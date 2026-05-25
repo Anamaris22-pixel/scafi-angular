@@ -1,0 +1,420 @@
+<!-- CONTENEDOR -->
+
+<div class="p-4">
+
+  <!-- TOP BAR -->
+
+  <div
+    class="bg-gray-200/95 rounded-2xl shadow-lg p-4 mb-5"
+  >
+
+    <div
+      class="flex flex-col md:flex-row gap-4 justify-between items-center"
+    >
+
+      <!-- BUSCADOR -->
+
+      <div class="flex">
+
+        <input
+
+          [(ngModel)]="buscar"
+
+          placeholder="Buscar cliente..."
+
+          class="w-72 p-3 rounded-l-xl border outline-none"
+
+        />
+
+        <button
+          class="bg-white px-4 rounded-r-xl border"
+        >
+
+          🔍
+
+        </button>
+
+      </div>
+
+      <!-- NUEVO -->
+
+      <button
+
+        (click)="mostrarFormulario = true"
+
+        class="bg-white hover:bg-gray-100 px-6 py-3 rounded-xl shadow font-semibold"
+
+      >
+
+        ➕ Nuevo
+
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- VOLVER -->
+
+  <div class="mb-5">
+
+    <button
+
+      routerLink="/dashboard"
+
+      class="bg-gradient-to-r from-black to-[#081028] text-white px-6 py-3 rounded-2xl shadow-2xl border border-slate-900 font-bold flex items-center gap-2 transition-all duration-300 hover:scale-105">
+
+      <span>
+        ←
+      </span>
+
+      <span>
+        Dashboard
+      </span>
+
+    </button>
+
+  </div>
+
+  <!-- FORMULARIO -->
+
+  <div
+
+    *ngIf="mostrarFormulario"
+
+    class="bg-white/95 rounded-2xl shadow-xl p-6 mb-5"
+
+  >
+
+    <h2 class="text-3xl font-bold mb-6 text-slate-800">
+
+      {{
+        editando
+        ? 'Editar Cliente'
+        : 'Nuevo Cliente'
+      }}
+
+    </h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+      <input
+
+        [(ngModel)]="nuevo.nit"
+
+        placeholder="NIT"
+
+        class="border rounded-xl p-3"
+
+      />
+
+      <input
+
+        [(ngModel)]="nuevo.nombre"
+
+        placeholder="Nombre empresa"
+
+        class="border rounded-xl p-3"
+
+      />
+
+      <input
+
+        [(ngModel)]="nuevo.telefono"
+
+        placeholder="Teléfono"
+
+        class="border rounded-xl p-3"
+
+      />
+
+      <input
+
+        [(ngModel)]="nuevo.correo"
+
+        placeholder="Correo"
+
+        class="border rounded-xl p-3"
+
+      />
+
+      <input
+
+        [(ngModel)]="nuevo.ciudad"
+
+        placeholder="Ciudad"
+
+        class="border rounded-xl p-3"
+
+      />
+
+      <input
+
+        [(ngModel)]="nuevo.direccion"
+
+        placeholder="Dirección"
+
+        class="border rounded-xl p-3"
+
+      />
+
+      <select
+
+        [(ngModel)]="nuevo.tipo"
+
+        class="border rounded-xl p-3"
+
+      >
+
+        <option value="Cooperativa">
+
+          Cooperativa
+
+        </option>
+
+        <option value="Exportadora">
+
+          Exportadora
+
+        </option>
+
+        <option value="Empresa">
+
+          Empresa
+
+        </option>
+
+        <option value="Distribuidor">
+
+          Distribuidor
+
+        </option>
+
+      </select>
+
+    </div>
+
+    <!-- BOTONES -->
+
+    <div class="flex gap-3 mt-6">
+
+      <button
+
+        *ngIf="!editando"
+
+        (click)="guardar()"
+
+        class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl font-semibold"
+
+      >
+
+        Guardar
+
+      </button>
+
+      <button
+
+        *ngIf="editando"
+
+        (click)="actualizar()"
+
+        class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold"
+
+      >
+
+        Actualizar
+
+      </button>
+
+      <button
+
+        (click)="cancelar()"
+
+        class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-xl font-semibold"
+
+      >
+
+        Cancelar
+
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- TABLA -->
+
+  <div
+    class="bg-white/95 rounded-2xl shadow-xl overflow-hidden"
+  >
+
+    <div class="overflow-auto">
+
+      <table class="w-full">
+
+        <thead class="bg-slate-900 text-white">
+
+          <tr>
+
+            <th class="p-4 text-left">
+              ID
+            </th>
+
+            <th class="p-4 text-left">
+              Cliente
+            </th>
+
+            <th class="p-4 text-left">
+              Contacto
+            </th>
+
+            <th class="p-4 text-left">
+              Dirección
+            </th>
+
+            <th class="p-4 text-left">
+              Tipo
+            </th>
+
+            <th class="p-4 text-left">
+              Acciones
+            </th>
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          <tr
+
+            *ngFor="
+              let c of clientesFiltrados()
+            "
+
+            class="border-b hover:bg-gray-100"
+
+          >
+
+            <td class="p-4 font-bold text-blue-700">
+
+              #{{ c.id }}
+
+            </td>
+
+            <td class="p-4">
+
+              <div class="font-semibold">
+
+                {{ c.nombre }}
+
+              </div>
+
+              <div class="text-sm text-gray-500">
+
+                {{ c.nit }}
+
+              </div>
+
+            </td>
+
+            <td class="p-4 text-sm">
+
+              {{ c.telefono }}
+
+              <br>
+
+              {{ c.correo }}
+
+            </td>
+
+            <td class="p-4">
+
+              {{ c.ciudad }}
+
+              <br>
+
+              <span class="text-sm text-gray-500">
+
+                {{ c.direccion }}
+
+              </span>
+
+            </td>
+
+            <td class="p-4">
+
+              <span
+
+                class="bg-blue-100 text-blue-700 px-3 py-1 rounded-xl text-sm"
+
+              >
+
+                {{ c.tipo }}
+
+              </span>
+
+            </td>
+
+            <td class="p-4">
+
+              <div class="flex gap-2">
+
+                <button
+
+                  (click)="editar(c)"
+
+                  class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg"
+
+                >
+
+                  Editar
+
+                </button>
+
+                <button
+
+                  (click)="eliminar(c.id)"
+
+                  class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg"
+
+                >
+
+                  Eliminar
+
+                </button>
+
+              </div>
+
+            </td>
+
+          </tr>
+
+          <!-- VACÍO -->
+
+          <tr
+            *ngIf="
+              clientesFiltrados().length === 0
+            "
+          >
+
+            <td
+              colspan="6"
+              class="text-center p-10 text-gray-500"
+            >
+
+              No hay clientes registrados
+
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</div>

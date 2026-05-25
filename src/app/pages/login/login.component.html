@@ -1,0 +1,178 @@
+<div class="min-h-screen flex">
+
+  <!-- IMAGEN -->
+  <div class="hidden md:block md:w-1/2">
+
+    <img
+      src="assets/cafe.jpg"
+      class="w-full h-full object-cover"
+    />
+
+  </div>
+
+  <!-- LOGIN -->
+  <div class="w-full md:w-1/2 bg-gray-200 flex items-center justify-center">
+
+    <div class="w-full max-w-md px-10">
+
+      <!-- LOGO -->
+      <div class="bg-[#c9a06a] rounded-3xl py-5 text-center mb-10">
+
+        <h1 class="text-6xl font-extrabold text-black">
+
+          SCAFI
+
+        </h1>
+
+      </div>
+
+      <!-- TÍTULO -->
+      <h2 class="text-5xl font-bold text-center mb-14 text-gray-800">
+
+        Inicio de Sesión
+
+      </h2>
+
+      <!-- CORREO -->
+      <div class="mb-8">
+
+        <label class="block text-2xl mb-3 text-gray-700">
+
+          Usuario / Correo
+
+        </label>
+
+        <input
+          type="email"
+          [(ngModel)]="correo"
+          placeholder="Ingresa tu correo"
+          class="w-full p-5 rounded-3xl border-4 border-blue-300 outline-none text-2xl"
+        />
+
+      </div>
+
+      <!-- PASSWORD -->
+      <div class="mb-4">
+
+        <label class="block text-2xl mb-3 text-gray-700">
+
+          Contraseña
+
+        </label>
+
+        <div class="relative">
+
+          <input
+            [type]="verPassword ? 'text' : 'password'"
+            [(ngModel)]="password"
+            placeholder="Ingresa tu contraseña"
+            class="w-full p-5 rounded-3xl border-4 border-gray-400 outline-none text-2xl"
+          />
+
+          <!-- BOTÓN OJO -->
+          <button
+            type="button"
+            (click)="verPassword = !verPassword"
+            class="absolute right-5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-black transition"
+          >
+
+            <!-- OJO ABIERTO -->
+            <svg
+              *ngIf="!verPassword"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="2"
+              stroke="currentColor"
+              class="w-6 h-6"
+            >
+
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M2.458 12C3.732 7.943 7.523 5 12 5
+                   c4.478 0 8.268 2.943 9.542 7
+                   -1.274 4.057-5.064 7-9.542 7
+                   -4.477 0-8.268-2.943-9.542-7z"
+              />
+
+              <circle cx="12" cy="12" r="3" />
+
+            </svg>
+
+            <!-- OJO CERRADO -->
+            <svg
+              *ngIf="verPassword"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="2"
+              stroke="currentColor"
+              class="w-6 h-6"
+            >
+
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M3 3l18 18"
+              />
+
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M10.477 10.482a3 3 0 004.243 4.243"
+              />
+
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M9.88 5.09A9.953 9.953 0 0112 5
+                   c4.478 0 8.268 2.943 9.542 7
+                   a9.97 9.97 0 01-4.132 5.411
+                   M6.228 6.228A9.956 9.956 0 002.458 12
+                   c1.274 4.057 5.064 7 9.542 7
+                   a9.95 9.95 0 005.255-1.5"
+              />
+
+            </svg>
+
+          </button>
+
+        </div>
+
+      </div>
+
+      <!-- OLVIDÉ -->
+      <div
+  routerLink="/recuperar-password"
+  class="text-red-400 text-sm cursor-pointer hover:underline"
+>
+  ¿Olvidaste tu contraseña?
+</div>
+
+      <!-- BOTÓN -->
+      <button
+        (click)="entrar()"
+        [disabled]="cargando"
+        class="w-full bg-blue-900 hover:bg-blue-950 transition text-white py-5 rounded-3xl text-3xl font-bold"
+      >
+
+        {{ cargando ? 'Ingresando...' : 'Iniciar Sesión' }}
+
+      </button>
+
+      <!-- ERROR -->
+      <div
+        *ngIf="error"
+        class="bg-red-100 text-red-700 mt-6 p-4 rounded-xl text-center text-xl"
+      >
+
+        {{ error }}
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

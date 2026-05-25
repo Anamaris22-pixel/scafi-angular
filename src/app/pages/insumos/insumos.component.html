@@ -1,0 +1,465 @@
+<div class="p-6 text-black">
+
+  <!-- BOTON VOLVER -->
+
+  <div class="mb-6">
+
+    <button
+      routerLink="/dashboard"
+      class="bg-gradient-to-r from-black to-[#081028] text-white px-6 py-3 rounded-2xl shadow-2xl border border-slate-900 font-bold flex items-center gap-2 transition-all duration-300 hover:scale-105">
+
+      <span class="text-2xl">
+        ←
+      </span>
+
+      <span>
+        Dashboard
+      </span>
+
+    </button>
+
+  </div>
+
+  <!-- TOP -->
+
+  <div
+    class="bg-gray-200
+           p-4
+           rounded-t-3xl
+           flex
+           justify-between
+           items-center"
+  >
+
+    <!-- BUSCADOR -->
+
+    <div class="flex">
+
+      <input
+        type="text"
+        [(ngModel)]="buscar"
+        placeholder="Buscar insumo..."
+        class="p-3 w-80 border rounded-l-xl outline-none"
+      >
+
+      <button
+        class="bg-white border px-4 rounded-r-xl"
+      >
+
+        🔍
+
+      </button>
+
+    </div>
+
+    <!-- NUEVO -->
+
+    <button
+      (click)="mostrarFormulario = !mostrarFormulario"
+      class="bg-white border px-5 py-2 rounded-xl shadow hover:bg-gray-100"
+    >
+
+      ➕ Nuevo Insumo
+
+    </button>
+
+  </div>
+
+  <!-- FORMULARIO -->
+
+  <div
+    *ngIf="mostrarFormulario"
+    class="bg-white p-6 border-x border-b shadow mb-4"
+  >
+
+    <h2 class="text-3xl font-bold mb-6">
+
+      {{
+        editando
+        ? '✏️ Editar Insumo'
+        : '📦 Nuevo Insumo'
+      }}
+
+    </h2>
+
+    <div class="grid grid-cols-2 gap-4">
+
+      <!-- NOMBRE -->
+
+      <input
+        [(ngModel)]="nuevo.nombre"
+        placeholder="Nombre Insumo"
+        class="p-3 border rounded-xl"
+      >
+
+      <!-- PROVEEDOR -->
+
+      <select
+        [(ngModel)]="nuevo.idProveedor"
+        class="p-3 border rounded-xl"
+      >
+
+        <option value="">
+          Seleccione proveedor
+        </option>
+
+        <option
+          *ngFor="let p of proveedores"
+          [value]="p.idProveedor"
+        >
+
+          {{ p.empresa }}
+
+        </option>
+
+      </select>
+
+      <!-- TIPO -->
+
+      <select
+        [(ngModel)]="nuevo.tipo"
+        class="col-span-2 p-3 border rounded-xl"
+      >
+
+        <option value="">
+          Seleccione tipo de insumo
+        </option>
+
+        <option value="Fertilizante">
+          Fertilizante
+        </option>
+
+        <option value="Herbicida">
+          Herbicida
+        </option>
+
+        <option value="Fungicida">
+          Fungicida
+        </option>
+
+        <option value="Insecticida">
+          Insecticida
+        </option>
+
+        <option value="Abono">
+          Abono
+        </option>
+
+        <option value="Herramienta">
+          Herramienta
+        </option>
+
+        <option value="Semilla">
+          Semilla
+        </option>
+
+        <option value="Otro">
+          Otro
+        </option>
+
+      </select>
+
+      <!-- DESCRIPCION -->
+
+      <textarea
+        [(ngModel)]="nuevo.descripcion"
+        placeholder="Descripción"
+        class="col-span-2 p-3 border rounded-xl"
+      ></textarea>
+
+      <!-- UNIDAD -->
+
+      <select
+        [(ngModel)]="nuevo.unidad"
+        class="p-3 border rounded-xl"
+      >
+
+        <option value="">
+          Unidad
+        </option>
+
+        <option value="Kg">
+          Kg
+        </option>
+
+        <option value="Litros">
+          Litros
+        </option>
+
+        <option value="Unidades">
+          Unidades
+        </option>
+
+      </select>
+
+      <!-- PRECIO -->
+
+      <input
+        [(ngModel)]="nuevo.precio"
+        type="number"
+        placeholder="Precio"
+        class="p-3 border rounded-xl"
+      >
+
+      <!-- STOCK MINIMO -->
+
+      <input
+        type="number"
+        [(ngModel)]="nuevo.stockMinimo"
+        placeholder="Stock mínimo"
+        class="p-3 border rounded-xl"
+      >
+
+      <!-- STOCK ACTUAL -->
+
+      <div
+
+        class="p-4 rounded-2xl border flex flex-col justify-center"
+
+        [class.bg-red-600]="
+          +nuevo.stock <= +nuevo.stockMinimo
+        "
+
+        [class.bg-slate-900]="
+          +nuevo.stock > +nuevo.stockMinimo
+        "
+
+        [class.text-white]="true"
+
+      >
+
+        <span class="text-sm uppercase opacity-70">
+
+          Stock Actual
+
+        </span>
+
+        <span class="text-4xl font-black mt-2">
+
+          {{
+            editando
+            ? nuevo.stock
+            : 0
+          }}
+
+        </span>
+
+      </div>
+
+    </div>
+
+    <!-- INFO -->
+
+    <div
+      class="mt-4 bg-blue-50 border border-blue-200 text-blue-700 p-4 rounded-2xl"
+    >
+
+      ℹ️ El stock se actualiza automáticamente
+      desde el módulo de movimientos.
+
+    </div>
+
+    <!-- BOTONES -->
+
+    <div class="flex gap-3 mt-6">
+
+      <!-- GUARDAR -->
+
+      <button
+        *ngIf="!editando"
+        (click)="guardar()"
+        class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl"
+      >
+
+        Guardar
+
+      </button>
+
+      <!-- ACTUALIZAR -->
+
+      <button
+        *ngIf="editando"
+        (click)="actualizar()"
+        class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl"
+      >
+
+        Actualizar
+
+      </button>
+
+      <!-- CANCELAR -->
+
+      <button
+        (click)="cancelarEditar()"
+        class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-xl"
+      >
+
+        Cancelar
+
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- TABLA -->
+
+  <div class="bg-white rounded-b-3xl shadow overflow-auto">
+
+    <table class="w-full">
+
+      <thead class="bg-gray-100">
+
+        <tr>
+
+          <th class="p-4 text-left">
+            Nombre
+          </th>
+
+          <th class="p-4 text-left">
+            Tipo
+          </th>
+
+          <th class="p-4 text-left">
+            Stock
+          </th>
+
+          <th class="p-4 text-left">
+            Estado
+          </th>
+
+          <th class="p-4 text-left">
+            Precio
+          </th>
+
+          <th class="p-4 text-left">
+            Acciones
+          </th>
+
+        </tr>
+
+      </thead>
+
+      <tbody>
+
+        <tr
+          *ngFor="let i of insumosFiltrados()"
+          class="border-b hover:bg-gray-50"
+        >
+
+          <!-- NOMBRE -->
+
+          <td class="p-4 font-bold">
+
+            {{ i.nombre }}
+
+          </td>
+
+          <!-- TIPO -->
+
+          <td class="p-4">
+
+            {{ i.tipo }}
+
+          </td>
+
+          <!-- STOCK -->
+
+          <td
+            class="p-4 font-bold"
+            [class.text-red-600]="
+              +i.stock <= +i.stockMinimo
+            "
+          >
+
+            {{ i.stock }}
+
+          </td>
+
+          <!-- ESTADO -->
+
+          <td class="p-4">
+
+            <!-- CRITICO -->
+
+            <span
+
+              *ngIf="
+                +i.stock <= +i.stockMinimo
+              "
+
+              class="bg-red-600 text-white px-4 py-2 rounded-xl text-sm font-bold"
+
+            >
+
+              CRÍTICO
+
+            </span>
+
+            <!-- NORMAL -->
+
+            <span
+
+              *ngIf="
+                +i.stock > +i.stockMinimo
+              "
+
+              class="bg-green-600 text-white px-4 py-2 rounded-xl text-sm font-bold"
+
+            >
+
+              NORMAL
+
+            </span>
+
+          </td>
+
+          <!-- PRECIO -->
+
+          <td class="p-4">
+
+            $ {{ i.precio }}
+
+          </td>
+
+          <!-- ACCIONES -->
+
+          <td class="p-4">
+
+            <div class="flex gap-2">
+
+              <!-- EDITAR -->
+
+              <button
+                (click)="editar(i)"
+                class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg"
+              >
+
+                ✏️
+
+              </button>
+
+              <!-- ELIMINAR -->
+
+              <button
+                (click)="eliminar(i.idInsumo)"
+                class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-lg"
+              >
+
+                🗑
+
+              </button>
+
+            </div>
+
+          </td>
+
+        </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</div>

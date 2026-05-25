@@ -1,0 +1,84 @@
+<div class="p-6 max-w-5xl mx-auto">
+
+  <h2 class="text-2xl font-bold mb-4">🛠️ Soporte Técnico</h2>
+
+  <!-- FORMULARIO -->
+  <div class="bg-white p-4 rounded shadow mb-4">
+
+    <input 
+      [(ngModel)]="nuevo.titulo"
+      placeholder="Título del problema"
+      class="w-full border p-2 mb-2 rounded">
+
+    <textarea 
+      [(ngModel)]="nuevo.descripcion"
+      placeholder="Describe el problema..."
+      class="w-full border p-2 mb-2 rounded">
+    </textarea>
+
+    <button 
+      (click)="crear()"
+      class="bg-green-600 text-white px-4 py-2 rounded">
+      Crear Ticket
+    </button>
+
+  </div>
+
+  <!-- LISTA -->
+  <div class="bg-white p-4 rounded shadow">
+
+    <table class="w-full text-left">
+
+      <thead>
+        <tr class="border-b">
+          <th>Título</th>
+          <th>Descripción</th>
+          <th>Estado</th>
+          <th>Fecha</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        <tr *ngFor="let t of tickets" class="border-b">
+
+          <td>{{ t.titulo }}</td>
+          <td>{{ t.descripcion }}</td>
+
+          <td>
+            <select 
+              [(ngModel)]="t.estado"
+              (change)="cambiarEstado(t, t.estado)"
+              class="border p-1 rounded">
+
+              <option *ngFor="let e of estados">{{ e }}</option>
+
+            </select>
+          </td>
+
+          <td>{{ t.fecha }}</td>
+
+          <td>
+            <button 
+              (click)="eliminar(t.id)"
+              class="bg-red-500 text-white px-2 py-1 rounded">
+              Eliminar
+            </button>
+          </td>
+
+        </tr>
+
+        <tr *ngIf="tickets.length === 0">
+          <td colspan="5" class="text-center p-4 text-gray-500">
+            No hay tickets registrados
+          </td>
+        </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</div>

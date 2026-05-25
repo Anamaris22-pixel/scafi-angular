@@ -1,0 +1,373 @@
+<div class="flex h-screen bg-[#0b141a] overflow-hidden">
+
+  <!-- SIDEBAR -->
+  <div class="w-[350px] bg-[#111b21] border-r border-[#2a3942] flex flex-col">
+
+    <!-- HEADER -->
+    <div class="bg-[#202c33] p-4">
+
+      <!-- BOTON DASHBOARD -->
+      <button
+        type="button"
+        (click)="volverDashboard()"
+        class="w-full bg-[#0b1d4d] hover:bg-[#16357d]
+               text-white px-5 py-4 rounded-2xl
+               font-bold transition mb-5"
+      >
+        ← Dashboard
+      </button>
+
+      <!-- TITULO -->
+      <h1 class="text-white text-4xl font-bold mb-5">
+        Chat SCAFI
+      </h1>
+
+      <!-- BUSCADOR -->
+      <input
+        type="text"
+        [(ngModel)]="buscarUsuario"
+        (input)="obtenerUsuariosChat()"
+        placeholder="Buscar mensajes..."
+        class="w-full bg-slate-800 rounded-xl px-4 py-3 text-white outline-none"
+      />
+
+    </div>
+
+    <!-- LISTA -->
+    <div class="flex-1 overflow-y-auto">
+
+      <!-- CONVERSACIONES -->
+      <div
+        *ngFor="let chat of conversacionesFiltradas"
+        (click)="seleccionarUsuario(chat)"
+        class="flex items-center gap-4 px-4 py-5
+               cursor-pointer border-b border-[#2a3942]
+               hover:bg-[#202c33] transition"
+        [class.bg-[#202c33]]="usuarioSeleccionado?.id == chat.id"
+      >
+
+        <!-- FOTO -->
+        <div
+          class="w-14 h-14 rounded-full
+                 bg-[#25d366]
+                 flex items-center justify-center
+                 text-white font-bold text-xl
+                 overflow-hidden shrink-0"
+        >
+
+          <img
+            *ngIf="chat.foto"
+            [src]="api + chat.foto"
+            class="w-full h-full object-cover"
+          />
+
+          <span *ngIf="!chat.foto">
+            {{ chat.nombre?.charAt(0) }}
+          </span>
+
+        </div>
+
+        <!-- INFO -->
+        <div class="flex-1 min-w-0">
+
+          <div class="flex justify-between items-center">
+
+            <h3 class="text-white font-semibold truncate">
+              {{ chat.nombre }}
+            </h3>
+
+            <span class="text-gray-400 text-xs">
+              {{ chat.ultima_fecha | date:'shortTime' }}
+            </span>
+
+          </div>
+
+          <p class="text-gray-400 text-sm truncate mt-1">
+            {{ chat.ultimo_mensaje || 'Sin mensajes' }}
+          </p>
+
+        </div>
+
+      </div>
+
+      <!-- RESULTADOS BUSQUEDA -->
+      <div
+        *ngFor="let u of usuarios"
+        (click)="seleccionarUsuario(u)"
+        class="flex items-center gap-4 px-4 py-5
+               cursor-pointer border-b border-[#2a3942]
+               hover:bg-[#202c33] transition"
+      >
+
+        <!-- FOTO -->
+        <div
+          class="w-14 h-14 rounded-full
+                 bg-[#25d366]
+                 flex items-center justify-center
+                 text-white font-bold text-xl"
+        >
+          {{ u.nombre?.charAt(0) }}
+        </div>
+
+        <!-- INFO -->
+        <div class="flex-1 overflow-hidden">
+
+          <h3 class="font-semibold text-white truncate">
+            {{ u.nombre }}
+          </h3>
+
+          <p class="text-sm text-gray-400 truncate">
+            {{ u.correo }}
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- CHAT -->
+  <div class="flex-1 flex flex-col bg-[#0b141a]">
+
+    <!-- SI HAY CHAT -->
+    <ng-container *ngIf="usuarioSeleccionado; else vacio">
+
+      <!-- HEADER CHAT -->
+      <div
+        class="bg-[#202c33]
+               border-b border-[#2a3942]
+               px-5 py-4 flex items-center gap-4"
+      >
+
+        <!-- FOTO -->
+        <div
+          class="w-12 h-12 rounded-full
+                 bg-[#25d366]
+                 flex items-center justify-center
+                 text-white font-bold overflow-hidden"
+        >
+
+          <img
+            *ngIf="usuarioSeleccionado.foto"
+            [src]="api + usuarioSeleccionado.foto"
+            class="w-full h-full object-cover"
+          />
+
+          <span *ngIf="!usuarioSeleccionado.foto">
+            {{ usuarioSeleccionado.nombre?.charAt(0) }}
+          </span>
+
+        </div>
+
+        <!-- INFO -->
+        <div>
+
+          <h2 class="text-white font-semibold text-lg">
+            {{ usuarioSeleccionado.nombre }}
+          </h2>
+
+          <p class="text-[#8696a0] text-sm">
+            Conversación activa
+          </p>
+
+        </div>
+
+      </div>
+
+      <!-- MENSAJES -->
+      <div
+        id="contenedorMensajes"
+        class="flex-1 overflow-y-auto p-6
+               flex flex-col gap-4"
+      >
+
+        <div
+          *ngFor="let m of mensajes"
+          class="flex"
+          [class.justify-end]="m.remitente_id == usuario.id"
+          [class.justify-start]="m.remitente_id != usuario.id"
+        >
+
+          <!-- BURBUJA -->
+          <div
+            class="max-w-[70%]
+                   rounded-2xl px-4 py-3 shadow-lg"
+            [class.bg-[#005c4b]]="m.remitente_id == usuario.id"
+            [class.bg-[#202c33]]="m.remitente_id != usuario.id"
+          >
+
+            <!-- TEXTO -->
+            <div
+              *ngIf="m.mensaje"
+              class="text-white whitespace-pre-wrap break-words text-lg"
+            >
+              {{ m.mensaje }}
+            </div>
+
+            <!-- IMAGEN -->
+            <div *ngIf="m.tipo == 'imagen'" class="mt-3">
+
+              <img
+                [src]="api + m.archivo"
+                class="rounded-2xl max-w-full"
+              />
+
+            </div>
+
+            <!-- PDF -->
+            <div *ngIf="m.tipo == 'pdf'" class="mt-3">
+
+              <a
+                [href]="api + m.archivo"
+                target="_blank"
+                class="bg-red-500 hover:bg-red-600
+                       text-white px-4 py-2 rounded-xl
+                       inline-flex items-center gap-2"
+              >
+                📄 Ver PDF
+              </a>
+
+            </div>
+
+            <!-- FECHA -->
+            <div class="text-right mt-2">
+
+              <span class="text-xs text-[#cfe9df]">
+                {{ m.fecha | date:'shortTime' }}
+              </span>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- FOOTER -->
+      <div class="bg-[#202c33] p-4">
+
+        <div class="flex items-center gap-3 relative">
+
+          <!-- EMOJIS -->
+          <div class="relative">
+
+            <button
+              type="button"
+              (click)="mostrarEmojis = !mostrarEmojis"
+              class="w-12 h-12 rounded-full
+                     bg-[#2a3942]
+                     hover:bg-[#374248]
+                     text-2xl
+                     flex items-center justify-center"
+            >
+              😊
+            </button>
+
+            <!-- PANEL EMOJIS -->
+            <div
+              *ngIf="mostrarEmojis"
+              class="absolute bottom-16 left-0
+                     bg-[#202c33]
+                     p-4 rounded-2xl
+                     shadow-2xl
+                     w-[340px]
+                     flex flex-wrap gap-3
+                     z-50 border border-[#2a3942]"
+            >
+
+              <button
+                *ngFor="let e of emojis"
+                type="button"
+                (click)="agregarEmoji(e)"
+                class="text-2xl hover:scale-125 transition"
+              >
+                {{ e }}
+              </button>
+
+            </div>
+
+          </div>
+
+          <!-- ARCHIVO -->
+          <label
+            class="w-12 h-12 rounded-full
+                   bg-[#2a3942]
+                   hover:bg-[#374248]
+                   text-white text-xl
+                   flex items-center justify-center
+                   cursor-pointer"
+          >
+
+            📎
+
+            <input
+              type="file"
+              hidden
+              (change)="seleccionarArchivo($event)"
+            />
+
+          </label>
+
+          <!-- INPUT -->
+          <input
+            type="text"
+            [(ngModel)]="texto"
+            (keyup.enter)="enviarMensaje()"
+            placeholder="Escribe un mensaje"
+            class="flex-1 bg-[#2a3942]
+                   text-white px-6 py-4
+                   rounded-full outline-none"
+          />
+
+          <!-- BOTON -->
+          <button
+            type="button"
+            (click)="enviarMensaje()"
+            [disabled]="enviando"
+            class="w-14 h-14 rounded-full
+                   bg-[#00a884]
+                   hover:bg-[#06cf9c]
+                   text-white text-2xl
+                   flex items-center justify-center
+                   transition disabled:opacity-50"
+          >
+            ➤
+          </button>
+
+        </div>
+
+      </div>
+
+    </ng-container>
+
+    <!-- VACIO -->
+    <ng-template #vacio>
+
+      <div
+        class="flex-1 flex flex-col
+               items-center justify-center
+               text-center px-10"
+      >
+
+        <div class="text-8xl mb-6">
+          💬
+        </div>
+
+        <h2 class="text-white text-4xl font-bold mb-4">
+          Tus mensajes
+        </h2>
+
+        <p class="text-gray-400 text-lg max-w-md">
+          Selecciona una conversación para comenzar a chatear.
+        </p>
+
+      </div>
+
+    </ng-template>
+
+  </div>
+
+</div>

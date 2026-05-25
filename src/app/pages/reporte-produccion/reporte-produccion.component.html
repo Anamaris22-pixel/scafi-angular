@@ -1,0 +1,259 @@
+<div class="min-h-screen bg-slate-100 p-6 print:p-0" style="background-image: url('assets/cafe.jpg'); background-attachment: fixed;">
+
+  <!-- BOTONES DE ACCIÓN (Ocultos en impresión) -->
+  <div class="flex gap-3 mb-6 justify-center print:hidden">
+    <button (click)="imprimir()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-xl shadow-lg font-semibold transition flex items-center gap-2">
+      🖨 Imprimir
+    </button>
+    <button (click)="exportarPDF()" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-xl shadow-lg font-semibold transition flex items-center gap-2">
+      📄 Exportar PDF
+    </button>
+    <button routerLink="/dashboard" class="bg-slate-900 hover:bg-slate-800 text-white px-5 py-2 rounded-xl shadow-lg font-semibold transition">
+      ← Dashboard
+    </button>
+  </div>
+  <!-- FILTRO -->
+
+<div class="max-w-[900px] mx-auto mb-8 print:hidden">
+
+  <div class="bg-white/95 backdrop-blur-md border border-slate-200 rounded-[30px] p-8 shadow-2xl">
+
+    <div class="flex items-center gap-3 mb-6">
+
+      <div class="bg-blue-600 text-white w-10 h-10 rounded-xl flex items-center justify-center shadow-lg">
+
+        🔎
+
+      </div>
+
+      <h2 class="text-[14px] uppercase tracking-[0.35em] font-black text-slate-400">
+
+        Filtro de Fechas
+
+      </h2>
+
+    </div>
+
+    <div class="grid grid-cols-4 gap-5 items-end">
+
+      <!-- FECHA INICIO -->
+
+      <div>
+
+        <label class="block text-xs uppercase font-black text-slate-500 mb-3">
+
+          Fecha Inicio
+
+        </label>
+
+        <input
+          type="date"
+          [(ngModel)]="fechaInicio"
+          class="w-full border border-slate-300 rounded-2xl px-5 py-4 bg-white"
+        >
+
+      </div>
+
+      <!-- FECHA FIN -->
+
+      <div>
+
+        <label class="block text-xs uppercase font-black text-slate-500 mb-3">
+
+          Fecha Fin
+
+        </label>
+
+        <input
+          type="date"
+          [(ngModel)]="fechaFin"
+          class="w-full border border-slate-300 rounded-2xl px-5 py-4 bg-white"
+        >
+
+      </div>
+
+      <!-- BOTON FILTRAR -->
+
+      <button
+        (click)="filtrarFechas()"
+        class="bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl px-5 py-4 shadow-xl"
+      >
+        Filtrar
+      </button>
+
+      <!-- BOTON LIMPIAR -->
+
+      <button
+        (click)="limpiarFiltro()"
+        class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-black rounded-2xl px-5 py-4 shadow-lg"
+      >
+        Limpiar
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+  <!-- CONTENEDOR DEL REPORTE (A4) -->
+  <div id="reportePDF" class="print-area bg-white w-[215.9mm] min-h-[297mm] mx-auto rounded-xl shadow-2xl p-[15mm] text-slate-800">
+    
+    <!-- HEADER -->
+    <div class="flex justify-between items-center border-b-2 border-gray-100 pb-6 mb-8">
+      <div class="flex items-center gap-4">
+        <img src="assets/logo-scafi.png" alt="Logo" class="w-24 object-contain">
+        <div>
+          
+          <p class="text-[#C8AA7A] text-sm font-bold uppercase tracking-wider mt-1">
+            Software de Control Integral Cafetero
+          </p>
+        </div>
+      </div>
+
+      <div class="text-right">
+        <h2 class="text-2xl font-black text-slate-900">REPORTE DE PRODUCCIÓN</h2>
+        <div class="mt-2 text-gray-500 text-xs font-medium uppercase tracking-tighter">
+          <p>Fecha: {{ fechaActual | date:'dd/MM/yyyy' }} | Hora: {{ fechaActual | date:'hh:mm a' }}</p>
+          <p>Responsable: <span class="text-slate-700">{{ usuario }}</span></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESUMEN EJECUTIVO (Tarjetas de arriba) -->
+    <div class="mb-10">
+      <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+        <span class="bg-slate-800 text-white p-1 rounded">📊</span> Resumen Ejecutivo
+      </h3>
+      <div class="grid grid-cols-5 gap-3">
+        <!-- Card Genérica -->
+        <div class="bg-slate-50 border border-slate-100 rounded-2xl p-4 shadow-sm flex flex-col justify-between h-32">
+          <p class="text-xs font-bold text-slate-500 uppercase">Total Registros</p>
+          <h2 class="text-1xl font-black text-slate-900">{{ totalRegistros() }}</h2>
+        </div>
+
+        <div class="bg-green-50 border border-green-100 rounded-2xl p-4 shadow-sm flex flex-col justify-between h-32">
+          <p class="text-xs font-bold text-green-700 uppercase">Producción Total</p>
+          <h2 class="text-2xl font-black text-green-700">{{ totalProduccion() }} <span class="text-sm">KG</span></h2>
+        </div>
+
+        <div class="bg-blue-50 border border-blue-100 rounded-2xl p-4 shadow-sm flex flex-col justify-between h-32">
+          <p class="text-xs font-bold text-blue-700 uppercase">Promedio</p>
+          <h2 class="text-2xl font-black text-blue-700">{{ promedioProduccion() }}</h2>
+        </div>
+
+        <div class="bg-orange-50 border border-orange-100 rounded-2xl p-4 shadow-sm flex flex-col justify-between h-32">
+          <p class="text-xs font-bold text-orange-700 uppercase">Prod. Alta</p>
+          <h2 class="text-2xl font-black text-orange-700">{{ produccionAlta() }}</h2>
+        </div>
+
+        <div class="bg-[#C8AA7A]/10 border border-[#C8AA7A]/20 rounded-2xl p-4 shadow-sm flex flex-col justify-between h-32">
+          <p class="text-xs font-bold text-[#8d734a] uppercase text-[10px]">Mejor Recolector</p>
+          <div>
+            <h2 class="text-sm font-black text via-white">{{ topRecolectores[0]?.recolector || '---' }}</h2>
+            <p class="text-lg font-black text-[#8d734a]">{{ topRecolectores[0]?.total || 0 }} KG</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOP RECOLECTORES (Ajustado para ser más pequeño) -->
+    <div class="mb-10">
+      <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+        <span class="bg-green-600 text-white p-1 rounded">🏆</span> Top Recolectores
+      </h3>
+      <div class="grid grid-cols-2 gap-3">
+        <div *ngFor="let r of topRecolectores" 
+             class="bg-white border border-gray-100 rounded-xl p-3 flex justify-between items-center shadow-sm">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center font-bold text-xs">
+              {{ topRecolectores.indexOf(r) + 1 }}
+            </div>
+            <div>
+              <h4 class="font-bold text-slate-800 text-sm capitalize">{{ r.recolector }}</h4>
+              <p class="text-[10px] text-gray-400 uppercase font-bold">{{ r.registros }} Registros</p>
+            </div>
+          </div>
+          <p class="text-green-600 font-black text-xl">{{ r.total }} <span class="text-xs">KG</span></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- TABLA DE DETALLE -->
+    <div>
+      <div class="flex justify-between items-end mb-3">
+        <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+          <span class="bg-slate-800 text-white p-1 rounded">🌱</span> Detalle de Producción
+        </h3>
+        <span class="text-xs font-bold text-gray-400 uppercase">Mostrando {{ produccion.length }} registros</span>
+      </div>
+      
+      <div class="overflow-hidden rounded-lg border border-gray-200">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="bg-slate-900 text-white">
+              <th class="p-2 text-left">ID</th>
+              <th class="p-2 text-left">Recolector</th>
+              <th class="p-2 text-left">Lote</th>
+              <th class="p-2 text-center">Cantidad</th>
+              <th class="p-2 text-center">Fecha</th>
+              <th class="p-2 text-left">Obs.</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            <tr *ngFor="let p of produccion; let i = index" [class.bg-gray-50]="i % 2 !== 0">
+              <td class="p-2 font-mono text-xs text-gray-400">#{{ p.id }}</td>
+              <td class="p-2 font-bold text-slate-700">{{ p.recolector }}</td>
+              <td class="p-2">{{ p.lote }}</td>
+              <td class="p-2 text-center font-black text-green-600 text-base">{{ p.cantidad }} KG</td>
+              <td class="p-2 text-center text-xs text-gray-500">{{ p.fecha }}</td>
+              <td class="p-2 text-xs italic text-gray-400">{{ p.observacion }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- FOOTER / FIRMAS -->
+    <div class="mt-16 pt-10 border-t border-dashed border-gray-300">
+      <div class="flex justify-around">
+        <div class="text-center">
+          <div class="border-t border-slate-900 w-48 mb-2 mx-auto"></div>
+          <p class="text-xs font-black uppercase">Administrador</p>
+          <p class="text-[10px] text-gray-400">SCAFI - Control Integral</p>
+        </div>
+        <div class="text-center">
+          <div class="border-t border-slate-900 w-48 mb-2 mx-auto"></div>
+          <p class="text-xs font-black uppercase">Propietario</p>
+          <p class="text-[10px] text-gray-400">Firma Autorizada</p>
+        </div>
+      </div>
+      
+      <div class="mt-12 text-center text-[10px] text-gray-400 uppercase tracking-widest">
+        <p>SCAFI © 2026 · Documento oficial de control interno</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<style>
+@media print {
+  @page {
+
+  size: letter;
+
+  margin: 12mm;
+
+}
+  body { background: white !important; }
+  .print-area {
+    width: 210mm;
+    height: 297mm;
+    padding: 15mm !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+  .print\:hidden { display: none !important; }
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+}
+</style>
