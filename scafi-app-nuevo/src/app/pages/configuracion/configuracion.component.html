@@ -1,0 +1,311 @@
+<!-- ========================= -->
+<!-- CONFIGURACIÓN -->
+<!-- ========================= -->
+
+<div class="min-h-screen bg-[#071223] text-white flex">
+
+  <!-- ========================= -->
+  <!-- SIDEBAR -->
+  <!-- ========================= -->
+
+  <aside class="w-64 bg-[#081120] border-r border-white/5 flex flex-col">
+
+    <!-- LOGO -->
+    <div class="px-6 py-7 border-b border-white/5">
+
+      <div class="text-5xl mb-3">
+        ⚙️
+      </div>
+
+      <h2 class="text-3xl font-black">
+        Configuración
+      </h2>
+
+    </div>
+
+    <!-- MENÚ -->
+    <div class="flex-1 p-4 space-y-3 overflow-auto">
+
+      <button
+        class="w-full flex items-center gap-3 bg-blue-600 hover:bg-blue-500 transition px-5 py-3 rounded-2xl text-left font-semibold"
+      >
+        👥 Usuarios
+      </button>
+
+      <button
+        class="w-full flex items-center gap-3 bg-white/5 hover:bg-white/10 transition px-5 py-3 rounded-2xl text-left"
+      >
+        🛡️ Roles y permisos
+      </button>
+
+      <button
+        class="w-full flex items-center gap-3 bg-white/5 hover:bg-white/10 transition px-5 py-3 rounded-2xl text-left"
+      >
+        🏢 Empresa
+      </button>
+
+      <button
+        class="w-full flex items-center gap-3 bg-white/5 hover:bg-white/10 transition px-5 py-3 rounded-2xl text-left"
+      >
+        🔐 Seguridad
+      </button>
+
+      <button
+        class="w-full flex items-center gap-3 bg-white/5 hover:bg-white/10 transition px-5 py-3 rounded-2xl text-left"
+      >
+        🎨 Apariencia
+      </button>
+
+      <button
+        class="w-full flex items-center gap-3 bg-white/5 hover:bg-white/10 transition px-5 py-3 rounded-2xl text-left"
+      >
+        🔔 Notificaciones
+      </button>
+
+      <button
+        class="w-full flex items-center gap-3 bg-white/5 hover:bg-white/10 transition px-5 py-3 rounded-2xl text-left"
+      >
+        💾 Respaldos
+      </button>
+
+    </div>
+
+  </aside>
+
+  <!-- ========================= -->
+  <!-- CONTENIDO -->
+  <!-- ========================= -->
+
+  <main class="flex-1 p-10 overflow-auto">
+
+    <!-- HEADER -->
+    <div class="flex justify-between items-center mb-10">
+
+      <div>
+
+        <h1 class="text-5xl font-black mb-3">
+          Gestión de Usuarios
+        </h1>
+
+        <p class="text-white/60 text-lg">
+          Administración de usuarios del sistema
+        </p>
+
+      </div>
+
+      <!-- BOTÓN -->
+      <button
+        (click)="mostrarModalUsuario = true"
+        class="bg-gradient-to-r from-blue-600 to-blue-500 hover:scale-105 transition-all duration-300 px-7 py-3 rounded-2xl font-semibold shadow-xl"
+      >
+        + Nuevo usuario
+      </button>
+
+    </div>
+
+    <!-- TABLA -->
+    <div class="bg-[#0E1A33] border border-white/5 rounded-2xl overflow-hidden">
+
+      <!-- HEADER TABLA -->
+      <div class="grid grid-cols-5 gap-5 px-8 py-5 bg-white/5 font-bold text-white/80">
+
+        <div>Usuario</div>
+
+        <div>Correo</div>
+
+        <div>Rol</div>
+
+        <div>Estado</div>
+
+        <div class="text-center">
+          Acciones
+        </div>
+
+      </div>
+
+      <!-- FILAS -->
+      <div
+        *ngFor="let usuario of usuarios"
+        class="grid grid-cols-5 gap-5 px-8 py-4 border-t border-white/5 items-center hover:bg-white/5 transition"
+      >
+
+        <!-- USUARIO -->
+        <div class="flex items-center gap-4">
+
+          <div class="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center font-black">
+            {{ usuario.nombre.charAt(0) }}
+          </div>
+
+          <div class="font-semibold">
+            {{ usuario.nombre }}
+          </div>
+
+        </div>
+
+        <!-- CORREO -->
+        <div class="text-white/70">
+          {{ usuario.correo }}
+        </div>
+
+        <!-- ROL -->
+        <div>
+          {{ usuario.rol }}
+        </div>
+
+        <!-- ESTADO -->
+        <div>
+
+          <span
+            class="bg-green-500/20 text-green-400 px-4 py-2 rounded-xl text-sm"
+          >
+            {{ usuario.estado }}
+          </span>
+
+        </div>
+
+        <!-- ACCIONES -->
+        <div class="flex justify-center gap-3">
+
+          <button
+            class="w-11 h-11 rounded-xl bg-yellow-400 hover:bg-yellow-300 transition text-black"
+          >
+            ✏️
+          </button>
+
+          <button
+            class="w-11 h-11 rounded-xl bg-red-500 hover:bg-red-400 transition"
+          >
+            🗑️
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+</div>
+
+<!-- ========================= -->
+<!-- MODAL NUEVO USUARIO -->
+<!-- ========================= -->
+
+<div
+  *ngIf="mostrarModalUsuario"
+  class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-6"
+>
+
+  <div class="bg-[#0B162C] w-full max-w-3xl rounded-[35px] border border-white/10 p-10 shadow-2xl">
+
+    <!-- HEADER -->
+    <div class="flex justify-between items-center mb-10">
+
+      <h2 class="text-4xl font-black">
+        Nuevo usuario
+      </h2>
+
+      <button
+        (click)="mostrarModalUsuario = false"
+        class="text-3xl hover:text-red-400 transition"
+      >
+        ✕
+      </button>
+
+    </div>
+
+    <!-- FORM -->
+    <div class="grid grid-cols-2 gap-6">
+
+      <!-- NOMBRE -->
+      <input
+        type="text"
+        placeholder="Nombre completo"
+        [(ngModel)]="nuevoUsuario.nombre"
+        class="bg-white/5 border border-white/10 rounded-2xl p-5 outline-none"
+      >
+
+      <!-- CORREO -->
+      <input
+        type="email"
+        placeholder="Correo"
+        [(ngModel)]="nuevoUsuario.correo"
+        class="bg-white/5 border border-white/10 rounded-2xl p-5 outline-none"
+      >
+
+      <!-- CONTRASEÑA -->
+      <input
+        type="password"
+        placeholder="Contraseña"
+        [(ngModel)]="nuevoUsuario.contrasena"
+        class="bg-white/5 border border-white/10 rounded-2xl p-5 outline-none"
+      >
+
+      <!-- ROL -->
+      <select
+        [(ngModel)]="nuevoUsuario.idRol"
+        class="bg-white/5 border border-white/10 rounded-2xl p-5 outline-none"
+      >
+
+        <option [ngValue]="1">
+          Propietario
+        </option>
+
+        <option [ngValue]="2">
+          Administrador
+        </option>
+
+        <option [ngValue]="3">
+          Recolector
+        </option>
+
+      </select>
+
+      <!-- ESTADO -->
+      <select
+        [(ngModel)]="nuevoUsuario.estado"
+        class="bg-white/5 border border-white/10 rounded-2xl p-5 outline-none"
+      >
+
+        <option value="Activo">
+          Activo
+        </option>
+
+        <option value="Inactivo">
+          Inactivo
+        </option>
+
+      </select>
+
+      <!-- FOTO -->
+      <input
+        type="file"
+        (change)="seleccionarFoto($event)"
+        class="bg-white/5 border border-white/10 rounded-2xl p-5 outline-none"
+      >
+
+    </div>
+
+    <!-- BOTONES -->
+    <div class="flex justify-end gap-5 mt-10">
+
+      <button
+        (click)="mostrarModalUsuario = false"
+        class="bg-white/10 hover:bg-white/20 transition px-8 py-4 rounded-2xl font-semibold"
+      >
+        Cancelar
+      </button>
+
+      <button
+        (click)="guardarUsuario()"
+        class="bg-blue-600 hover:bg-blue-500 transition px-10 py-4 rounded-2xl font-black shadow-lg"
+      >
+        Guardar usuario
+      </button>
+
+    </div>
+
+  </div>
+
+</div>

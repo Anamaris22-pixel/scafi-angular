@@ -1,0 +1,85 @@
+<div class="h-screen flex flex-col overflow-hidden">
+  <!-- HEADER -->
+  <header class="bg-[#1e1e1e] text-white flex items-center justify-between px-6 py-3 shadow-xl z-50">
+    <!-- BUSCADOR -->
+    <input
+      type="text"
+      [(ngModel)]="searchTerm"
+      (keyup.enter)="search()"
+      placeholder="Buscar módulo..."
+      class="bg-slate-700 px-4 py-2 rounded-full text-sm w-72 outline-none"
+    />
+
+    <!-- DERECHA -->
+    <div class="flex items-center gap-6">
+      <!-- NOTIFICACIONES -->
+      <div
+  class="relative"
+  *ngIf="user?.idRol == 1 || user?.idRol == 2"
+>
+        <button (click)="toggleNoti()" class="relative text-2xl hover:text-yellow-400 transition">
+          <!-- Ícono campana -->
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3c0 .386-.149.735-.405 1.005L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+          </svg>
+
+          <!-- Contador -->
+          <span *ngIf="notificaciones.length > 0"
+            class="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+            {{ notificaciones.length }}
+          </span>
+        </button>
+
+        <!-- PANEL -->
+        <div *ngIf="showNoti"
+          class="absolute right-0 mt-4 w-96 bg-white text-black rounded-2xl shadow-2xl overflow-hidden z-50">
+          <div class="bg-slate-900 text-white p-4 font-bold">Notificaciones</div>
+          <div *ngFor="let n of notificaciones" class="p-4 border-b hover:bg-gray-100 transition">
+            <div class="font-bold text-red-500">{{ n.titulo }}</div>
+            <div class="text-sm text-gray-700 mt-1">{{ n.mensaje }}</div>
+            <div class="text-xs text-gray-400 mt-2">{{ n.fecha }}</div>
+          </div>
+          <div *ngIf="notificaciones.length === 0" class="p-6 text-center text-gray-500">Sin notificaciones</div>
+        </div>
+      </div>
+
+      <!-- MENSAJES -->
+      <button *ngIf="user?.idRol == 1 || user?.idRol == 2 || user?.idRol == 3"
+        routerLink="/mensajes"
+        class="text-2xl hover:text-green-400 transition"
+      >
+        <!-- Ícono chat -->
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.77 9.77 0 01-4-.84L3 20l1.84-3.68A7.97 7.97 0 013 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+        </svg>
+      </button>
+
+      <!-- USUARIO -->
+      <div class="flex items-center gap-3">
+        <button
+         
+  *ngIf="user?.idRol == 1 || user?.idRol == 2 || user?.idRol == 3"
+          class="w-10 h-10 rounded-full bg-green-600 flex items-center justify-center font-bold"
+        >
+          {{ user?.nombre?.charAt(0) }}
+        </button>
+        <div>
+          <div class="font-semibold text-sm">{{ user?.nombre }}</div>
+          <div class="text-xs text-gray-300">{{ getRolNombre() }}</div>
+        </div>
+      </div>
+
+      <!-- SALIR -->
+      <button (click)="logout()" class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg text-sm transition">
+        Salir
+      </button>
+    </div>
+  </header>
+
+  <!-- CONTENIDO -->
+  <main class="flex-1 overflow-auto bg-cover bg-center" style="background-image: url('assets/cafe.jpg');">
+    <router-outlet></router-outlet>
+  </main>
+</div>

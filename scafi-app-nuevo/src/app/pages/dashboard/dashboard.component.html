@@ -1,0 +1,225 @@
+<div class="flex min-h-screen bg-cover bg-center" style="background-image: url('/assets/cafe.jpg'); background-attachment: fixed;">
+
+  <aside 
+    class="bg-slate-900 text-white transition-all duration-300 flex flex-col shadow-2xl z-20 print:hidden"
+    [class.w-72]="sidebarAbierto" 
+    [class.w-20]="!sidebarAbierto"
+  >
+    <div class="h-20 flex items-center justify-between px-5 border-b border-slate-800">
+      <h1 class="text-2xl font-black tracking-widest transition-all" *ngIf="sidebarAbierto">
+        SCAFI
+      </h1>
+      <button (click)="toggleSidebar()" class="text-2xl hover:text-green-400 transition mx-auto" [class.px-2]="!sidebarAbierto">
+        ☰
+      </button>
+    </div>
+
+    <nav class="flex-1 py-6 space-y-1 overflow-y-auto custom-scrollbar">
+      
+      <a routerLink="/dashboard" routerLinkActive="bg-green-600 text-white font-bold" class="flex items-center gap-4 px-6 py-3.5 hover:bg-slate-800 transition-all">
+        <span class="text-xl">🏠</span>
+        <span *ngIf="sidebarAbierto" class="text-sm tracking-wide">Inicio</span>
+      </a>
+
+      <div>
+        <button (click)="toggleProductividad()" class="w-full flex items-center justify-between px-6 py-3.5 hover:bg-slate-800 transition-all text-left">
+          <div class="flex items-center gap-4">
+            <span class="text-xl">🌱</span>
+            <span *ngIf="sidebarAbierto" class="text-sm tracking-wide">Productividad</span>
+          </div>
+          <span *ngIf="sidebarAbierto" class="text-xs text-slate-400 transition-transform" [class.rotate-90]="menuProductividad">▶</span>
+        </button>
+        <div *ngIf="menuProductividad && sidebarAbierto" class="bg-slate-950/40 py-1 space-y-0.5">
+          <a routerLink="/recolectores" class="block pl-16 py-2.5 text-xs text-slate-400 hover:text-white hover:bg-slate-800 transition">Recolectores</a>
+          <a routerLink="/cultivos" class="block pl-16 py-2.5 text-xs text-slate-400 hover:text-white hover:bg-slate-800 transition">Cultivos</a>
+          <a routerLink="/recoleccion" class="block pl-16 py-2.5 text-xs text-slate-400 hover:text-white hover:bg-slate-800 transition">Recolección</a>
+        </div>
+      </div>
+
+      <div>
+        <button (click)="toggleInventario()" class="w-full flex items-center justify-between px-6 py-3.5 hover:bg-slate-800 transition-all text-left">
+          <div class="flex items-center gap-4">
+            <span class="text-xl">📦</span>
+            <span *ngIf="sidebarAbierto" class="text-sm tracking-wide">Inventario</span>
+          </div>
+          <span *ngIf="sidebarAbierto" class="text-xs text-slate-400 transition-transform" [class.rotate-90]="menuInventario">▶</span>
+        </button>
+        <div *ngIf="menuInventario && sidebarAbierto" class="bg-slate-950/40 py-1 space-y-0.5">
+          <a routerLink="/insumos" class="block pl-16 py-2.5 text-xs text-slate-400 hover:text-white hover:bg-slate-800 transition">Insumos</a>
+          <a routerLink="/proveedores" class="block pl-16 py-2.5 text-xs text-slate-400 hover:text-white hover:bg-slate-800 transition">Proveedores</a>
+          <a routerLink="/movimientos" class="block pl-16 py-2.5 text-xs text-slate-400 hover:text-white hover:bg-slate-800 transition">Movimientos</a>
+        </div>
+      </div>
+
+      <div>
+        <button (click)="toggleVentas()" class="w-full flex items-center justify-between px-6 py-3.5 hover:bg-slate-800 transition-all text-left">
+          <div class="flex items-center gap-4">
+            <span class="text-xl">💰</span>
+            <span *ngIf="sidebarAbierto" class="text-sm tracking-wide">Ventas</span>
+          </div>
+          <span *ngIf="sidebarAbierto" class="text-xs text-slate-400 transition-transform" [class.rotate-90]="menuVentas">▶</span>
+        </button>
+        <div *ngIf="menuVentas && sidebarAbierto" class="bg-slate-950/40 py-1 space-y-0.5">
+          <a routerLink="/ventas" class="block pl-16 py-2.5 text-xs text-slate-400 hover:text-white hover:bg-slate-800 transition">Ventas</a>
+          <a routerLink="/clientes" class="block pl-16 py-2.5 text-xs text-slate-400 hover:text-white hover:bg-slate-800 transition">Clientes</a>
+        </div>
+      </div>
+
+      <div>
+        <button (click)="toggleReportes()" class="w-full flex items-center justify-between px-6 py-3.5 hover:bg-slate-800 transition-all text-left">
+          <div class="flex items-center gap-4">
+            <span class="text-xl">📊</span>
+            <span *ngIf="sidebarAbierto" class="text-sm tracking-wide">Reportes</span>
+          </div>
+          <span *ngIf="sidebarAbierto" class="text-xs text-slate-400 transition-transform" [class.rotate-90]="menuReportes">▶</span>
+        </button>
+        <div *ngIf="menuReportes && sidebarAbierto" class="bg-slate-950/50 py-1 space-y-0.5">
+          <a routerLink="/reporte-inventario" class="block pl-16 py-2.5 text-xs text-slate-400 hover:text-white hover:bg-slate-800 transition">Reporte Inventario</a>
+          <a routerLink="/reporte-ventas" class="block pl-16 py-2.5 text-xs text-slate-400 hover:text-white hover:bg-slate-800 transition">Reporte Ventas</a>
+          <a routerLink="/reporte-produccion" class="block pl-16 py-2.5 text-xs text-slate-400 hover:text-white hover:bg-slate-800 transition">Reporte Producción</a>
+        </div>
+      </div>
+
+      <a routerLink="/configuracion" routerLinkActive="bg-green-600 text-white font-bold" class="flex items-center gap-4 px-6 py-3.5 hover:bg-slate-800 transition-all">
+        <span class="text-xl">⚙️</span>
+        <span *ngIf="sidebarAbierto" class="text-sm tracking-wide">Configuración</span>
+      </a>
+    </nav>
+  </aside>
+
+  <main class="flex-1 p-8 overflow-y-auto backdrop-blur-sm bg-gradient-to-br from-black/20 to-black/30">
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      
+      <div class="bg-white/95 backdrop-blur-md border border-white/40 rounded-3xl p-6 shadow-2xl flex justify-between items-center hover:scale-[1.02] transition-transform">
+        <div>
+          <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Producción Acumulada</p>
+          <h2 class="text-3xl font-black text-slate-900 mt-2">{{ totalProduccionKG | number }} KG</h2>
+        </div>
+        <span class="text-5xl p-3 bg-green-50 rounded-2xl">🌱</span>
+      </div>
+
+      <div class="bg-white/95 backdrop-blur-md border border-white/40 rounded-3xl p-6 shadow-2xl flex justify-between items-center hover:scale-[1.02] transition-transform">
+        <div>
+          <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Ventas del Mes</p>
+          <h2 class="text-3xl font-black text-slate-900 mt-2">$ {{ totalVentasMes | number }}</h2>
+        </div>
+        <span class="text-5xl p-3 bg-amber-50 rounded-2xl">💰</span>
+      </div>
+
+      <div class="bg-white/95 backdrop-blur-md border border-white/40 rounded-3xl p-6 shadow-2xl flex justify-between items-center hover:scale-[1.02] transition-transform">
+        <div>
+          <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Personal Activo</p>
+          <h2 class="text-3xl font-black text-slate-900 mt-2">{{ totalRecolectores }} Recolectores</h2>
+        </div>
+        <span class="text-5xl p-3 bg-blue-50 rounded-2xl">👨‍🌾</span>
+      </div>
+
+      <div class="bg-white/95 backdrop-blur-md border border-white/40 rounded-3xl p-6 shadow-2xl flex justify-between items-center hover:scale-[1.02] transition-transform">
+        <div>
+          <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Lotes Registrados</p>
+          <h2 class="text-3xl font-black text-slate-900 mt-2">{{ totalCultivos }} Lotes</h2>
+        </div>
+        <span class="text-5xl p-3 bg-orange-50 rounded-2xl">☕</span>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      
+      <div class="lg:col-span-2 bg-white/95 backdrop-blur-md border border-white/40 rounded-3xl p-6 shadow-2xl flex flex-col justify-between">
+        <div class="flex justify-between items-center mb-6">
+          <div>
+            <h2 class="text-2xl font-black text-slate-800">Evolución de Ventas</h2>
+            <p class="text-xs text-gray-400 font-medium">Ventas registradas automáticamente en tiempo real</p>
+          </div>
+          
+        </div>
+        <div class="h-72 relative">
+          <canvas id="graficaVentas"></canvas>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-4">
+        
+        <div class="bg-gradient-to-br from-red-500 to-rose-600 text-white p-6 rounded-3xl shadow-lg flex justify-between items-center">
+          <div>
+            <p class="text-sm font-bold opacity-80 uppercase tracking-wide">Insumos Bajos Stock</p>
+            <h2 class="text-5xl font-black mt-2">{{ inventarioBajoCount }}</h2>
+          </div>
+          <span class="text-4xl bg-white/20 p-3 rounded-2xl">⚠️</span>
+        </div>
+
+        <div class="bg-gradient-to-br from-green-600 to-emerald-700 text-white p-6 rounded-3xl shadow-lg flex justify-between items-center">
+  <div>
+    <p class="text-sm font-bold opacity-80 uppercase tracking-wide">
+      Ventas Registradas Hoy
+    </p>
+
+    <h2 class="text-4xl font-black mt-2">
+      $ {{ ventasHoy | number }}
+    </h2>
+  </div>
+
+  <span class="text-4xl bg-white/20 p-3 rounded-2xl">
+    💵
+  </span>
+</div>
+
+        <div class="bg-gradient-to-br from-slate-800 to-slate-900 text-white p-6 rounded-3xl shadow-lg flex justify-between items-center">
+          <div>
+            <p class="text-sm font-bold opacity-80 uppercase tracking-wide">Lotes en Producción</p>
+            <h2 class="text-4xl font-black mt-2">{{ cultivosActivosCount }} Activos</h2>
+          </div>
+          <span class="text-4xl bg-white/20 p-3 rounded-2xl">🚜</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white/95 backdrop-blur-md border border-white/40 rounded-3xl p-6 shadow-2xl mt-8">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+        <div>
+          <h2 class="text-2xl font-black text-slate-800">Últimos Movimientos en Finca</h2>
+          <p class="text-xs text-gray-400 font-medium">Historial de control interno y auditoría</p>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto rounded-2xl border border-slate-100">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-slate-50 text-slate-400 text-[10px] font-black uppercase tracking-wider border-b border-slate-100">
+              <th class="p-4">Fecha</th>
+              <th class="p-4">Movimiento / Acción</th>
+              <th class="p-4">Encargado</th>
+              <th class="p-4 text-center">Estado</th>
+            </tr>
+          </thead>
+          <tbody class="text-xs font-bold text-slate-600 divide-y divide-slate-50">
+            <tr *ngIf="ultimosMovimientos.length === 0">
+              <td colspan="4" class="p-8 text-center text-gray-400 font-medium italic">
+                No se registran movimientos recientes en el sistema cafetero.
+              </td>
+            </tr>
+            <tr *ngFor="let mov of ultimosMovimientos">
+              <td class="p-4 text-slate-900 font-mono">{{ mov.fecha }}</td>
+              <td class="p-4 text-slate-700">{{ mov.movimiento }}</td>
+              <td class="p-4 text-slate-500 uppercase text-[11px]">{{ mov.usuario }}</td>
+              <td class="p-4 text-center">
+                <span 
+                  class="px-3 py-1 rounded-full text-[10px] font-black uppercase"
+                  [ngClass]="{
+                    'bg-green-100 text-green-700': mov.estado === 'Completado' || mov.estado === 'Activo',
+                    'bg-amber-100 text-amber-700': mov.estado === 'Pendiente',
+                    'bg-red-100 text-red-700': mov.estado === 'Crítico' || mov.estado === 'Cancelado'
+                  }"
+                >
+                  {{ mov.estado }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>

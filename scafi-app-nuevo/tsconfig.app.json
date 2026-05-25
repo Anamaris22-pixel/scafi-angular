@@ -1,0 +1,29 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/app",
+    "types": []
+  },
+  "files": [
+    "src/main.ts"
+  ],
+  "include": [
+    "src/**/*.d.ts",
+    "src/app/**/*.ts"
+  ],
+  "exclude": [
+    "src/**/*.spec.ts",
+    "src/app/app.module.ts",
+    "src/app/app.component.ts",
+    "src/app/app.config.ts",
+    "src/app/core/services/auth.service.ts",
+    "src/app/core/services/auth.ts",
+    "src/app/core/services/mensajes.service.ts",
+    "src/app/core/services/movimientos.service.ts",
+    "src/app/core/services/notificaciones.service.ts",
+    "src/app/core/services/proveedor.service.ts",
+    "src/app/core/services/reporte-produccion.service.ts",
+    "src/app/core/services/reportes.service.ts",
+    "src/app/shared/boton-inicio/boton-inicio.ts"
+  ]
+}

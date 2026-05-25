@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1:3307
--- Tiempo de generación: 25-05-2026 a las 03:57:01
+-- Tiempo de generación: 25-05-2026 a las 09:56:55
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -719,33 +719,35 @@ CREATE TABLE `usuario` (
   `telefono` varchar(30) DEFAULT NULL,
   `documento` varchar(30) DEFAULT NULL,
   `direccion` varchar(255) DEFAULT NULL,
-  `estado` varchar(20) DEFAULT 'Activo'
+  `estado` varchar(20) DEFAULT 'Activo',
+  `token_recuperacion` varchar(255) DEFAULT NULL,
+  `token_expira` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `usuario`
 --
 
-INSERT INTO `usuario` (`id`, `nombre`, `correo`, `contrasena`, `idRol`, `foto`, `telefono`, `documento`, `direccion`, `estado`) VALUES
-(1, 'Admin Sistema', 'admin@scafi.com', '123456', 2, 'uploads/usuarios/default.jpg', '3001001001', '100000001', 'Centro Administrativo', 'Activo'),
-(2, 'Carlos Propietario', 'anamaris22@outlook.com', '12345', 1, 'uploads/usuarios/default.jpg', '3001001002', '100000002', 'Finca El Cafetal', 'Activo'),
-(3, 'Maria Propietaria', 'maria@scafi.com', '123456', 1, 'uploads/usuarios/default.jpg', '3001001003', '100000003', 'Vereda La Esperanza', 'Activo'),
-(4, 'Admin Sistema', 'admin@scafi.com', '123456', 2, 'uploads/usuarios/default.jpg', '3001001004', '100000004', 'Oficina Principal', 'Activo'),
-(5, 'Juan Recolector', 'juan@scafi.com', '123456', 3, 'uploads/usuarios/default.jpg', '3001001005', '100000005', 'Zona Norte', 'Activo'),
-(6, 'Pedro Recolector', 'pedro@scafi.com', '123456', 3, 'uploads/usuarios/default.jpg', '3001001006', '100000006', 'Zona Sur', 'Activo'),
-(7, 'Luis Recolector', 'luis@scafi.com', '123456', 3, 'uploads/usuarios/default.jpg', '3001001007', '100000007', 'Zona Rural', 'Activo'),
-(8, 'Ana Recolectora', 'ana@scafi.com', '123456', 3, 'uploads/usuarios/default.jpg', '3001001008', '100000008', 'Barrio Central', 'Activo'),
-(9, 'Sofia Recolectora', 'sofia@scafi.com', '123456', 3, 'uploads/usuarios/default.jpg', '3001001009', '100000009', 'Sector Cafetero', 'Activo'),
-(10, 'Camila Recolectora', 'camila@scafi.com', '123456', 3, 'uploads/usuarios/default.jpg', '3001001010', '100000010', 'Zona Alta', 'Activo'),
-(11, 'Diego Recolector', 'diego@scafi.com', '123456', 3, 'uploads/usuarios/default.jpg', '3001001011', '100000011', 'Zona Baja', 'Activo'),
-(12, 'Andres Recolector', 'andres@scafi.com', '123456', 3, 'uploads/usuarios/default.jpg', '3001001012', '100000012', 'Vereda Norte', 'Activo'),
-(13, 'Miguel Recolector', 'miguel@scafi.com', '123456', 3, 'uploads/usuarios/default.jpg', '3001001013', '100000013', 'Vereda Sur', 'Activo'),
-(14, 'Jose Recolector', 'jose@scafi.com', '123456', 3, 'uploads/usuarios/default.jpg', '3001001014', '100000014', 'Finca La Palma', 'Activo'),
-(15, 'Laura Recolectora', 'laura@scafi.com', '123456', 3, 'uploads/usuarios/default.jpg', '3001001015', '100000015', 'Finca Central', 'Activo'),
-(16, 'Paula Recolectora', 'paula@scafi.com', '123456', 3, 'uploads/usuarios/default.jpg', '3001001016', '100000016', 'Zona Cafetera', 'Activo'),
-(17, 'Kevin Recolector', 'kevin@scafi.com', '123456', 3, 'uploads/usuarios/default.jpg', '3001001017', '100000017', 'Vereda Alta', 'Activo'),
-(18, 'Daniel Recolector', 'daniel@scafi.com', '123456', 3, 'uploads/usuarios/default.jpg', '3001001018', '100000018', 'Sector Norte', 'Activo'),
-(19, 'Valentina Recolectora', 'valentina@scafi.com', '123456', 3, 'uploads/usuarios/default.jpg', '3001001019', '100000019', 'Sector Sur', 'Activo');
+INSERT INTO `usuario` (`id`, `nombre`, `correo`, `contrasena`, `idRol`, `foto`, `telefono`, `documento`, `direccion`, `estado`, `token_recuperacion`, `token_expira`) VALUES
+(1, 'Admin Sistema', 'admin@scafi.com', '123456', 2, 'uploads/usuarios/default.jpg', '3001001001', '100000001', 'Centro Administrativo', 'Activo', NULL, NULL),
+(2, 'Carlos Propietario', 'ceciliavargas8812@gmail.com', '12345', 1, 'uploads/usuarios/default.jpg', '3001001002', '100000002', 'Finca El Cafetal', 'Activo', '976c3a35d6353d89eafec39b22c9fe90765d585398fa1f0f15b8aa6cf1b6252c', '2026-05-25 10:50:17'),
+(3, 'Maria Propietaria', 'maria@scafi.com', '123456', 1, 'uploads/usuarios/default.jpg', '3001001003', '100000003', 'Vereda La Esperanza', 'Activo', NULL, NULL),
+(4, 'Admin Sistema', 'admin@scafi.com', '123456', 2, 'uploads/usuarios/default.jpg', '3001001004', '100000004', 'Oficina Principal', 'Activo', NULL, NULL),
+(5, 'Juan Recolector', 'juan@scafi.com', '123456', 3, 'uploads/usuarios/default.jpg', '3001001005', '100000005', 'Zona Norte', 'Activo', NULL, NULL),
+(6, 'Pedro Recolector', 'pedro@scafi.com', '123456', 3, 'uploads/usuarios/default.jpg', '3001001006', '100000006', 'Zona Sur', 'Activo', NULL, NULL),
+(7, 'Luis Recolector', 'luis@scafi.com', '123456', 3, 'uploads/usuarios/default.jpg', '3001001007', '100000007', 'Zona Rural', 'Activo', NULL, NULL),
+(8, 'Ana Recolectora', 'ana@scafi.com', '123456', 3, 'uploads/usuarios/default.jpg', '3001001008', '100000008', 'Barrio Central', 'Activo', NULL, NULL),
+(9, 'Sofia Recolectora', 'sofia@scafi.com', '123456', 3, 'uploads/usuarios/default.jpg', '3001001009', '100000009', 'Sector Cafetero', 'Activo', NULL, NULL),
+(10, 'Camila Recolectora', 'camila@scafi.com', '123456', 3, 'uploads/usuarios/default.jpg', '3001001010', '100000010', 'Zona Alta', 'Activo', NULL, NULL),
+(11, 'Diego Recolector', 'diego@scafi.com', '123456', 3, 'uploads/usuarios/default.jpg', '3001001011', '100000011', 'Zona Baja', 'Activo', NULL, NULL),
+(12, 'Andres Recolector', 'andres@scafi.com', '123456', 3, 'uploads/usuarios/default.jpg', '3001001012', '100000012', 'Vereda Norte', 'Activo', NULL, NULL),
+(13, 'Miguel Recolector', 'miguel@scafi.com', '123456', 3, 'uploads/usuarios/default.jpg', '3001001013', '100000013', 'Vereda Sur', 'Activo', NULL, NULL),
+(14, 'Jose Recolector', 'jose@scafi.com', '123456', 3, 'uploads/usuarios/default.jpg', '3001001014', '100000014', 'Finca La Palma', 'Activo', NULL, NULL),
+(15, 'Laura Recolectora', 'laura@scafi.com', '123456', 3, 'uploads/usuarios/default.jpg', '3001001015', '100000015', 'Finca Central', 'Activo', NULL, NULL),
+(16, 'Paula Recolectora', 'paula@scafi.com', '123456', 3, 'uploads/usuarios/default.jpg', '3001001016', '100000016', 'Zona Cafetera', 'Activo', NULL, NULL),
+(17, 'Kevin Recolector', 'kevin@scafi.com', '123456', 3, 'uploads/usuarios/default.jpg', '3001001017', '100000017', 'Vereda Alta', 'Activo', NULL, NULL),
+(18, 'Daniel Recolector', 'daniel@scafi.com', '123456', 3, 'uploads/usuarios/default.jpg', '3001001018', '100000018', 'Sector Norte', 'Activo', NULL, NULL),
+(19, 'Valentina Recolectora', 'valentina@scafi.com', '123456', 3, 'uploads/usuarios/default.jpg', '3001001019', '100000019', 'Sector Sur', 'Activo', NULL, NULL);
 
 -- --------------------------------------------------------
 

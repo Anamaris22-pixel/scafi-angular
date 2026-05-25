@@ -1,0 +1,163 @@
+<div class="relative">
+
+  <!-- BOTON -->
+  <button
+
+    (click)="mostrar = !mostrar"
+
+    class="relative
+           text-2xl
+           hover:scale-110
+           transition"
+
+  >
+
+    🔔
+
+    <!-- BURBUJA -->
+    <span
+
+      *ngIf="total > 0"
+
+      class="absolute
+             -top-2
+             -right-2
+             bg-red-500
+             text-white
+             text-xs
+             w-5
+             h-5
+             rounded-full
+             flex
+             items-center
+             justify-center"
+
+    >
+
+      {{ total }}
+
+    </span>
+
+  </button>
+
+
+  <!-- PANEL -->
+  <div
+
+    *ngIf="mostrar"
+
+    class="absolute
+           right-0
+           mt-3
+           w-96
+           bg-[#101827]
+           rounded-2xl
+           shadow-2xl
+           border
+           border-white/10
+           overflow-hidden
+           z-50"
+
+  >
+
+    <!-- HEADER -->
+    <div
+      class="p-4
+             border-b
+             border-white/10
+             text-white
+             font-bold
+             text-lg"
+    >
+
+      Notificaciones
+
+    </div>
+
+
+    <!-- LOADING -->
+    <div
+
+      *ngIf="cargando"
+
+      class="p-6
+             text-center
+             text-gray-400"
+
+    >
+
+      Cargando...
+
+    </div>
+
+
+    <!-- VACIO -->
+    <div
+
+      *ngIf="!cargando && notificaciones.length === 0"
+
+      class="p-6
+             text-center
+             text-gray-400"
+
+    >
+
+      No hay notificaciones
+
+    </div>
+
+
+    <!-- LISTA -->
+    <div
+      *ngIf="notificaciones.length > 0"
+      class="max-h-[400px] overflow-y-auto"
+    >
+
+      <div
+
+        *ngFor="let n of notificaciones"
+
+        class="p-4
+               border-b
+               border-white/5
+               hover:bg-white/5
+               transition"
+
+      >
+
+        <div
+          class="text-white
+                 font-semibold"
+        >
+
+          {{ n.titulo }}
+
+        </div>
+
+        <div
+          class="text-gray-300
+                 text-sm
+                 mt-1"
+        >
+
+          {{ n.mensaje }}
+
+        </div>
+
+        <div
+          class="text-xs
+                 text-gray-500
+                 mt-2"
+        >
+
+          {{ n.fecha }}
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

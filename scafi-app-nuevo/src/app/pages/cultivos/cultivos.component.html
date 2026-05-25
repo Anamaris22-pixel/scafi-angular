@@ -1,0 +1,321 @@
+<div class="p-6 text-black">
+
+  <!-- VOLVER -->
+  <div class="mb-6">
+
+    <button
+      routerLink="/dashboard"
+      class="bg-gradient-to-r from-black to-[#081028] text-white px-6 py-3 rounded-2xl shadow-2xl border border-slate-900 font-bold flex items-center gap-2 transition-all duration-300 hover:scale-105">
+
+      <span class="text-2xl">
+        ←
+      </span>
+
+      <span>
+        Dashboard
+      </span>
+
+    </button>
+
+  </div>
+
+  <!-- TOP -->
+  <div
+    class="bg-gray-200
+           p-4
+           rounded-t-3xl
+           flex
+           justify-between
+           items-center"
+  >
+
+    <!-- BUSCAR -->
+    <div class="flex">
+
+      <input
+        type="text"
+        [(ngModel)]="buscar"
+        placeholder="Buscar lote o café..."
+        class="p-3 w-80 border rounded-l-xl outline-none"
+      >
+
+      <button
+        class="bg-white border px-4 rounded-r-xl"
+      >
+
+        🔍
+
+      </button>
+
+    </div>
+
+    <!-- NUEVO -->
+    <button
+      (click)="mostrarFormulario = !mostrarFormulario"
+      class="bg-white border px-5 py-2 rounded-xl shadow hover:bg-gray-100"
+    >
+
+      🌱 Nuevo Cultivo
+
+    </button>
+
+  </div>
+
+  <!-- FORMULARIO -->
+  <div
+    *ngIf="mostrarFormulario"
+    class="bg-white p-6 border-x border-b shadow mb-4"
+  >
+
+    <h2 class="text-3xl font-bold text-green-700 mb-6">
+
+      {{
+        editando
+        ? '✏️ Editar Cultivo'
+        : '🌱 Registrar Cultivo'
+      }}
+
+    </h2>
+
+    <div class="grid grid-cols-2 gap-4">
+
+      <!-- TIPO -->
+      <select
+        [(ngModel)]="tipoCafe"
+        class="p-4 border rounded-xl"
+      >
+
+        <option value="">
+          Tipo de café
+        </option>
+
+        <option value="Arábico">
+          Arábico
+        </option>
+
+        <option value="Robusta">
+          Robusta
+        </option>
+
+      </select>
+
+      <!-- LOTE -->
+      <select
+        [(ngModel)]="idLote"
+        class="p-4 border rounded-xl"
+      >
+
+        <option value="">
+          Seleccione lote
+        </option>
+
+        <option
+          *ngFor="let l of lotes"
+          [value]="l.idLote"
+        >
+
+          {{ l.nombreLote }}
+
+        </option>
+
+      </select>
+
+      <!-- FECHA -->
+      <input
+        type="date"
+        [(ngModel)]="fechaSiembra"
+        class="p-4 border rounded-xl"
+      >
+
+      <!-- ESTADO -->
+      <select
+        [(ngModel)]="estado"
+        class="p-4 border rounded-xl"
+      >
+
+        <option value="">
+          Estado
+        </option>
+
+        <option value="Activo">
+          Activo
+        </option>
+
+        <option value="Inactivo">
+          Inactivo
+        </option>
+
+      </select>
+
+    </div>
+
+    <!-- BOTONES -->
+    <div class="flex gap-3 mt-6">
+
+      <!-- GUARDAR -->
+      <button
+        *ngIf="!editando"
+        (click)="guardar()"
+        class="bg-green-600 hover:bg-green-700
+               text-white px-6 py-3 rounded-xl"
+      >
+
+        Guardar
+
+      </button>
+
+      <!-- ACTUALIZAR -->
+      <button
+        *ngIf="editando"
+        (click)="actualizar()"
+        class="bg-blue-600 hover:bg-blue-700
+               text-white px-6 py-3 rounded-xl"
+      >
+
+        Actualizar
+
+      </button>
+
+      <!-- CANCELAR -->
+      <button
+        (click)="cancelar()"
+        class="bg-gray-500 hover:bg-gray-600
+               text-white px-6 py-3 rounded-xl"
+      >
+
+        Cancelar
+
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- TABLA -->
+  <div class="bg-white rounded-b-3xl shadow overflow-auto">
+
+    <table class="w-full">
+
+      <thead class="bg-slate-800 text-white">
+
+        <tr>
+
+          <th class="p-4">
+            ID
+          </th>
+
+          <th class="p-4">
+            Lote
+          </th>
+
+          <th class="p-4">
+            Café
+          </th>
+
+          <th class="p-4">
+            Fecha
+          </th>
+
+          <th class="p-4">
+            Estado
+          </th>
+
+          <th class="p-4">
+            Acción
+          </th>
+
+        </tr>
+
+      </thead>
+
+      <tbody>
+
+  <tr
+    *ngFor="let c of cultivos"
+    class="border-b hover:bg-gray-50 bg-white"
+  >
+
+    <!-- ID -->
+    <td class="p-4 text-center">
+
+      {{ c.idCultivo }}
+
+    </td>
+
+    <!-- LOTE -->
+    <td class="p-4 text-center">
+
+      {{ c.nombreLote }}
+
+    </td>
+
+    <!-- CAFÉ -->
+    <td class="p-4 text-center">
+
+      {{ c.tipoCafe }}
+
+    </td>
+
+    <!-- FECHA -->
+    <td class="p-4 text-center">
+
+      {{ c.fechaSiembra }}
+
+    </td>
+
+    <!-- ESTADO -->
+    <td class="p-4 text-center">
+
+      <span
+        class="px-3 py-1 rounded-xl text-white font-bold"
+        [ngClass]="
+          c.estado === 'Activo'
+          ? 'bg-green-600'
+          : 'bg-red-600'
+        "
+      >
+
+        {{ c.estado }}
+
+      </span>
+
+    </td>
+
+    <!-- ACCIONES -->
+    <td class="p-4 text-center">
+
+      <div class="flex gap-2 justify-center">
+
+        <button
+          (click)="editar(c)"
+          class="bg-blue-600 hover:bg-blue-700
+                 text-white px-4 py-2 rounded-lg"
+        >
+
+          Editar
+
+        </button>
+
+        <button
+          (click)="eliminar(c.idCultivo)"
+          class="bg-red-600 hover:bg-red-700
+                 text-white px-4 py-2 rounded-lg"
+        >
+
+          Eliminar
+
+        </button>
+
+      </div>
+
+    </td>
+
+  </tr>
+
+</tbody>
+
+    </table>
+
+  </div>
+
+</div>

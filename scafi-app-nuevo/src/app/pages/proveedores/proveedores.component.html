@@ -1,0 +1,295 @@
+<div class="p-6 text-black">
+
+  <!-- TOP BAR -->
+  <div class="bg-gray-200 p-4 rounded-t-xl flex justify-between items-center">
+
+    <!-- BUSCADOR -->
+    <div class="flex">
+
+      <input
+        type="text"
+        [(ngModel)]="buscar"
+        placeholder="Buscar proveedor..."
+        class="p-3 w-80 border rounded-l-lg outline-none"
+      >
+
+      <button
+        class="bg-white border px-4 rounded-r-lg"
+      >
+        🔍
+      </button>
+
+    </div>
+   
+    <!-- BOTÓN NUEVO -->
+    <button
+      (click)="mostrarFormulario = !mostrarFormulario"
+      class="bg-white border px-5 py-2 rounded-lg shadow hover:bg-gray-100"
+    >
+
+      ➕ Nuevo
+
+    </button>
+
+  </div>
+<!-- BOTÓN VOLVER -->
+
+<div class="p-6 pb-0">
+
+  <button
+
+    routerLink="/dashboard"
+
+    class="bg-gradient-to-r from-black to-[#081028] text-white px-6 py-3 rounded-2xl shadow-2xl border border-slate-900 font-bold flex items-center gap-2 transition-all duration-300 hover:scale-105">
+
+    <span class="text-xl">
+      ←
+    </span>
+
+    <span>
+      Dashboard
+    </span>
+
+  </button>
+
+</div>
+  <!-- FORMULARIO -->
+  <div
+    *ngIf="mostrarFormulario"
+    class="bg-white p-6 shadow border-x border-b mb-4"
+  >
+
+    <h2 class="text-2xl font-bold mb-5">
+
+      {{
+        editando
+        ? '✏️ Editar Proveedor'
+        : '➕ Nuevo Proveedor'
+      }}
+
+    </h2>
+
+    <div class="grid grid-cols-2 gap-4">
+
+      <!-- NOMBRE -->
+      <input
+        [(ngModel)]="nuevo.nombre"
+        placeholder="Nombre"
+        class="p-3 border rounded-lg"
+      >
+
+      <!-- EMPRESA -->
+      <input
+        [(ngModel)]="nuevo.empresa"
+        placeholder="Empresa"
+        class="p-3 border rounded-lg"
+      >
+
+      <!-- TELÉFONO -->
+      <input
+        [(ngModel)]="nuevo.telefono"
+        placeholder="Teléfono"
+        class="p-3 border rounded-lg"
+      >
+
+      <!-- CORREO -->
+      <input
+        [(ngModel)]="nuevo.correo"
+        placeholder="Correo"
+        class="p-3 border rounded-lg"
+      >
+
+      <!-- DIRECCIÓN -->
+      <input
+        [(ngModel)]="nuevo.direccion"
+        placeholder="Dirección"
+        class="p-3 border rounded-lg"
+      >
+
+      <!-- ESTADO -->
+      <select
+        [(ngModel)]="nuevo.estado"
+        class="p-3 border rounded-lg"
+      >
+
+        <option value="Activo">
+          Activo
+        </option>
+
+        <option value="Inactivo">
+          Inactivo
+        </option>
+
+      </select>
+
+    </div>
+
+    <!-- BOTONES -->
+    <div class="flex gap-3 mt-6">
+
+      <button
+        *ngIf="!editando"
+        (click)="guardar()"
+        class="bg-green-600 text-white px-6 py-3 rounded-lg"
+      >
+
+        Guardar
+
+      </button>
+
+      <button
+        *ngIf="editando"
+        (click)="actualizar()"
+        class="bg-blue-600 text-white px-6 py-3 rounded-lg"
+      >
+
+        Actualizar
+
+      </button>
+
+      <button
+        (click)="cancelar()"
+        class="bg-gray-500 text-white px-6 py-3 rounded-lg"
+      >
+
+        Cancelar
+
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- TABLA -->
+  <div class="bg-white rounded-b-xl shadow overflow-auto">
+
+    <table class="w-full">
+
+      <!-- HEAD -->
+      <thead class="bg-gray-100 text-left">
+
+        <tr>
+
+          <th class="p-4">ID</th>
+          <th class="p-4">Proveedor</th>
+          <th class="p-4">Contacto</th>
+          <th class="p-4">Dirección</th>
+          <th class="p-4">Estado</th>
+          <th class="p-4">Acciones</th>
+
+        </tr>
+
+      </thead>
+
+      <!-- BODY -->
+      <tbody>
+
+        <tr
+          *ngFor="let p of proveedoresFiltrados()"
+          class="border-b hover:bg-gray-50"
+        >
+
+          <!-- ID -->
+          <td class="p-4">
+
+            {{ p.idProveedor }}
+
+          </td>
+
+          <!-- PROVEEDOR -->
+          <td class="p-4">
+
+            <div class="font-bold">
+
+              {{ p.empresa }}
+
+            </div>
+
+            <div class="text-gray-500 text-sm">
+
+              {{ p.nombre }}
+
+            </div>
+
+          </td>
+
+          <!-- CONTACTO -->
+          <td class="p-4">
+
+            <div>
+
+              📞 {{ p.telefono }}
+
+            </div>
+
+            <div class="text-blue-600 text-sm">
+
+              {{ p.correo }}
+
+            </div>
+
+          </td>
+
+          <!-- DIRECCIÓN -->
+          <td class="p-4">
+
+            {{ p.direccion }}
+
+          </td>
+
+          <!-- ESTADO -->
+          <td class="p-4">
+
+            <span
+              class="px-3 py-1 rounded-full text-white text-sm"
+              [ngClass]="
+                p.estado === 'Activo'
+                ? 'bg-green-500'
+                : 'bg-red-500'
+              "
+            >
+
+              {{ p.estado }}
+
+            </span>
+
+          </td>
+
+          <!-- ACCIONES -->
+          <td class="p-4">
+
+            <div class="flex gap-2">
+
+              <!-- EDITAR -->
+              <button
+                (click)="editar(p)"
+                class="bg-blue-500 text-white px-3 py-1 rounded"
+              >
+
+                ✏️
+
+              </button>
+
+              <!-- ELIMINAR -->
+              <button
+                (click)="eliminar(p.idProveedor)"
+                class="bg-red-500 text-white px-3 py-1 rounded"
+              >
+
+                🗑
+
+              </button>
+
+            </div>
+
+          </td>
+
+        </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</div>

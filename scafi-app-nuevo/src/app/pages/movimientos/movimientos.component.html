@@ -1,0 +1,412 @@
+<div class="p-6 text-black">
+
+  <!-- VOLVER -->
+  <div class="mb-6">
+
+    <button
+      routerLink="/dashboard"
+
+      class="bg-gradient-to-r from-black to-[#081028] text-white px-6 py-3 rounded-2xl shadow-2xl border border-slate-900 font-bold flex items-center gap-2 transition-all duration-300 hover:scale-105">
+
+      <span class="text-2xl">
+        ←
+      </span>
+
+      <span>
+        Dashboard
+      </span>
+
+    </button>
+
+  </div>
+
+  <!-- CARDS -->
+  <div class="grid grid-cols-3 gap-4 mb-6">
+
+    <!-- ENTRADAS -->
+    <div
+      class="bg-green-600
+             text-white
+             p-6
+             rounded-3xl
+             shadow-xl"
+    >
+
+      <p class="text-lg">
+        Entradas
+      </p>
+
+      <h2 class="text-4xl font-bold mt-2">
+
+        {{ totalEntradas() }}
+
+      </h2>
+
+    </div>
+
+    <!-- SALIDAS -->
+    <div
+      class="bg-red-500
+             text-white
+             p-6
+             rounded-3xl
+             shadow-xl"
+    >
+
+      <p class="text-lg">
+        Salidas
+      </p>
+
+      <h2 class="text-4xl font-bold mt-2">
+
+        {{ totalSalidas() }}
+
+      </h2>
+
+    </div>
+
+    <!-- REGISTROS -->
+    <div
+      class="bg-slate-800
+             text-white
+             p-6
+             rounded-3xl
+             shadow-xl"
+    >
+
+      <p class="text-lg">
+        Movimientos
+      </p>
+
+      <h2 class="text-4xl font-bold mt-2">
+
+        {{ movimientos.length }}
+
+      </h2>
+
+    </div>
+
+  </div>
+
+  <!-- CABECERA -->
+  <div
+    class="bg-gray-200
+           p-4
+           rounded-t-3xl
+           flex
+           justify-between
+           items-center"
+  >
+
+    <!-- BUSCADOR -->
+    <div class="flex">
+
+      <input
+        type="text"
+
+        [(ngModel)]="buscar"
+
+        placeholder="Buscar movimiento..."
+
+        class="p-3 w-80 border rounded-l-xl outline-none"
+      >
+
+      <button
+        class="bg-white border px-4 rounded-r-xl"
+      >
+
+        🔍
+
+      </button>
+
+    </div>
+
+    <!-- BOTON -->
+    <button
+      (click)="mostrarFormulario = !mostrarFormulario"
+
+      class="bg-white border
+             px-5 py-2 rounded-xl
+             shadow hover:bg-gray-100"
+    >
+
+      ➕ Nuevo Movimiento
+
+    </button>
+
+  </div>
+
+  <!-- FORMULARIO -->
+  <div
+    *ngIf="mostrarFormulario"
+
+    class="bg-white p-6 border-x border-b shadow"
+  >
+
+    <h2
+      class="text-3xl font-bold text-slate-800 mb-6"
+    >
+
+      {{
+        editando
+        ? '✏️ Editar Movimiento'
+        : '📦 Nuevo Movimiento'
+      }}
+
+    </h2>
+
+    <div class="grid grid-cols-2 gap-4">
+
+      <!-- INSUMO -->
+      <select
+[(ngModel)]="nuevo.idInsumo"
+name="idInsumo"
+>
+
+<option
+*ngFor="let i of insumos"
+[value]="i.idInsumo"
+>
+
+{{ i.nombre }}
+
+</option>
+
+</select>
+      <!-- TIPO -->
+      <select
+        [(ngModel)]="nuevo.tipo"
+
+        class="p-4 border rounded-xl"
+      >
+
+        <option value="Entrada">
+          Entrada
+        </option>
+
+        <option value="Salida">
+          Salida
+        </option>
+
+      </select>
+
+      <!-- CANTIDAD -->
+      <input
+        type="number"
+
+        [(ngModel)]="nuevo.cantidad"
+
+        placeholder="Cantidad"
+
+        class="p-4 border rounded-xl"
+      >
+
+      <!-- OBSERVACION -->
+      <textarea
+        [(ngModel)]="nuevo.observacion"
+
+        placeholder="Observación"
+
+        class="p-4 border rounded-xl"
+      ></textarea>
+
+    </div>
+
+    <!-- BOTONES -->
+    <div class="flex gap-3 mt-6">
+
+      <!-- GUARDAR -->
+      <button
+        *ngIf="!editando"
+
+        (click)="guardar()"
+
+        class="bg-green-600 hover:bg-green-700
+               text-white px-6 py-3 rounded-xl"
+      >
+
+        Guardar
+
+      </button>
+
+      <!-- ACTUALIZAR -->
+      <button
+        *ngIf="editando"
+
+        (click)="actualizar()"
+
+        class="bg-blue-600 hover:bg-blue-700
+               text-white px-6 py-3 rounded-xl"
+      >
+
+        Actualizar
+
+      </button>
+
+      <!-- CANCELAR -->
+      <button
+        (click)="cancelar()"
+
+        class="bg-gray-500 hover:bg-gray-600
+               text-white px-6 py-3 rounded-xl"
+      >
+
+        Cancelar
+
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- TABLA -->
+  <div
+    class="bg-white
+           rounded-b-3xl
+           shadow
+           overflow-auto"
+  >
+
+    <table class="w-full">
+
+      <thead
+        class="bg-slate-800 text-white"
+      >
+
+        <tr>
+
+          <th class="p-4">
+            Fecha
+          </th>
+
+          <th class="p-4">
+            Insumo
+          </th>
+
+          <th class="p-4">
+            Tipo
+          </th>
+
+          <th class="p-4">
+            Cantidad
+          </th>
+
+          <th class="p-4">
+            Observación
+          </th>
+
+          <th class="p-4">
+            Acciones
+          </th>
+
+        </tr>
+
+      </thead>
+
+      <tbody>
+
+        <tr
+          *ngFor="
+            let m of movimientosFiltrados()
+          "
+
+          class="border-b hover:bg-gray-50"
+        >
+
+          <!-- FECHA -->
+          <td class="p-4 text-center">
+
+            {{ m.fecha }}
+
+          </td>
+
+          <!-- INSUMO -->
+          <td class="p-4 text-center">
+
+            {{ m.insumo }}
+
+          </td>
+
+          <!-- TIPO -->
+          <td class="p-4 text-center">
+
+            <span
+
+              class="px-3 py-1 rounded-xl
+                     text-white font-bold"
+
+              [ngClass]="
+                m.tipo === 'Entrada'
+                ? 'bg-green-600'
+                : 'bg-red-500'
+              "
+            >
+
+              {{ m.tipo }}
+
+            </span>
+
+          </td>
+
+          <!-- CANTIDAD -->
+          <td class="p-4 text-center">
+
+            {{ m.cantidad }}
+
+          </td>
+
+          <!-- OBS -->
+          <td class="p-4 text-center">
+
+            {{ m.observacion }}
+
+          </td>
+
+          <!-- ACCIONES -->
+          <td class="p-4 text-center">
+
+            <div
+              class="flex gap-2 justify-center"
+            >
+
+              <!-- EDITAR -->
+              <button
+                (click)="editar(m)"
+
+                class="bg-blue-600
+                       hover:bg-blue-700
+                       text-white
+                       px-4 py-2 rounded-lg"
+              >
+
+                Editar
+
+              </button>
+
+              <!-- ELIMINAR -->
+              <button
+                (click)="eliminar(m.id)"
+
+                class="bg-red-600
+                       hover:bg-red-700
+                       text-white
+                       px-4 py-2 rounded-lg"
+              >
+
+                Eliminar
+
+              </button>
+
+            </div>
+
+          </td>
+
+        </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</div>
