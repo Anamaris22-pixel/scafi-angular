@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1:3307
--- Tiempo de generación: 16-05-2026 a las 05:15:26
+-- Tiempo de generación: 25-05-2026 a las 03:57:01
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -228,32 +228,67 @@ CREATE TABLE `mensajes` (
   `receptor_id` int(11) DEFAULT NULL,
   `mensaje` text DEFAULT NULL,
   `fecha` datetime DEFAULT current_timestamp(),
-  `archivo` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `archivo` varchar(255) DEFAULT NULL,
+  `tipo` varchar(20) DEFAULT 'texto'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `mensajes`
 --
 
-INSERT INTO `mensajes` (`id`, `remitente_id`, `receptor_id`, `mensaje`, `fecha`, `archivo`) VALUES
-(1, 1, 2, 'Hola administrador', '2026-05-07 22:05:59', NULL),
-(2, 2, 1, 'Hola propietario', '2026-05-07 22:05:59', NULL),
-(3, 1, 3, '¿Cómo va la recolección?', '2026-05-07 22:05:59', NULL),
-(4, 0, 0, '', '2026-05-07 22:09:25', NULL),
-(5, 0, 0, '', '2026-05-07 22:09:26', NULL),
-(6, 0, 0, '', '2026-05-07 22:09:27', NULL),
-(7, 0, 0, '', '2026-05-07 22:09:35', NULL),
-(8, 1, 2, '', '2026-05-07 22:16:41', NULL),
-(9, 2, 19, 'prueba', '2026-05-07 23:18:26', NULL),
-(10, 2, 19, 'jjj', '2026-05-07 23:24:21', NULL),
-(11, 2, 2, 'buenas noches prueba', '2026-05-07 23:27:35', NULL),
-(12, 2, 19, 'pruva', '2026-05-08 00:01:38', NULL),
-(13, 2, 12, 'hhhhhhh', '2026-05-08 17:24:50', NULL),
-(14, 2, 19, 'jkjjjj', '2026-05-08 17:25:14', NULL),
-(15, 2, 19, 'prueba', '2026-05-08 17:35:47', NULL),
-(16, 2, 2, 'prueba', '2026-05-08 17:37:11', NULL),
-(17, 2, 19, 'pruebas chat', '2026-05-08 18:07:16', NULL),
-(18, 2, 18, 'aaaaa', '2026-05-14 22:01:14', NULL);
+INSERT INTO `mensajes` (`id`, `remitente_id`, `receptor_id`, `mensaje`, `fecha`, `archivo`, `tipo`) VALUES
+(1, 1, 2, 'Hola administrador', '2026-05-07 22:05:59', NULL, 'texto'),
+(2, 2, 1, 'Hola propietario', '2026-05-07 22:05:59', NULL, 'texto'),
+(3, 1, 3, '¿Cómo va la recolección?', '2026-05-07 22:05:59', NULL, 'texto'),
+(4, 0, 0, 'prueba', '2026-05-07 22:09:25', NULL, 'texto'),
+(5, 0, 0, 'prueba', '2026-05-07 22:09:26', NULL, 'texto'),
+(6, 0, 0, 'prueba', '2026-05-07 22:09:27', NULL, 'texto'),
+(7, 0, 0, 'prueba', '2026-05-07 22:09:35', NULL, 'texto'),
+(8, 1, 2, 'prueba', '2026-05-07 22:16:41', NULL, 'texto'),
+(9, 2, 19, 'prueba', '2026-05-07 23:18:26', NULL, 'texto'),
+(10, 2, 19, 'jjj', '2026-05-07 23:24:21', NULL, 'texto'),
+(11, 2, 2, 'buenas noches prueba', '2026-05-07 23:27:35', NULL, 'texto'),
+(12, 2, 19, 'pruva', '2026-05-08 00:01:38', NULL, 'texto'),
+(13, 2, 12, 'hhhhhhh', '2026-05-08 17:24:50', NULL, 'texto'),
+(14, 2, 19, 'jkjjjj', '2026-05-08 17:25:14', NULL, 'texto'),
+(15, 2, 19, 'prueba', '2026-05-08 17:35:47', NULL, 'texto'),
+(16, 2, 2, 'prueba', '2026-05-08 17:37:11', NULL, 'texto'),
+(17, 2, 19, 'pruebas chat', '2026-05-08 18:07:16', NULL, 'texto'),
+(18, 2, 18, 'aaaaa', '2026-05-14 22:01:14', NULL, 'texto'),
+(19, 2, 18, 'ssss', '2026-05-22 01:16:06', NULL, 'texto'),
+(20, 2, 18, 'prueba', '2026-05-22 01:16:18', 'uploads/chat/1779430578_47113340808_1372522140.pdf', 'pdf'),
+(21, 2, 18, '????', '2026-05-22 01:16:25', NULL, 'texto'),
+(22, 2, 18, 'aaaaaaa', '2026-05-22 01:19:48', NULL, 'texto'),
+(23, 2, 18, '????????????????', '2026-05-22 01:19:54', NULL, 'texto'),
+(24, 2, 18, '👍', '2026-05-22 01:30:00', NULL, 'texto'),
+(25, 2, 18, 'kk', '2026-05-22 01:30:08', NULL, 'texto'),
+(26, 2, 18, '', '2026-05-22 01:30:34', 'uploads/chat/1779431434_Captura de pantalla 2026-05-14 160816.png', 'imagen'),
+(27, 2, 18, '😀', '2026-05-22 01:30:55', NULL, 'texto'),
+(28, 2, 18, 'pruebas', '2026-05-22 01:31:21', NULL, 'texto'),
+(29, 1, 2, 'prueba', '2026-05-23 01:34:51', NULL, 'texto'),
+(30, 1, 2, '😅', '2026-05-23 01:35:00', NULL, 'texto'),
+(31, 1, 2, '', '2026-05-23 01:35:13', 'uploads/chat/1779518113_Captura de pantalla 2026-05-14 160816.png', 'imagen'),
+(32, 2, 1, 'ww', '2026-05-23 01:36:20', NULL, 'texto'),
+(33, 2, 12, 'aaaa', '2026-05-24 12:52:12', NULL, 'texto'),
+(34, 2, 12, '😊', '2026-05-24 12:52:25', NULL, 'texto'),
+(35, 12, 2, 'prueba', '2026-05-24 12:53:55', NULL, 'texto'),
+(36, 2, 5, 'prueba', '2026-05-24 20:22:28', NULL, 'texto'),
+(37, 2, 5, '😅', '2026-05-24 20:22:38', NULL, 'texto'),
+(38, 2, 5, '', '2026-05-24 20:22:50', 'uploads/chat/1779672169_Captura de pantalla 2026-05-14 160816.png', 'imagen'),
+(39, 2, 5, 'prueba', '2026-05-24 20:23:50', NULL, 'texto'),
+(40, 2, 5, '😀', '2026-05-24 20:24:13', NULL, 'texto'),
+(41, 2, 5, '', '2026-05-24 20:24:34', 'uploads/chat/1779672274_Captura de pantalla 2026-05-14 160816.png', 'imagen'),
+(42, 2, 5, 'envo mensaje', '2026-05-24 20:24:54', NULL, 'texto'),
+(43, 2, 1, 'prueba', '2026-05-24 20:25:14', NULL, 'texto'),
+(44, 2, 1, '😀', '2026-05-24 20:25:25', NULL, 'texto'),
+(45, 2, 1, '', '2026-05-24 20:27:14', 'uploads/chat/1779672434_boletín .pdf', 'pdf'),
+(46, 5, 2, 'mensaje  de  prueba', '2026-05-24 20:28:21', NULL, 'texto'),
+(47, 5, 2, '😁', '2026-05-24 20:28:49', NULL, 'texto'),
+(48, 5, 2, '', '2026-05-24 20:29:11', 'uploads/chat/1779672551_Captura de pantalla 2026-05-14 160816.png', 'imagen'),
+(49, 1, 2, 'mensaje de prueba se recibe', '2026-05-24 20:30:19', NULL, 'texto'),
+(50, 1, 12, 'mensaje de prueba', '2026-05-24 20:30:43', NULL, 'texto'),
+(51, 5, 2, '😁', '2026-05-24 20:31:44', NULL, 'texto'),
+(52, 1, 2, 's', '2026-05-24 20:36:19', NULL, 'texto');
 
 -- --------------------------------------------------------
 
@@ -333,6 +368,53 @@ CREATE TABLE `notificaciones` (
 INSERT INTO `notificaciones` (`id`, `usuario_id`, `titulo`, `mensaje`, `fecha`) VALUES
 (1, 1, 'Prueba Sistema', 'Esta es una notificación de prueba desde MySQL', '2026-05-08 00:35:40'),
 (2, 1, 'Stock Bajo', 'El fertilizante premium está por debajo del stock mínimo', '2026-05-08 02:13:01');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `permisos`
+--
+
+CREATE TABLE `permisos` (
+  `idPermiso` int(11) NOT NULL,
+  `idRol` int(11) NOT NULL,
+  `modulo` varchar(100) DEFAULT NULL,
+  `verModulo` tinyint(1) DEFAULT 0,
+  `crearModulo` tinyint(1) DEFAULT 0,
+  `editarModulo` tinyint(1) DEFAULT 0,
+  `eliminarModulo` tinyint(1) DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `permisos`
+--
+
+INSERT INTO `permisos` (`idPermiso`, `idRol`, `modulo`, `verModulo`, `crearModulo`, `editarModulo`, `eliminarModulo`) VALUES
+(1, 1, 'Dashboard', 1, 1, 1, 1),
+(2, 1, 'Ventas', 1, 1, 1, 1),
+(3, 1, 'Inventario', 1, 1, 1, 1),
+(4, 1, 'Usuarios', 1, 1, 1, 1),
+(5, 1, 'Roles', 1, 1, 1, 1),
+(6, 1, 'Configuracion', 1, 1, 1, 1),
+(7, 1, 'Mensajes', 1, 1, 1, 1),
+(8, 1, 'Reportes', 1, 1, 1, 1),
+(9, 1, 'Notificaciones', 1, 1, 1, 1),
+(10, 1, 'Produccion', 1, 1, 1, 1),
+(11, 2, 'Dashboard', 1, 0, 0, 0),
+(12, 2, 'Ventas', 1, 1, 0, 0),
+(13, 2, 'Inventario', 1, 1, 1, 0),
+(14, 2, 'Mensajes', 1, 1, 1, 1),
+(15, 2, 'Reportes', 1, 1, 1, 1),
+(16, 2, 'Notificaciones', 1, 0, 0, 0),
+(17, 2, 'Produccion', 1, 1, 1, 0),
+(18, 2, 'Recolectores', 1, 1, 1, 1),
+(19, 3, 'Dashboard', 1, 0, 0, 0),
+(20, 3, 'Mensajes', 1, 1, 1, 0),
+(21, 3, 'Notificaciones', 1, 0, 0, 0),
+(22, 3, 'Recoleccion', 1, 0, 0, 0),
+(23, 2, 'Cultivos', 1, 1, 1, 0),
+(24, 2, 'Recoleccion', 1, 1, 1, 0),
+(25, 2, 'Configuracion', 1, 0, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -687,108 +769,127 @@ CREATE TABLE `ventas` (
 --
 
 INSERT INTO `ventas` (`idVenta`, `fecha`, `cliente`, `producto`, `cantidad`, `precio`, `total`, `estado`) VALUES
-(1, '2026-05-01', 'Carlos Gómez', 'Arábico', 10.00, 18000.00, 180000.00, 'Pagado'),
-(2, '2026-05-01', 'Laura Medina', 'Robusta', 15.00, 16000.00, 240000.00, 'Pagado'),
-(3, '2026-05-02', 'Pedro Ramírez', 'Geisha', 5.00, 45000.00, 225000.00, 'Pagado'),
-(4, '2026-05-02', 'Ana Torres', 'Arábico', 20.00, 17500.00, 350000.00, 'Pagado'),
-(5, '2026-05-03', 'Miguel Rojas', 'Robusta', 18.00, 16500.00, 297000.00, 'Pagado'),
-(6, '2026-05-03', 'Sofía Herrera', 'Geisha', 4.00, 48000.00, 192000.00, 'Pagado'),
-(7, '2026-05-04', 'Daniel Castro', 'Arábico', 25.00, 17800.00, 445000.00, 'Pagado'),
-(8, '2026-05-04', 'Camila Vargas', 'Robusta', 12.00, 16200.00, 194400.00, 'Pagado'),
-(9, '2026-05-05', 'Luis Gómez', 'Geisha', 3.00, 50000.00, 150000.00, 'Pagado'),
-(10, '2026-05-05', 'Valentina Ruiz', 'Arábico', 30.00, 18000.00, 540000.00, 'Pagado'),
-(11, '2026-05-06', 'Jorge Medina', 'Robusta', 22.00, 16500.00, 363000.00, 'Pagado'),
-(12, '2026-05-06', 'Paula León', 'Geisha', 6.00, 47000.00, 282000.00, 'Pagado'),
-(13, '2026-05-07', 'Ricardo Pérez', 'Arábico', 16.00, 17600.00, 281600.00, 'Pagado'),
-(14, '2026-05-07', 'María López', 'Robusta', 14.00, 16000.00, 224000.00, 'Pagado'),
-(15, '2026-05-08', 'Andrés Silva', 'Geisha', 7.00, 49000.00, 343000.00, 'Pagado'),
-(16, '2026-05-08', 'Juliana Herrera', 'Arábico', 28.00, 18200.00, 509600.00, 'Pagado'),
-(17, '2026-05-09', 'Fernando Díaz', 'Robusta', 10.00, 15800.00, 158000.00, 'Pagado'),
-(18, '2026-05-09', 'Natalia Cruz', 'Geisha', 2.00, 52000.00, 104000.00, 'Pagado'),
-(19, '2026-05-10', 'Juan Martínez', 'Arábico', 19.00, 17900.00, 340100.00, 'Pagado'),
-(20, '2026-05-10', 'Carolina Vega', 'Robusta', 24.00, 16400.00, 393600.00, 'Pagado'),
-(21, '2026-05-11', 'David León', 'Geisha', 5.00, 51000.00, 255000.00, 'Pagado'),
-(22, '2026-05-11', 'Tatiana Gómez', 'Arábico', 21.00, 17700.00, 371700.00, 'Pagado'),
-(23, '2026-05-12', 'Kevin Torres', 'Robusta', 13.00, 16100.00, 209300.00, 'Pagado'),
-(24, '2026-05-12', 'Liliana Mora', 'Geisha', 8.00, 49500.00, 396000.00, 'Pagado'),
-(25, '2026-05-13', 'Mauricio Ruiz', 'Arábico', 17.00, 18000.00, 306000.00, 'Pagado'),
-(26, '2026-05-13', 'Sara López', 'Robusta', 11.00, 15900.00, 174900.00, 'Pagado'),
-(27, '2026-05-14', 'Diego Herrera', 'Geisha', 4.00, 53000.00, 212000.00, 'Pagado'),
-(28, '2026-05-14', 'Mónica Castro', 'Arábico', 26.00, 18100.00, 470600.00, 'Pagado'),
-(29, '2026-05-15', 'Cristian Díaz', 'Robusta', 20.00, 16600.00, 332000.00, 'Pagado'),
-(30, '2026-05-15', 'Adriana Pérez', 'Geisha', 6.00, 50000.00, 300000.00, 'Pagado'),
-(31, '2026-05-16', 'Santiago Rojas', 'Arábico', 18.00, 17800.00, 320400.00, 'Pagado'),
-(32, '2026-05-16', 'Andrea Medina', 'Robusta', 9.00, 16200.00, 145800.00, 'Pagado'),
-(33, '2026-05-17', 'Felipe Gómez', 'Geisha', 7.00, 51500.00, 360500.00, 'Pagado'),
-(34, '2026-05-17', 'Paola Vargas', 'Arábico', 32.00, 18000.00, 576000.00, 'Pagado'),
-(35, '2026-05-18', 'Óscar Ramírez', 'Robusta', 16.00, 16300.00, 260800.00, 'Pagado'),
-(36, '2026-05-18', 'Verónica León', 'Geisha', 5.00, 50500.00, 252500.00, 'Pagado'),
-(37, '2026-05-19', 'Eduardo Silva', 'Arábico', 14.00, 17600.00, 246400.00, 'Pagado'),
-(38, '2026-05-19', 'Lorena Torres', 'Robusta', 27.00, 16500.00, 445500.00, 'Pagado'),
-(39, '2026-05-20', 'Alejandro Cruz', 'Geisha', 3.00, 54000.00, 162000.00, 'Pagado'),
-(40, '2026-05-20', 'Claudia Gómez', 'Arábico', 29.00, 18200.00, 527800.00, 'Pagado'),
-(41, '2026-05-21', 'Iván Herrera', 'Robusta', 15.00, 16000.00, 240000.00, 'Pagado'),
-(42, '2026-05-21', 'Patricia Díaz', 'Geisha', 9.00, 49800.00, 448200.00, 'Pagado'),
-(43, '2026-05-22', 'Raúl Medina', 'Arábico', 24.00, 17900.00, 429600.00, 'Pagado'),
-(44, '2026-05-22', 'Marcela Ruiz', 'Robusta', 12.00, 16400.00, 196800.00, 'Pagado'),
-(45, '2026-05-23', 'Héctor López', 'Geisha', 6.00, 52000.00, 312000.00, 'Pagado'),
-(46, '2026-05-23', 'Gloria Vega', 'Arábico', 20.00, 17700.00, 354000.00, 'Pagado'),
-(47, '2026-05-24', 'Sebastián Castro', 'Robusta', 18.00, 16600.00, 298800.00, 'Pagado'),
-(48, '2026-05-24', 'Diana León', 'Geisha', 4.00, 55000.00, 220000.00, 'Pagado'),
-(49, '2026-05-25', 'Tomás Silva', 'Arábico', 31.00, 18100.00, 561100.00, 'Pagado'),
-(50, '2026-05-25', 'Yulieth Pérez', 'Robusta', 22.00, 16300.00, 358600.00, 'Pagado'),
-(57, '2026-05-11', 'laura estrada', 'Robusta', 100.00, 4000.00, 400000.00, 'Pagado'),
-(59, '2026-05-05', 'semicafe', 'Robusta', 500.00, 4000.00, 2000000.00, 'Pagado'),
-(60, '2026-05-11', 'Laura Lopera', 'Robusta', 100.00, 4000.00, 400000.00, 'Pagado'),
-(71, '2026-05-26', 'Carlos Ramírez', 'Arábico', 25.00, 18000.00, 450000.00, 'Pagado'),
-(72, '2026-05-26', 'María Torres', 'Robusta', 14.00, 16500.00, 231000.00, 'Pagado'),
-(73, '2026-05-27', 'Andrés López', 'Geisha', 7.00, 50000.00, 350000.00, 'Pagado'),
-(74, '2026-05-27', 'Sofía Martínez', 'Arábico', 30.00, 18200.00, 546000.00, 'Pagado'),
-(75, '2026-05-28', 'Julián Herrera', 'Robusta', 20.00, 16000.00, 320000.00, 'Pagado'),
-(76, '2026-05-28', 'Camila Díaz', 'Geisha', 10.00, 52000.00, 520000.00, 'Pagado'),
-(77, '2026-01-05', 'Carlos Ramírez', 'Arábico', 20.00, 18000.00, 360000.00, 'Pagado'),
-(78, '2026-01-08', 'María Torres', 'Robusta', 15.00, 16000.00, 240000.00, 'Pagado'),
-(79, '2026-01-12', 'Andrés López', 'Geisha', 8.00, 50000.00, 400000.00, 'Pagado'),
-(80, '2026-01-15', 'Sofía Martínez', 'Arábico', 25.00, 18200.00, 455000.00, 'Pagado'),
-(81, '2026-01-20', 'Julián Herrera', 'Robusta', 10.00, 16500.00, 165000.00, 'Pagado'),
-(82, '2026-01-25', 'Camila Díaz', 'Geisha', 12.00, 52000.00, 624000.00, 'Pagado'),
-(83, '2026-01-28', 'Luis Gómez', 'Arábico', 18.00, 17900.00, 322200.00, 'Pagado'),
-(84, '2026-01-30', 'Paola Ruiz', 'Robusta', 22.00, 16200.00, 356400.00, 'Pagado'),
-(85, '2026-02-03', 'Héctor López', 'Geisha', 6.00, 51000.00, 306000.00, 'Pagado'),
-(86, '2026-02-06', 'Gloria Vega', 'Arábico', 30.00, 18000.00, 540000.00, 'Pagado'),
-(87, '2026-02-10', 'Sebastián Castro', 'Robusta', 14.00, 16400.00, 229600.00, 'Pagado'),
-(88, '2026-02-14', 'Diana León', 'Geisha', 9.00, 55000.00, 495000.00, 'Pagado'),
-(89, '2026-02-18', 'Tomás Silva', 'Arábico', 28.00, 18100.00, 506800.00, 'Pagado'),
-(90, '2026-02-22', 'Yulieth Pérez', 'Robusta', 20.00, 16300.00, 326000.00, 'Pagado'),
-(91, '2026-02-25', 'Laura Estrada', 'Geisha', 7.00, 52000.00, 364000.00, 'Pagado'),
-(92, '2026-02-28', 'Miguel Ángel', 'Arábico', 26.00, 17800.00, 462800.00, 'Pagado'),
-(93, '2026-03-02', 'Patricia Díaz', 'Robusta', 12.00, 16000.00, 192000.00, 'Pagado'),
-(94, '2026-03-05', 'Raúl Medina', 'Arábico', 24.00, 17900.00, 429600.00, 'Pagado'),
-(95, '2026-03-08', 'Marcela Ruiz', 'Geisha', 10.00, 54000.00, 540000.00, 'Pagado'),
-(96, '2026-03-12', 'Iván Herrera', 'Robusta', 18.00, 16500.00, 297000.00, 'Pagado'),
-(97, '2026-03-15', 'Claudia Gómez', 'Arábico', 20.00, 18200.00, 364000.00, 'Pagado'),
-(98, '2026-03-18', 'Fernando Ríos', 'Geisha', 5.00, 56000.00, 280000.00, 'Pagado'),
-(99, '2026-03-22', 'Natalia López', 'Robusta', 16.00, 16200.00, 259200.00, 'Pagado'),
-(100, '2026-03-26', 'Esteban Torres', 'Arábico', 22.00, 18000.00, 396000.00, 'Pagado'),
-(101, '2026-04-01', 'Andrea Ramírez', 'Geisha', 8.00, 53000.00, 424000.00, 'Pagado'),
-(102, '2026-04-04', 'Jorge Castillo', 'Arábico', 27.00, 18100.00, 488700.00, 'Pagado'),
-(103, '2026-04-08', 'Lucía Fernández', 'Robusta', 14.00, 16000.00, 224000.00, 'Pagado'),
-(104, '2026-04-12', 'Pedro Sánchez', 'Geisha', 6.00, 55000.00, 330000.00, 'Pagado'),
-(105, '2026-04-16', 'Valentina Díaz', 'Arábico', 25.00, 17900.00, 447500.00, 'Pagado'),
-(106, '2026-04-20', 'Samuel Herrera', 'Robusta', 20.00, 16300.00, 326000.00, 'Pagado'),
-(107, '2026-04-24', 'Isabel Gómez', 'Geisha', 9.00, 52000.00, 468000.00, 'Pagado'),
-(108, '2026-04-28', 'Ricardo Vega', 'Arábico', 30.00, 18200.00, 546000.00, 'Pagado'),
-(109, '2026-05-02', 'Laura Estrada', 'Robusta', 12.00, 16000.00, 192000.00, 'Pagado'),
-(110, '2026-05-05', 'Semicafé Ltda', 'Robusta', 500.00, 4000.00, 2000000.00, 'Pagado'),
-(111, '2026-05-07', 'Carlos Ramírez', 'Arábico', 29.00, 18200.00, 527800.00, 'Pagado'),
-(112, '2026-05-10', 'María Torres', 'Robusta', 15.00, 16000.00, 240000.00, 'Pagado'),
-(113, '2026-05-13', 'Patricia Díaz', 'Geisha', 9.00, 49800.00, 448200.00, 'Pagado'),
-(114, '2026-05-16', 'Raúl Medina', 'Arábico', 24.00, 17900.00, 429600.00, 'Pagado'),
-(115, '2026-05-19', 'Marcela Ruiz', 'Robusta', 12.00, 16400.00, 196800.00, 'Pagado'),
-(116, '2026-05-22', 'Héctor López', 'Geisha', 6.00, 52000.00, 312000.00, 'Pagado'),
-(117, '2026-05-25', 'Gloria Vega', 'Arábico', 20.00, 17700.00, 354000.00, 'Pagado'),
-(118, '2026-05-28', 'Sebastián Castro', 'Robusta', 18.00, 16600.00, 298800.00, 'Pagado'),
-(119, '2026-05-30', 'Diana León', 'Geisha', 5.00, 55000.00, 220000.00, 'Pagado');
+(1, '2025-06-06', 'Cooperativa Cafetera del Tolima', 'Arábico', 12.00, 18000.00, 216000.00, 'Pagado'),
+(2, '2025-06-07', 'Café del Quindío SAS', 'Robusta', 10.00, 16500.00, 165000.00, 'Pagado'),
+(3, '2025-06-08', 'Federación Cafetera Huila', 'Geisha', 5.00, 54000.00, 270000.00, 'Pagado'),
+(4, '2025-06-09', 'Exportadora Premium Coffee', 'Castillo', 18.00, 14500.00, 261000.00, 'Pendiente'),
+(5, '2025-06-10', 'Cooperativa Caficultores Risaralda', 'Caturra', 14.00, 17200.00, 240800.00, 'Pagado'),
+(6, '2025-06-12', 'Café Orgánico Colombiano', 'Arábico', 11.00, 18100.00, 199100.00, 'Pagado'),
+(7, '2025-06-14', 'Asociación Cafetera del Cauca', 'Robusta', 16.00, 16000.00, 256000.00, 'Pendiente'),
+(8, '2025-06-16', 'Distribuidora Café Dorado', 'Geisha', 4.00, 55500.00, 222000.00, 'Pagado'),
+(9, '2025-06-18', 'Comercializadora Café Andino', 'Castillo', 20.00, 14900.00, 298000.00, 'Pagado'),
+(10, '2025-06-20', 'Café Supremo Export', 'Caturra', 13.00, 17000.00, 221000.00, 'Pagado'),
+(11, '2025-07-02', 'Cooperativa Cafetera de Caldas', 'Arábico', 15.00, 18200.00, 273000.00, 'Pagado'),
+(12, '2025-07-04', 'Industria Cafetera del Norte', 'Robusta', 17.00, 16100.00, 273700.00, 'Pendiente'),
+(13, '2025-07-06', 'Asociación Café Premium', 'Geisha', 6.00, 54800.00, 328800.00, 'Pagado'),
+(14, '2025-07-08', 'Coffee Export Colombia', 'Castillo', 22.00, 14700.00, 323400.00, 'Pagado'),
+(15, '2025-07-10', 'Café Especial del Huila', 'Caturra', 12.00, 17300.00, 207600.00, 'Pendiente'),
+(16, '2025-07-12', 'Cooperativa Caficultores Antioquia', 'Arábico', 16.00, 18400.00, 294400.00, 'Pagado'),
+(17, '2025-07-14', 'Distribuidora Aroma Café', 'Robusta', 14.00, 16300.00, 228200.00, 'Pagado'),
+(18, '2025-07-16', 'Café Export del Valle', 'Geisha', 5.00, 55200.00, 276000.00, 'Pendiente'),
+(19, '2025-07-18', 'Cooperativa Café de Nariño', 'Castillo', 24.00, 14800.00, 355200.00, 'Pagado'),
+(20, '2025-07-20', 'Comercializadora Aroma Premium', 'Caturra', 10.00, 17100.00, 171000.00, 'Pagado'),
+(21, '2025-08-01', 'Café Tradición Colombiana', 'Arábico', 13.00, 18300.00, 237900.00, 'Pendiente'),
+(22, '2025-08-03', 'Federación Cafetera del Cauca', 'Robusta', 18.00, 16000.00, 288000.00, 'Pagado'),
+(23, '2025-08-05', 'Coffee Gold Export', 'Geisha', 4.00, 56000.00, 224000.00, 'Pagado'),
+(24, '2025-08-07', 'Cooperativa Cafetera Santander', 'Castillo', 21.00, 14900.00, 312900.00, 'Pagado'),
+(25, '2025-08-09', 'Café Sierra Nevada', 'Caturra', 15.00, 17200.00, 258000.00, 'Pendiente'),
+(26, '2025-08-11', 'Distribuidora Café Selecto', 'Arábico', 12.00, 18100.00, 217200.00, 'Pagado'),
+(27, '2025-08-13', 'Exportadora Aroma Andina', 'Robusta', 19.00, 16200.00, 307800.00, 'Pagado'),
+(28, '2025-08-15', 'Cooperativa Cafetera Quindío', 'Geisha', 6.00, 55000.00, 330000.00, 'Pendiente'),
+(29, '2025-08-17', 'Café Premium de Colombia', 'Castillo', 23.00, 14700.00, 338100.00, 'Pagado'),
+(30, '2025-08-19', 'Asociación Productores de Café', 'Caturra', 11.00, 17000.00, 187000.00, 'Pagado'),
+(31, '2025-09-02', 'Coffee Beans Export SAS', 'Arábico', 15.00, 18400.00, 276000.00, 'Pagado'),
+(32, '2025-09-04', 'Café de Altura Premium', 'Robusta', 16.00, 16100.00, 257600.00, 'Pendiente'),
+(33, '2025-09-06', 'Cooperativa Cafetera del Meta', 'Geisha', 5.00, 55800.00, 279000.00, 'Pagado'),
+(34, '2025-09-08', 'Distribuidora Café Real', 'Castillo', 20.00, 15000.00, 300000.00, 'Pagado'),
+(35, '2025-09-10', 'Café Orgánico Export', 'Caturra', 13.00, 17100.00, 222300.00, 'Pagado'),
+(36, '2025-09-12', 'Federación Cafetera del Tolima', 'Arábico', 17.00, 18200.00, 309400.00, 'Pendiente'),
+(37, '2025-09-14', 'Café Aroma de Montaña', 'Robusta', 12.00, 16400.00, 196800.00, 'Pagado'),
+(38, '2025-09-16', 'Cooperativa Cafetera del Valle', 'Geisha', 7.00, 54500.00, 381500.00, 'Pagado'),
+(39, '2025-09-18', 'Exportadora Café Supremo', 'Castillo', 22.00, 14800.00, 325600.00, 'Pagado'),
+(40, '2025-09-20', 'Café Tradición Andina', 'Caturra', 14.00, 17300.00, 242200.00, 'Pendiente'),
+(41, '2025-10-01', 'Cooperativa Cafetera Boyacá', 'Arábico', 16.00, 18100.00, 289600.00, 'Pagado'),
+(42, '2025-10-03', 'Distribuidora Aroma Premium', 'Robusta', 15.00, 16000.00, 240000.00, 'Pagado'),
+(43, '2025-10-05', 'Coffee Export Andino', 'Geisha', 4.00, 56000.00, 224000.00, 'Pendiente'),
+(44, '2025-10-07', 'Café Especial del Cauca', 'Castillo', 24.00, 14900.00, 357600.00, 'Pagado'),
+(45, '2025-10-09', 'Cooperativa Cafetera Santander', 'Caturra', 13.00, 17200.00, 223600.00, 'Pagado'),
+(46, '2025-10-11', 'Café Premium Export SAS', 'Arábico', 18.00, 18300.00, 329400.00, 'Pagado'),
+(47, '2025-10-13', 'Asociación Cafetera Colombiana', 'Robusta', 11.00, 16200.00, 178200.00, 'Pendiente'),
+(48, '2025-10-15', 'Distribuidora Café Andino', 'Geisha', 6.00, 55200.00, 331200.00, 'Pagado'),
+(49, '2025-10-17', 'Café Supremo de Colombia', 'Castillo', 20.00, 14800.00, 296000.00, 'Pagado'),
+(50, '2025-10-19', 'Cooperativa Nacional Cafetera', 'Caturra', 15.00, 17000.00, 255000.00, 'Pagado'),
+(51, '2025-11-02', 'Cooperativa Cafetera del Tolima', 'Arábico', 14.00, 18200.00, 254800.00, 'Pagado'),
+(52, '2025-11-04', 'Café del Quindío SAS', 'Robusta', 18.00, 16100.00, 289800.00, 'Pendiente'),
+(53, '2025-11-06', 'Federación Cafetera Huila', 'Geisha', 5.00, 55800.00, 279000.00, 'Pagado'),
+(54, '2025-11-08', 'Exportadora Premium Coffee', 'Castillo', 22.00, 14700.00, 323400.00, 'Pagado'),
+(55, '2025-11-10', 'Cooperativa Caficultores Risaralda', 'Caturra', 12.00, 17300.00, 207600.00, 'Pendiente'),
+(56, '2025-11-12', 'Café Orgánico Colombiano', 'Arábico', 17.00, 18100.00, 307700.00, 'Pagado'),
+(57, '2025-11-14', 'Asociación Cafetera del Cauca', 'Robusta', 13.00, 16400.00, 213200.00, 'Pagado'),
+(58, '2025-11-16', 'Distribuidora Café Dorado', 'Geisha', 6.00, 54800.00, 328800.00, 'Pendiente'),
+(59, '2025-11-18', 'Comercializadora Café Andino', 'Castillo', 20.00, 14900.00, 298000.00, 'Pagado'),
+(60, '2025-11-20', 'Café Supremo Export', 'Caturra', 16.00, 17100.00, 273600.00, 'Pagado'),
+(61, '2025-12-02', 'Cooperativa Cafetera de Caldas', 'Arábico', 15.00, 18300.00, 274500.00, 'Pagado'),
+(62, '2025-12-04', 'Industria Cafetera del Norte', 'Robusta', 11.00, 16200.00, 178200.00, 'Pendiente'),
+(63, '2025-12-06', 'Asociación Café Premium', 'Geisha', 4.00, 56000.00, 224000.00, 'Pagado'),
+(64, '2025-12-08', 'Coffee Export Colombia', 'Castillo', 24.00, 14800.00, 355200.00, 'Pagado'),
+(65, '2025-12-10', 'Café Especial del Huila', 'Caturra', 13.00, 17200.00, 223600.00, 'Pagado'),
+(66, '2025-12-12', 'Cooperativa Caficultores Antioquia', 'Arábico', 18.00, 18100.00, 325800.00, 'Pagado'),
+(67, '2025-12-14', 'Distribuidora Aroma Café', 'Robusta', 15.00, 16000.00, 240000.00, 'Pendiente'),
+(68, '2025-12-16', 'Café Export del Valle', 'Geisha', 5.00, 55200.00, 276000.00, 'Pagado'),
+(69, '2025-12-18', 'Cooperativa Café de Nariño', 'Castillo', 22.00, 14900.00, 327800.00, 'Pagado'),
+(70, '2025-12-20', 'Comercializadora Aroma Premium', 'Caturra', 14.00, 17000.00, 238000.00, 'Pendiente'),
+(71, '2026-01-03', 'Café Tradición Colombiana', 'Arábico', 16.00, 18200.00, 291200.00, 'Pagado'),
+(72, '2026-01-05', 'Federación Cafetera del Cauca', 'Robusta', 12.00, 16300.00, 195600.00, 'Pendiente'),
+(73, '2026-01-07', 'Coffee Gold Export', 'Geisha', 6.00, 55000.00, 330000.00, 'Pagado'),
+(74, '2026-01-09', 'Cooperativa Cafetera Santander', 'Castillo', 21.00, 14800.00, 310800.00, 'Pagado'),
+(75, '2026-01-11', 'Café Sierra Nevada', 'Caturra', 15.00, 17100.00, 256500.00, 'Pendiente'),
+(76, '2026-01-13', 'Distribuidora Café Selecto', 'Arábico', 17.00, 18400.00, 312800.00, 'Pagado'),
+(77, '2026-01-15', 'Exportadora Aroma Andina', 'Robusta', 13.00, 16100.00, 209300.00, 'Pagado'),
+(78, '2026-01-17', 'Cooperativa Cafetera Quindío', 'Geisha', 5.00, 55800.00, 279000.00, 'Pendiente'),
+(79, '2026-01-19', 'Café Premium de Colombia', 'Castillo', 20.00, 15000.00, 300000.00, 'Pagado'),
+(80, '2026-01-21', 'Asociación Productores de Café', 'Caturra', 11.00, 17300.00, 190300.00, 'Pagado'),
+(81, '2026-02-02', 'Coffee Beans Export SAS', 'Arábico', 18.00, 18100.00, 325800.00, 'Pagado'),
+(82, '2026-02-04', 'Café de Altura Premium', 'Robusta', 15.00, 16200.00, 243000.00, 'Pendiente'),
+(83, '2026-02-06', 'Cooperativa Cafetera del Meta', 'Geisha', 4.00, 56000.00, 224000.00, 'Pagado'),
+(84, '2026-02-08', 'Distribuidora Café Real', 'Castillo', 24.00, 14900.00, 357600.00, 'Pagado'),
+(85, '2026-02-10', 'Café Orgánico Export', 'Caturra', 13.00, 17000.00, 221000.00, 'Pagado'),
+(86, '2026-02-12', 'Federación Cafetera del Tolima', 'Arábico', 16.00, 18300.00, 292800.00, 'Pendiente'),
+(87, '2026-02-14', 'Café Aroma de Montaña', 'Robusta', 12.00, 16400.00, 196800.00, 'Pagado'),
+(88, '2026-02-16', 'Cooperativa Cafetera del Valle', 'Geisha', 6.00, 55200.00, 331200.00, 'Pagado'),
+(89, '2026-02-18', 'Exportadora Café Supremo', 'Castillo', 22.00, 14800.00, 325600.00, 'Pagado'),
+(90, '2026-02-20', 'Café Tradición Andina', 'Caturra', 14.00, 17200.00, 240800.00, 'Pendiente'),
+(91, '2026-03-02', 'Cooperativa Cafetera Boyacá', 'Arábico', 15.00, 18200.00, 273000.00, 'Pagado'),
+(92, '2026-03-04', 'Distribuidora Aroma Premium', 'Robusta', 17.00, 16000.00, 272000.00, 'Pendiente'),
+(93, '2026-03-06', 'Coffee Export Andino', 'Geisha', 5.00, 55800.00, 279000.00, 'Pagado'),
+(94, '2026-03-08', 'Café Especial del Cauca', 'Castillo', 21.00, 14900.00, 312900.00, 'Pagado'),
+(95, '2026-03-10', 'Cooperativa Cafetera Santander', 'Caturra', 13.00, 17100.00, 222300.00, 'Pagado'),
+(96, '2026-03-12', 'Café Premium Export SAS', 'Arábico', 18.00, 18400.00, 331200.00, 'Pendiente'),
+(97, '2026-03-14', 'Asociación Cafetera Colombiana', 'Robusta', 11.00, 16300.00, 179300.00, 'Pagado'),
+(98, '2026-03-16', 'Distribuidora Café Andino', 'Geisha', 6.00, 55000.00, 330000.00, 'Pagado'),
+(99, '2026-03-18', 'Café Supremo de Colombia', 'Castillo', 20.00, 14800.00, 296000.00, 'Pagado'),
+(100, '2026-03-20', 'Cooperativa Nacional Cafetera', 'Caturra', 15.00, 17300.00, 259500.00, 'Pendiente'),
+(101, '2026-04-02', 'Cooperativa Cafetera del Tolima', 'Arábico', 14.00, 18100.00, 253400.00, 'Pagado'),
+(102, '2026-04-04', 'Café del Quindío SAS', 'Robusta', 16.00, 16200.00, 259200.00, 'Pagado'),
+(103, '2026-04-06', 'Federación Cafetera Huila', 'Geisha', 5.00, 55200.00, 276000.00, 'Pendiente'),
+(104, '2026-04-08', 'Exportadora Premium Coffee', 'Castillo', 23.00, 14900.00, 342700.00, 'Pagado'),
+(105, '2026-04-10', 'Cooperativa Caficultores Risaralda', 'Caturra', 12.00, 17100.00, 205200.00, 'Pagado'),
+(106, '2026-04-12', 'Café Orgánico Colombiano', 'Arábico', 18.00, 18300.00, 329400.00, 'Pendiente'),
+(107, '2026-04-14', 'Asociación Cafetera del Cauca', 'Robusta', 10.00, 16000.00, 160000.00, 'Pagado'),
+(108, '2026-04-16', 'Distribuidora Café Dorado', 'Geisha', 6.00, 54800.00, 328800.00, 'Pagado'),
+(109, '2026-04-18', 'Comercializadora Café Andino', 'Castillo', 21.00, 14800.00, 310800.00, 'Pagado'),
+(110, '2026-04-20', 'Café Supremo Export', 'Caturra', 15.00, 17200.00, 258000.00, 'Pendiente'),
+(111, '2026-05-02', 'Cooperativa Cafetera de Caldas', 'Arábico', 13.00, 18200.00, 236600.00, 'Pagado'),
+(112, '2026-05-04', 'Industria Cafetera del Norte', 'Robusta', 17.00, 16100.00, 273700.00, 'Pagado'),
+(113, '2026-05-06', 'Asociación Café Premium', 'Geisha', 4.00, 56000.00, 224000.00, 'Pendiente'),
+(114, '2026-05-08', 'Coffee Export Colombia', 'Castillo', 20.00, 14900.00, 298000.00, 'Pagado'),
+(115, '2026-05-10', 'Café Especial del Huila', 'Caturra', 14.00, 17300.00, 242200.00, 'Pagado'),
+(116, '2026-05-12', 'Cooperativa Caficultores Antioquia', 'Arábico', 16.00, 18400.00, 294400.00, 'Pendiente'),
+(117, '2026-05-14', 'Distribuidora Aroma Café', 'Robusta', 12.00, 16200.00, 194400.00, 'Pagado'),
+(118, '2026-05-16', 'Café Export del Valle', 'Geisha', 5.00, 55200.00, 276000.00, 'Pagado'),
+(119, '2026-05-18', 'Cooperativa Café de Nariño', 'Castillo', 22.00, 14800.00, 325600.00, 'Pagado'),
+(120, '2026-05-20', 'Comercializadora Aroma Premium', 'Caturra', 15.00, 17100.00, 256500.00, 'Pendiente'),
+(121, '2026-05-22', 'Distribuidora Aroma Café', 'Robusta', 100.00, 4500.00, 450000.00, 'Pagado');
 
 --
 -- Índices para tablas volcadas
@@ -836,6 +937,13 @@ ALTER TABLE `movimientos`
 --
 ALTER TABLE `notificaciones`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `permisos`
+--
+ALTER TABLE `permisos`
+  ADD PRIMARY KEY (`idPermiso`),
+  ADD KEY `idRol` (`idRol`);
 
 --
 -- Indices de la tabla `produccion`
@@ -916,7 +1024,7 @@ ALTER TABLE `lotes`
 -- AUTO_INCREMENT de la tabla `mensajes`
 --
 ALTER TABLE `mensajes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
 
 --
 -- AUTO_INCREMENT de la tabla `movimientos`
@@ -929,6 +1037,12 @@ ALTER TABLE `movimientos`
 --
 ALTER TABLE `notificaciones`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT de la tabla `permisos`
+--
+ALTER TABLE `permisos`
+  MODIFY `idPermiso` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT de la tabla `produccion`
@@ -970,7 +1084,7 @@ ALTER TABLE `usuario`
 -- AUTO_INCREMENT de la tabla `ventas`
 --
 ALTER TABLE `ventas`
-  MODIFY `idVenta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=120;
+  MODIFY `idVenta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=122;
 
 --
 -- Restricciones para tablas volcadas
@@ -981,6 +1095,12 @@ ALTER TABLE `ventas`
 --
 ALTER TABLE `cultivos`
   ADD CONSTRAINT `cultivos_ibfk_1` FOREIGN KEY (`idLote`) REFERENCES `lotes` (`idLote`);
+
+--
+-- Filtros para la tabla `permisos`
+--
+ALTER TABLE `permisos`
+  ADD CONSTRAINT `permisos_ibfk_1` FOREIGN KEY (`idRol`) REFERENCES `rol` (`idRol`) ON DELETE CASCADE;
 
 --
 -- Filtros para la tabla `produccion`
