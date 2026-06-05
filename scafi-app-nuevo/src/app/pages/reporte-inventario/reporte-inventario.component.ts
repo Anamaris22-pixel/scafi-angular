@@ -265,17 +265,8 @@ implements OnInit, AfterViewInit {
 
   }
 
+      
   
-  // IMPRIMIR
-
-  imprimir() {
-
-    window.print();
-
-  }
-
-  
-
   // EXPORTAR PDF
 
  exportarPDF() {
