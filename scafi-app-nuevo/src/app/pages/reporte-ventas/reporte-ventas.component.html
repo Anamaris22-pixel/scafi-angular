@@ -1,700 +1,124 @@
-<!-- ====================================================== -->
-<!-- REPORTE VENTAS HTML COMPLETO PROFESIONAL -->
-<!-- ====================================================== -->
+<div class="min-h-screen bg-slate-100 p-6" style="background-image: url('assets/cafe.jpg'); background-attachment: fixed;">
 
-<div
-class="min-h-screen bg-cover bg-center bg-fixed p-6"
-style="background-image: url('assets/cafe.jpg');"
->
-
-  <!-- BOTONES -->
-
-  <div class="flex gap-3 mb-6 justify-center print-hidden">
-
-    <button
-      (click)="imprimir()"
-      class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-xl shadow-lg font-semibold transition"
-    >
-      🖨 Imprimir
-    </button>
-
-    <button
-      (click)="exportarPDF()"
-      class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-xl shadow-lg font-semibold transition"
-    >
+  <div class="flex gap-3 mb-6 justify-center mt-4">
+    <button (click)="exportarPDF()" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-xl shadow-lg font-semibold transition flex items-center gap-2">
       📄 Exportar PDF
     </button>
-
-    <a
-      routerLink="/dashboard"
-      class="bg-slate-900 hover:bg-slate-800 text-white px-5 py-2 rounded-xl shadow-lg font-semibold transition"
-    >
+    <button routerLink="/dashboard" class="bg-slate-900 hover:bg-slate-800 text-white px-5 py-2 rounded-xl shadow-lg font-semibold transition">
       ← Dashboard
-    </a>
-
+    </button>
   </div>
 
-  <!-- FILTRO -->
-
-  <div class="max-w-[900px] mx-auto mb-8 print-hidden">
-
+  <div class="max-w-[900px] mx-auto mb-8 print:hidden">
     <div class="bg-white/95 backdrop-blur-md border border-slate-200 rounded-[30px] p-8 shadow-2xl">
-
-      <!-- TITULO -->
-
       <div class="flex items-center gap-3 mb-6">
-
-        <div class="bg-blue-600 text-white w-10 h-10 rounded-xl flex items-center justify-center shadow-lg">
-
-          🔎
-
-        </div>
-
-        <h2 class="text-[14px] uppercase tracking-[0.35em] font-black text-slate-400">
-
-          Filtro de Fechas
-
-        </h2>
-
+        <div class="bg-blue-600 text-white w-10 h-10 rounded-xl flex items-center justify-center shadow-lg">🔎</div>
+        <h2 class="text-[14px] uppercase tracking-[0.35em] font-black text-slate-400">Filtro de Fechas</h2>
       </div>
-
-      <!-- CONTROLES -->
-
       <div class="grid grid-cols-4 gap-5 items-end">
-
-        <!-- FECHA INICIO -->
-
         <div>
-
-          <label class="block text-xs uppercase font-black text-slate-500 mb-3 tracking-wide">
-
-            Fecha Inicio
-
-          </label>
-
-          <input
-            type="date"
-            [(ngModel)]="fechaInicio"
-            class="w-full border border-slate-300 rounded-2xl px-5 py-4 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-
+          <label class="block text-xs uppercase font-black text-slate-500 mb-3">Fecha Inicio</label>
+          <input type="date" [(ngModel)]="fechaInicio" class="w-full border border-slate-300 rounded-2xl px-5 py-4 bg-white">
         </div>
-
-        <!-- FECHA FIN -->
-
         <div>
-
-          <label class="block text-xs uppercase font-black text-slate-500 mb-3 tracking-wide">
-
-            Fecha Fin
-
-          </label>
-
-          <input
-            type="date"
-            [(ngModel)]="fechaFin"
-            class="w-full border border-slate-300 rounded-2xl px-5 py-4 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-
+          <label class="block text-xs uppercase font-black text-slate-500 mb-3">Fecha Fin</label>
+          <input type="date" [(ngModel)]="fechaFin" class="w-full border border-slate-300 rounded-2xl px-5 py-4 bg-white">
         </div>
-
-        <!-- BOTON FILTRAR -->
-
-        <button
-          (click)="filtrarVentas()"
-          class="bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl px-5 py-4 shadow-xl transition-all duration-300 hover:scale-[1.02]"
-        >
-          Filtrar
-        </button>
-
-        <!-- BOTON LIMPIAR -->
-
-        <button
-          (click)="limpiarFiltro()"
-          class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-black rounded-2xl px-5 py-4 shadow-lg transition-all duration-300 hover:scale-[1.02]"
-        >
-          Limpiar
-        </button>
-
+        <button (click)="filtrarVentas()" class="bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl px-5 py-4 shadow-xl">Filtrar</button>
+        <button (click)="limpiarFiltro()" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-black rounded-2xl px-5 py-4 shadow-lg">Limpiar</button>
       </div>
-
     </div>
-
   </div>
 
-  <!-- PDF -->
-
-  <div
-    id="reportePDF"
-    class="bg-white rounded-[28px] shadow-2xl p-[18mm] w-[215.9mm] min-h-[297mm] mx-auto overflow-hidden"
-  >
-
-    <!-- HEADER -->
-
-    <div class="flex justify-between items-start border-b border-slate-200 pb-8">
-
-      <!-- IZQUIERDA -->
-
-      <div class="flex items-center gap-5">
-
-        <img
-          src="assets/logo-scafi.png"
-          class="w-28"
-        >
-
+  <div id="reportePDF" class="reporte-pdf bg-white w-full max-w-[215.9mm] mx-auto rounded-xl shadow-2xl p-[15mm] text-slate-800 print:max-w-full print:shadow-none print:rounded-none print:p-[10mm]">
+    
+    <div class="flex justify-between items-center border-b-2 border-slate-100 pb-6 mb-8">
+      <div class="flex items-center gap-4">
+        <img src="assets/logo-scafi.png" alt="Logo" class="w-24 object-contain">
         <div>
-
-          <h1 class="text-[38px] font-black text-slate-900 leading-none">
-            SCAFI
-          </h1>
-
-          <p class="text-[#C7A56B] text-[18px] font-bold leading-tight mt-2">
-            Software de
-            <br>
-            Control Integral
-            <br>
-            Cafetero
+          <p class="text-[#C8AA7A] text-sm font-bold uppercase tracking-wider mt-1">
+            Software de Control Integral Cafetero
           </p>
-
         </div>
-
       </div>
-
-      <!-- DERECHA -->
-
       <div class="text-right">
-
-        <h2 class="text-[38px] font-black uppercase leading-none text-slate-900">
-          Reporte
-          <br>
-          de Ventas
-        </h2>
-
-        <div class="mt-4 text-gray-500 text-sm font-semibold leading-7">
-
-          <p>
-            Fecha:
-            {{ fechaActual | date:'dd/MM/yyyy' }}
-          </p>
-
-          <p>
-            Hora:
-            {{ fechaActual | date:'hh:mm a' }}
-          </p>
-
+        <h2 class="text-2xl font-black text-slate-900 leading-tight">REPORTE DE <br> VENTAS</h2>
+        <div class="mt-2 text-slate-500 text-xs font-medium uppercase tracking-tighter">
+          <p>Fecha: {{ fechaActual | date:'dd/MM/yyyy' }} | Hora: {{ fechaActual | date:'hh:mm a' }}</p>
           <p>Responsable: <span class="text-slate-700">{{ usuario }}</span></p>
-
         </div>
-
       </div>
-
     </div>
 
-    <!-- RESUMEN -->
-
-    <div class="grid grid-cols-4 gap-5 my-12">
-
-      <!-- TOTAL -->
-
-      <div class="bg-slate-50 border border-slate-200 rounded-3xl p-5 shadow-sm">
-
-        <p class="text-[11px] uppercase font-black text-slate-400">
-          Ventas
-        </p>
-
-        <h3 class="text-[16px] font-black text-slate-900 mt-5">
-          {{ ventasFiltradas.length }}
-        </h3>
-
+    <div class="mb-10 print:break-inside-avoid">
+      <h3 class="text-lg font-bold text-slate-800 mb-4">RESUMEN DE OPERACIONES</h3>
+      <div class="grid grid-cols-4 gap-3">
+        <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3 shadow-sm flex flex-col justify-between h-20 print:bg-slate-50">
+          <p class="text-[10px] font-bold text-slate-500 uppercase">Ventas Realizadas</p>
+          <h2 class="text-xl font-black text-slate-900">{{ ventasFiltradas.length }}</h2>
+        </div>
+        <div class="bg-green-50 border border-green-100 rounded-2xl p-3 shadow-sm flex flex-col justify-between h-20 print:bg-green-50">
+          <p class="text-[10px] font-bold text-green-700 uppercase">Total Ingresos</p>
+          <h2 class="text-lg font-black text-green-700 break-words leading-none">$ {{ totalGeneral | number }}</h2>
+        </div>
+        <div class="bg-blue-50 border border-blue-100 rounded-2xl p-3 shadow-sm flex flex-col justify-between h-20 print:bg-blue-50">
+          <p class="text-[10px] font-bold text-blue-700 uppercase">Venta Promedio</p>
+          <h2 class="text-lg font-black text-blue-700 break-words leading-none">$ {{ promedioVentas() | number:'1.0-0' }}</h2>
+        </div>
+        <div class="bg-[#C8AA7A]/10 border border-[#C8AA7A]/20 rounded-2xl p-3 shadow-sm flex flex-col justify-between h-20 print:bg-[#C8AA7A]/10">
+          <p class="text-[10px] font-bold text-[#8d734a] uppercase">Venta Más Alta</p>
+          <h2 class="text-lg font-black text-slate-800 break-words leading-none">$ {{ obtenerVentaAlta() | number }}</h2>
+        </div>
       </div>
-
-      <!-- INGRESOS -->
-
-      <div class="bg-green-50 border border-green-100 rounded-3xl p-5 shadow-sm">
-
-        <p class="text-[11px] uppercase font-black text-green-700">
-          Ingresos
-        </p>
-
-        <h3 class="text-[16px] font-black text-green-700 mt-5 break-words">
-          $ {{ totalGeneral | number }}
-        </h3>
-
-      </div>
-
-      <!-- PROMEDIO -->
-
-      <div class="bg-blue-50 border border-blue-100 rounded-3xl p-5 shadow-sm">
-
-        <p class="text-[11px] uppercase font-black text-blue-700">
-          Promedio
-        </p>
-
-        <h3 class="text-[16px] font-black text-blue-700 mt-5 break-words">
-          $ {{ promedioVentas() | number:'1.0-0' }}
-        </h3>
-
-      </div>
-
-      <!-- VENTA ALTA -->
-
-      <div class="bg-orange-50 border border-orange-100 rounded-3xl p-5 shadow-sm">
-
-        <p class="text-[11px] uppercase font-black text-orange-700">
-          Venta Alta
-        </p>
-
-        <h3 class="text-[16px] font-black text-orange-700 mt-5 break-words">
-          $ {{ obtenerVentaAlta() | number }}
-        </h3>
-
-      </div>
-
     </div>
 
-    <!-- TABLA -->
-
-    <div>
-
-      <!-- TITULO TABLA -->
-
-      <div class="flex justify-between items-center mb-5">
-
-        <h2 class="text-[14px] tracking-[0.35em] uppercase font-black text-slate-400">
-
-          🛒 Detalle de Ventas
-
-        </h2>
-
-        <span class="text-xs font-bold uppercase tracking-widest text-slate-400">
-
-          {{ ventasFiltradas.length }}
-
-          registros
-
-        </span>
-
+    <div class="mb-10 print:overflow-visible print:h-auto">
+      <div class="flex justify-between items-end mb-3">
+        <h3 class="text-lg font-bold text-slate-800">DETALLE DE EXISTENCIAS</h3>
+        <span class="text-xs font-bold text-slate-400 uppercase">Mostrando {{ ventasFiltradas.length }} registros</span>
       </div>
-
-      <!-- CONTENEDOR TABLA -->
-
-      <div class="overflow-x-auto rounded-[24px] border border-slate-200 shadow-sm bg-white">
-
-        <table class="w-full border-collapse">
-
-          <!-- ENCABEZADO -->
-
+      
+      <div class="overflow-hidden rounded-lg border border-slate-200 print:overflow-visible print:h-auto">
+        <table class="w-full text-sm border-collapse print:overflow-visible">
           <thead>
-
-            <tr class="bg-slate-900 text-white uppercase text-[11px] tracking-[0.18em]">
-
-              <th class="px-5 py-4 text-left">
-                ID
-              </th>
-
-              <th class="px-5 py-4 text-left">
-                Cliente
-              </th>
-
-              <th class="px-5 py-4 text-left">
-                Producto
-              </th>
-
-              <th class="px-5 py-4 text-center">
-                Cant.
-              </th>
-
-              <th class="px-5 py-4 text-right">
-                Total
-              </th>
-
+            <tr class="bg-slate-900 text-white uppercase text-[10px] tracking-wider print:bg-slate-900">
+              <th class="p-2 text-left">ID</th>
+              <th class="p-2 text-left">Cliente</th>
+              <th class="p-2 text-left">Producto</th>
+              <th class="p-2 text-center">Cant.</th>
+              <th class="p-2 text-center">Total</th>
             </tr>
-
           </thead>
-
-          <!-- CUERPO -->
-
-          <tbody>
-
-            <tr
-              *ngFor="let v of ventasFiltradas; let i = index"
-              [class.bg-slate-50]="i % 2 !== 0"
-              class="border-b border-slate-100 hover:bg-slate-100 transition-all duration-200"
-            >
-
-              <!-- ID -->
-
-              <td class="px-5 py-5 font-black text-blue-600 text-sm">
-                #{{ v.idVenta }}
-              </td>
-
-              <!-- CLIENTE -->
-
-              <td class="px-5 py-5 font-black uppercase text-slate-800">
-                {{ v.cliente }}
-              </td>
-
-              <!-- PRODUCTO -->
-
-              <td class="px-5 py-5 italic text-slate-500 font-semibold">
-                {{ v.producto }}
-              </td>
-
-              <!-- CANTIDAD -->
-
-              <td class="px-5 py-5 text-center font-bold text-slate-700">
-                {{ v.cantidad }}
-              </td>
-
-              <!-- TOTAL -->
-
-              <td class="px-5 py-5 text-right font-black text-slate-900 text-[20px]">
-                $ {{ v.total | number }}
-              </td>
-
+          <tbody class="divide-y divide-slate-100 print:overflow-visible">
+            <tr *ngFor="let v of ventasFiltradas; let idx = index" [class.bg-slate-50]="idx % 2 !== 0" class="print:break-inside-avoid print:bg-transparent" [ngClass]="{'print:bg-slate-50': idx % 2 !== 0}">
+              <td class="p-2 font-black text-blue-600 text-xs">#{{ v.idVenta }}</td>
+              <td class="p-2 font-bold text-slate-700 capitalize text-xs">{{ v.cliente }}</td>
+              <td class="p-2 text-xs text-slate-500 italic">{{ v.producto }}</td>
+              <td class="p-2 text-center font-bold text-slate-700">{{ v.cantidad }}</td>
+              <td class="p-2 text-center font-black text-slate-900">$ {{ v.total | number }}</td>
             </tr>
-
           </tbody>
-
         </table>
-
       </div>
-
     </div>
 
-    <!-- FIRMAS -->
-
-    <div class="mt-20 pt-10 border-t border-dashed border-slate-300">
-
-      <div class="flex justify-between px-10">
-
-        <!-- FIRMA ADMIN -->
-
+    <div class="mt-16 pt-10 border-t border-dashed border-slate-300 print:break-inside-avoid">
+      <div class="flex justify-around">
         <div class="text-center">
-
-          <div class="w-60 border-t-2 border-slate-900 mb-3"></div>
-
-          <h3 class="font-black uppercase text-slate-900">
-            Administrador
-          </h3>
-
-          <p class="text-xs text-slate-400 uppercase tracking-wide">
-            SCAFI · Control Integral
-          </p>
-
+          <div class="border-t border-slate-900 w-48 mb-2 mx-auto"></div>
+          <p class="text-xs font-black uppercase text-slate-900">Administrador</p>
         </div>
-
-        <!-- FIRMA PROPIETARIO -->
-
         <div class="text-center">
-
-          <div class="w-60 border-t-2 border-slate-900 mb-3"></div>
-
-          <h3 class="font-black uppercase text-slate-900">
-            Propietario
-          </h3>
-
-          <p class="text-xs text-slate-400 uppercase tracking-wide">
-            Firma Autorizada
-          </p>
-
+          <div class="border-t border-slate-900 w-48 mb-2 mx-auto"></div>
+          <p class="text-xs font-black uppercase text-slate-900">Revisado Por</p>
+          <p class="text-[10px] text-slate-400">Auditoría Interna</p>
         </div>
-
       </div>
-
-      <!-- FOOTER -->
-
-      <div class="mt-14 text-center text-[10px] uppercase tracking-[0.45em] text-slate-300 font-semibold">
-
-        SCAFI © 2026 · DOCUMENTO OFICIAL DE CONTROL INTERNO
-
+      
+      <div class="mt-12 text-center text-[9px] text-slate-400 uppercase tracking-widest hidden print:block">
+        <p>SCAFI © 2026 · Documento oficial de ventas</p>
       </div>
-
     </div>
 
   </div>
-
 </div>
-
-<!-- ====================================================== -->
-<!-- ESTILOS -->
-<!-- ====================================================== -->
-
-<style>
-
-html,
-body {
-
-  overflow-x: hidden;
-
-}
-
-thead {
-
-  display: table-header-group;
-
-}
-
-tfoot {
-
-  display: table-footer-group;
-
-}
-
-tr,
-td,
-th {
-
-  page-break-inside: avoid;
-
-}
-
-table {
-
-  width: 100%;
-
-}
-
-@page {
-
-  size: letter;
-
-  margin: 12mm;
-
-}
-
-.print-hidden {
-
-  print-color-adjust: exact;
-
-  -webkit-print-color-adjust: exact;
-
-}
-
-@media print {
-
-  body {
-
-    background: white !important;
-
-  }
-
-  .print-hidden {
-
-    display: none !important;
-
-  }
-
-  #reportePDF {
-
-    width: 100% !important;
-
-    max-width: 100% !important;
-
-    margin: 0 auto !important;
-
-    box-shadow: none !important;
-
-    border-radius: 0 !important;
-
-    overflow: visible !important;
-
-  }
-
-  table {
-
-    font-size: 11px;
-
-  }
-
-  thead {
-
-    display: table-header-group;
-
-  }
-
-}
-
-</style>
-<style>
-
-/* ========================================= */
-/* GENERAL */
-/* ========================================= */
-
-html,
-body {
-
-  overflow-x: hidden;
-
-}
-
-/* ========================================= */
-/* TABLAS */
-/* ========================================= */
-
-table {
-
-  width: 100%;
-
-  border-collapse: collapse;
-
-}
-
-thead {
-
-  display: table-header-group;
-
-}
-
-tfoot {
-
-  display: table-footer-group;
-
-}
-
-tr,
-td,
-th {
-
-  page-break-inside: avoid !important;
-
-}
-
-/* ========================================= */
-/* CONTENEDOR PDF */
-/* ========================================= */
-
-#print-area,
-.print-area,
-#reportePDF {
-
-  overflow: visible !important;
-
-}
-
-/* ========================================= */
-/* HOJA CARTA */
-/* ========================================= */
-
-@page {
-
-  size: letter;
-
-  margin: 12mm;
-
-}
-
-/* ========================================= */
-/* IMPRESIÓN */
-/* ========================================= */
-
-@media print {
-
-  html,
-  body {
-
-    width: 215.9mm;
-
-    height: auto !important;
-
-    overflow: visible !important;
-
-    background: white !important;
-
-  }
-
-  body {
-
-    margin: 0 !important;
-
-    padding: 0 !important;
-
-  }
-
-  /* OCULTAR BOTONES */
-
-  .print\:hidden {
-
-    display: none !important;
-
-  }
-
-  /* REPORTE */
-
-  .print-area,
-  #reportePDF {
-
-    width: 100% !important;
-
-    max-width: 100% !important;
-
-    min-height: auto !important;
-
-    height: auto !important;
-
-    overflow: visible !important;
-
-    box-shadow: none !important;
-
-    border: none !important;
-
-    border-radius: 0 !important;
-
-    margin: 0 auto !important;
-
-    padding: 10mm !important;
-
-    background: white !important;
-
-  }
-
-  /* EVITAR CORTES FEOS */
-
-  .avoid-break {
-
-    page-break-inside: avoid !important;
-
-  }
-
-  /* TABLAS */
-
-  table {
-
-    width: 100% !important;
-
-    font-size: 11px;
-
-  }
-
-  thead {
-
-    display: table-header-group;
-
-  }
-
-  tfoot {
-
-    display: table-footer-group;
-
-  }
-
-  tr {
-
-    page-break-inside: avoid !important;
-
-  }
-
-  /* COLORES */
-
-  * {
-
-    -webkit-print-color-adjust: exact !important;
-
-    print-color-adjust: exact !important;
-
-  }
-
-}
-
-</style>
