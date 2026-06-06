@@ -64,10 +64,7 @@ WHERE correo='$correo'
 
 mysqli_query($conexion, $update);
 
-$link = "
-http://localhost:4200/recuperar-password?token=$token
-";
-
+$link = "http://localhost:4200/recuperar-password?token=$token";
 $mail = new PHPMailer(true);
 
 try {

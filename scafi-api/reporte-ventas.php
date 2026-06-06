@@ -5,11 +5,11 @@ header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json");
 
 $conn = new mysqli(
-    "localhost",
+    "127.0.0.1",
     "root",
     "",
     "scafi",
-    3306
+    3307
 );
 
 if ($conn->connect_error) {

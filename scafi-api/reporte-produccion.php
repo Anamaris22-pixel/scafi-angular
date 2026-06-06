@@ -17,13 +17,11 @@ header(
 // =========================
 
 $conn = new mysqli(
-
-    "localhost",
+    "127.0.0.1",
     "root",
     "",
     "scafi",
-    3306
-
+    3307
 );
 
 // UTF8
