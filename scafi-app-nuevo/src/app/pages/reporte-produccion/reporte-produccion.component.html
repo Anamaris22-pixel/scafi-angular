@@ -1,16 +1,18 @@
-<div class="min-h-screen bg-slate-100 p-6 print:p-0" style="background-image: url('assets/cafe.jpg'); background-attachment: fixed;">
+<div class="min-h-screen bg-slate-100 p-6"
+     style="background-image: url('assets/cafe.jpg'); background-attachment: fixed;">
 
-  <!-- BOTONES DE ACCIÓN (Ocultos en impresión) -->
-  <div class="flex gap-3 mb-6 justify-center print:hidden">
-    <button (click)="imprimir()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-xl shadow-lg font-semibold transition flex items-center gap-2">
-      🖨 Imprimir
-    </button>
-    <button (click)="exportarPDF()" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-xl shadow-lg font-semibold transition flex items-center gap-2">
+  <div class="flex gap-3 mb-6 justify-center mt-4">
+
+    <button
+      (click)="exportarPDF()"
+      class="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-xl shadow-lg font-semibold transition flex items-center gap-2">
       📄 Exportar PDF
     </button>
+
     <button routerLink="/dashboard" class="bg-slate-900 hover:bg-slate-800 text-white px-5 py-2 rounded-xl shadow-lg font-semibold transition">
       ← Dashboard
     </button>
+
   </div>
   <!-- FILTRO -->
 
@@ -214,27 +216,18 @@
     </div>
 
     <!-- FOOTER / FIRMAS -->
-    <div class="mt-16 pt-10 border-t border-dashed border-gray-300">
+    <div class="mt-16 pt-10 border-t border-dashed border-slate-300 print:break-inside-avoid">
       <div class="flex justify-around">
         <div class="text-center">
           <div class="border-t border-slate-900 w-48 mb-2 mx-auto"></div>
-          <p class="text-xs font-black uppercase">Administrador</p>
-          <p class="text-[10px] text-gray-400">SCAFI - Control Integral</p>
-        </div>
+          <p class="text-xs font-black uppercase text-slate-900">Administrador</p>
+           </div>
         <div class="text-center">
           <div class="border-t border-slate-900 w-48 mb-2 mx-auto"></div>
-          <p class="text-xs font-black uppercase">Propietario</p>
-          <p class="text-[10px] text-gray-400">Firma Autorizada</p>
+          <p class="text-xs font-black uppercase text-slate-900">Revisado Por</p>
+          <p class="text-[10px] text-slate-400">Auditoría Interna</p>
         </div>
       </div>
-      
-      <div class="mt-12 text-center text-[10px] text-gray-400 uppercase tracking-widest">
-        <p>SCAFI © 2026 · Documento oficial de control interno</p>
-      </div>
-    </div>
-
-  </div>
-</div>
 
 <style>
 @media print {

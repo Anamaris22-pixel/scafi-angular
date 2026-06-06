@@ -261,8 +261,50 @@ currentY += kpiH + 12;
         4: { halign: 'right', fontStyle: 'bold' }
       }
     });
+   const finalY = (pdf as any).lastAutoTable.finalY + 15;
 
-    agregarPieDePagina();
-    pdf.save('Reporte_Ventas_SCAFI.pdf');
+// FIRMAS
+
+pdf.line(
+  margenX + 10,
+  finalY,
+  margenX + 60,
+  finalY
+);
+
+pdf.line(
+  pdfWidth - 75,
+  finalY,
+  pdfWidth - 20,
+  finalY
+);
+
+pdf.setFontSize(10);
+pdf.setFont('helvetica', 'bold');
+
+pdf.text(
+  'ADMINISTRADOR',
+  margenX + 22,
+  finalY + 7
+);
+
+pdf.text(
+  'REVISADO POR',
+  pdfWidth - 60,
+  finalY + 7
+);
+
+pdf.setFont(
+  'helvetica',
+  'normal'
+);
+
+pdf.text(
+  'Auditoría Interna',
+  pdfWidth - 55,
+  finalY + 13
+);
+agregarPieDePagina();
+pdf.save('Reporte_Ventas_SCAFI.pdf');
   }
 }
