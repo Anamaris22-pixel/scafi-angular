@@ -9,7 +9,16 @@
   <!-- ========================= -->
 
   <aside class="w-64 bg-[#081120] border-r border-white/5 flex flex-col">
+    <div class="mb-6">
 
+    <button
+        routerLink="/dashboard"
+        class="flex items-center gap-2 bg-[#0E1A33] hover:bg-[#16264a] text-white px-5 py-3 rounded-xl border border-white/10 transition"
+    >
+        ← Dashboard
+    </button>
+
+</div>
     <!-- LOGO -->
     <div class="px-6 py-7 border-b border-white/5">
 
@@ -45,28 +54,20 @@
       </button>
 
       <button
-        class="w-full flex items-center gap-3 bg-white/5 hover:bg-white/10 transition px-5 py-3 rounded-2xl text-left"
-      >
-        🔐 Seguridad
-      </button>
+  routerLink="/seguridad"
+  class="w-full flex items-center gap-3 bg-white/5 hover:bg-white/10 transition px-5 py-3 rounded-2xl text-left"
+>
+  🔐 Seguridad
+</button>
 
       <button
         class="w-full flex items-center gap-3 bg-white/5 hover:bg-white/10 transition px-5 py-3 rounded-2xl text-left"
       >
-        🎨 Apariencia
+        🎧 Soporte
       </button>
 
-      <button
-        class="w-full flex items-center gap-3 bg-white/5 hover:bg-white/10 transition px-5 py-3 rounded-2xl text-left"
-      >
-        🔔 Notificaciones
-      </button>
-
-      <button
-        class="w-full flex items-center gap-3 bg-white/5 hover:bg-white/10 transition px-5 py-3 rounded-2xl text-left"
-      >
-        💾 Respaldos
-      </button>
+      
+      
 
     </div>
 

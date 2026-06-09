@@ -12,419 +12,440 @@ from './core/guards/auth.guard';
 
 export const routes: Routes = [
 
-  // =========================
-  // LOGIN
-  // =========================
-  {
-    path: 'login',
+// =========================
+// LOGIN
+// =========================
+{
+  path: 'login',
 
-    loadComponent: () =>
-      import('./pages/login/login.component')
-        .then(m => m.LoginComponent)
-  },
-
-  // =========================
-  // RECUPERAR PASSWORD
-  // =========================
-  {
-  path: 'recuperar-password',
   loadComponent: () =>
-    import('./pages/recuperar-password/recuperar-password.component')
-    .then(m => m.RecuperarPasswordComponent)
+    import('./pages/login/login.component')
+      .then(m => m.LoginComponent)
 },
 
-  // =========================
-  // APP PROTEGIDA
-  // =========================
-  {
-    path: '',
+// =========================
+// RECUPERAR PASSWORD
+// =========================
+{
+path: 'recuperar-password',
+loadComponent: () =>
+  import('./pages/recuperar-password/recuperar-password.component')
+  .then(m => m.RecuperarPasswordComponent)
+},
 
-    component: LayoutComponent,
+// =========================
+// APP PROTEGIDA
+// =========================
+{
+  path: '',
 
-    canActivate: [
-      authGuard
-    ],
+  component: LayoutComponent,
 
-    children: [
+  canActivate: [
+    authGuard
+  ],
 
-      // =========================
-      // DASHBOARD
-      // =========================
-      {
-        path: 'dashboard',
+  children: [
 
-        loadComponent: () =>
-          import('./pages/dashboard/dashboard.component')
-            .then(m => m.DashboardComponent)
-      },
+    // =========================
+    // DASHBOARD
+    // =========================
+    {
+      path: 'dashboard',
 
-      // =========================
-      // RECOLECTORES
-      // =========================
-      {
-        path: 'recolectores',
+      loadComponent: () =>
+        import('./pages/dashboard/dashboard.component')
+          .then(m => m.DashboardComponent)
+    },
 
-        loadComponent: () =>
-          import('./pages/recolectores/recolectores.component')
-            .then(m => m.RecolectoresComponent),
+    // =========================
+    // RECOLECTORES
+    // =========================
+    {
+      path: 'recolectores',
 
-        canActivate: [
-          roleGuard
-        ],
+      loadComponent: () =>
+        import('./pages/recolectores/recolectores.component')
+          .then(m => m.RecolectoresComponent),
 
-        data: {
-          roles: [
-            'Propietario',
-            'Administrador'
-          ]
-        }
-      },
+      canActivate: [
+        roleGuard
+      ],
 
-      // =========================
-      // CULTIVOS
-      // =========================
-      {
-        path: 'cultivos',
+      data: {
+        roles: [
+          'Propietario',
+          'Administrador'
+        ]
+      }
+    },
 
-        loadComponent: () =>
-          import('./pages/cultivos/cultivos.component')
-            .then(m => m.CultivosComponent),
+    // =========================
+    // CULTIVOS
+    // =========================
+    {
+      path: 'cultivos',
 
-        canActivate: [
-          roleGuard
-        ],
+      loadComponent: () =>
+        import('./pages/cultivos/cultivos.component')
+          .then(m => m.CultivosComponent),
 
-        data: {
-          roles: [
-            'Propietario',
-            'Administrador'
-          ]
-        }
-      },
+      canActivate: [
+        roleGuard
+      ],
 
-      // =========================
-      // LOTES
-      // =========================
-      {
-        path: 'lotes',
+      data: {
+        roles: [
+          'Propietario',
+          'Administrador'
+        ]
+      }
+    },
 
-        loadComponent: () =>
-          import('./pages/lotes/lotes.component')
-            .then(m => m.LotesComponent),
+    // =========================
+    // LOTES
+    // =========================
+    {
+      path: 'lotes',
 
-        canActivate: [
-          roleGuard
-        ],
+      loadComponent: () =>
+        import('./pages/lotes/lotes.component')
+          .then(m => m.LotesComponent),
 
-        data: {
-          roles: [
-            'Propietario',
-            'Administrador'
-          ]
-        }
-      },
+      canActivate: [
+        roleGuard
+      ],
 
-      // =========================
-      // RECOLECCION
-      // =========================
-      {
-        path: 'recoleccion',
+      data: {
+        roles: [
+          'Propietario',
+          'Administrador'
+        ]
+      }
+    },
 
-        loadComponent: () =>
-          import('./pages/recoleccion/recoleccion.component')
-            .then(m => m.RecoleccionComponent),
+    // =========================
+    // RECOLECCION
+    // =========================
+    {
+      path: 'recoleccion',
 
-        canActivate: [
-          roleGuard
-        ],
+      loadComponent: () =>
+        import('./pages/recoleccion/recoleccion.component')
+          .then(m => m.RecoleccionComponent),
 
-        data: {
-          roles: [
-            'Propietario',
-            'Administrador',
-            'Recolector'
-          ]
-        }
-      },
+      canActivate: [
+        roleGuard
+      ],
 
-      // =========================
-      // INSUMOS
-      // =========================
-      {
-        path: 'insumos',
+      data: {
+        roles: [
+          'Propietario',
+          'Administrador',
+          'Recolector'
+        ]
+      }
+    },
 
-        loadComponent: () =>
-          import('./pages/insumos/insumos.component')
-            .then(m => m.InsumosComponent),
+    // =========================
+    // INSUMOS
+    // =========================
+    {
+      path: 'insumos',
 
-        canActivate: [
-          roleGuard
-        ],
+      loadComponent: () =>
+        import('./pages/insumos/insumos.component')
+          .then(m => m.InsumosComponent),
 
-        data: {
-          roles: [
-            'Propietario',
-            'Administrador'
-          ]
-        }
-      },
+      canActivate: [
+        roleGuard
+      ],
 
-      // =========================
-      // PROVEEDORES
-      // =========================
-      {
-        path: 'proveedores',
+      data: {
+        roles: [
+          'Propietario',
+          'Administrador'
+        ]
+      }
+    },
 
-        loadComponent: () =>
-          import('./pages/proveedores/proveedores.component')
-            .then(m => m.ProveedoresComponent),
+    // =========================
+    // PROVEEDORES
+    // =========================
+    {
+      path: 'proveedores',
 
-        canActivate: [
-          roleGuard
-        ],
+      loadComponent: () =>
+        import('./pages/proveedores/proveedores.component')
+          .then(m => m.ProveedoresComponent),
 
-        data: {
-          roles: [
-            'Propietario',
-            'Administrador'
-          ]
-        }
-      },
+      canActivate: [
+        roleGuard
+      ],
 
-      // =========================
-      // MOVIMIENTOS
-      // =========================
-      {
-        path: 'movimientos',
+      data: {
+        roles: [
+          'Propietario',
+          'Administrador'
+        ]
+      }
+    },
 
-        loadComponent: () =>
-          import('./pages/movimientos/movimientos.component')
-            .then(m => m.MovimientosComponent),
+    // =========================
+    // MOVIMIENTOS
+    // =========================
+    {
+      path: 'movimientos',
 
-        canActivate: [
-          roleGuard
-        ],
+      loadComponent: () =>
+        import('./pages/movimientos/movimientos.component')
+          .then(m => m.MovimientosComponent),
 
-        data: {
-          roles: [
-            'Propietario',
-            'Administrador'
-          ]
-        }
-      },
+      canActivate: [
+        roleGuard
+      ],
 
-      // =========================
-      // VENTAS
-      // =========================
-      {
-        path: 'ventas',
+      data: {
+        roles: [
+          'Propietario',
+          'Administrador'
+        ]
+      }
+    },
 
-        loadComponent: () =>
-          import('./pages/ventas/ventas.component')
-            .then(m => m.VentasComponent),
+    // =========================
+    // VENTAS
+    // =========================
+    {
+      path: 'ventas',
 
-        canActivate: [
-          roleGuard
-        ],
+      loadComponent: () =>
+        import('./pages/ventas/ventas.component')
+          .then(m => m.VentasComponent),
 
-        data: {
-          roles: [
-            'Propietario',
-            'Administrador'
-          ]
-        }
-      },
+      canActivate: [
+        roleGuard
+      ],
 
-      // =========================
-      // CLIENTES
-      // =========================
-      {
-        path: 'clientes',
+      data: {
+        roles: [
+          'Propietario',
+          'Administrador'
+        ]
+      }
+    },
 
-        loadComponent: () =>
-          import('./pages/clientes/clientes.component')
-            .then(m => m.ClientesComponent),
+    // =========================
+    // CLIENTES
+    // =========================
+    {
+      path: 'clientes',
 
-        canActivate: [
-          roleGuard
-        ],
+      loadComponent: () =>
+        import('./pages/clientes/clientes.component')
+          .then(m => m.ClientesComponent),
 
-        data: {
-          roles: [
-            'Propietario',
-            'Administrador'
-          ]
-        }
-      },
+      canActivate: [
+        roleGuard
+      ],
 
-      // =========================
-      // MENSAJES
-      // =========================
-      {
-        path: 'mensajes',
+      data: {
+        roles: [
+          'Propietario',
+          'Administrador'
+        ]
+      }
+    },
 
-        loadComponent: () =>
-          import('./pages/mensajes/mensajes.component')
-            .then(m => m.MensajesComponent),
+    // =========================
+    // MENSAJES
+    // =========================
+    {
+      path: 'mensajes',
 
-        canActivate: [
-          roleGuard
-        ],
+      loadComponent: () =>
+        import('./pages/mensajes/mensajes.component')
+          .then(m => m.MensajesComponent),
 
-        data: {
-          roles: [
-            'Propietario',
-            'Administrador',
-            'Recolector'
-          ]
-        }
-      },
+      canActivate: [
+        roleGuard
+      ],
 
-      // =========================
-      // NOTIFICACIONES
-      // =========================
-      {
-        path: 'notificaciones',
+      data: {
+        roles: [
+          'Propietario',
+          'Administrador',
+          'Recolector'
+        ]
+      }
+    },
 
-        loadComponent: () =>
-          import('./pages/notificaciones/notificaciones.component')
-            .then(m => m.NotificacionesComponent)
-      },
+    // =========================
+    // NOTIFICACIONES
+    // =========================
+    {
+      path: 'notificaciones',
 
-      // =========================
-      // USUARIOS
-      // =========================
-      {
-        path: 'usuarios',
+      loadComponent: () =>
+        import('./pages/notificaciones/notificaciones.component')
+          .then(m => m.NotificacionesComponent)
+    },
 
-        loadComponent: () =>
-          import('./pages/usuarios/usuarios.component')
-            .then(m => m.UsuariosComponent),
+    // =========================
+    // USUARIOS
+    // =========================
+    {
+      path: 'usuarios',
 
-        canActivate: [
-          roleGuard
-        ],
+      loadComponent: () =>
+        import('./pages/usuarios/usuarios.component')
+          .then(m => m.UsuariosComponent),
 
-        data: {
-          roles: [
-            'Propietario'
-          ]
-        }
-      },
-            // =========================
+      canActivate: [
+        roleGuard
+      ],
+
+      data: {
+        roles: [
+          'Propietario'
+        ]
+      }
+    },
+          // =========================
 // REPORTES
 // =========================
 
 {
-  path: 'reporte-ventas',
+path: 'reporte-ventas',
 
-  loadComponent: () =>
-    import('./pages/reporte-ventas/reporte-ventas.component')
-      .then(m => m.ReporteVentasComponent),
+loadComponent: () =>
+  import('./pages/reporte-ventas/reporte-ventas.component')
+    .then(m => m.ReporteVentasComponent),
 
-  canActivate: [
-    roleGuard
-  ],
+canActivate: [
+  roleGuard
+],
 
-  data: {
-    roles: [
-      'Propietario',
-      'Administrador'
-    ]
-  }
+data: {
+  roles: [
+    'Propietario',
+    'Administrador'
+  ]
+}
 },
 
 {
-  path: 'reporte-inventario',
+path: 'reporte-inventario',
 
-  loadComponent: () =>
-    import('./pages/reporte-inventario/reporte-inventario.component')
-      .then(m => m.ReporteInventarioComponent),
+loadComponent: () =>
+  import('./pages/reporte-inventario/reporte-inventario.component')
+    .then(m => m.ReporteInventarioComponent),
 
-  canActivate: [
-    roleGuard
-  ],
+canActivate: [
+  roleGuard
+],
 
-  data: {
-    roles: [
-      'Propietario',
-      'Administrador'
-    ]
-  }
+data: {
+  roles: [
+    'Propietario',
+    'Administrador'
+  ]
+}
 },
 
 {
-  path: 'reporte-produccion',
+path: 'reporte-produccion',
 
-  loadComponent: () =>
-    import('./pages/reporte-produccion/reporte-produccion.component')
-      .then(m => m.ReporteProduccionComponent),
+loadComponent: () =>
+  import('./pages/reporte-produccion/reporte-produccion.component')
+    .then(m => m.ReporteProduccionComponent),
 
-  canActivate: [
-    roleGuard
-  ],
+canActivate: [
+  roleGuard
+],
 
-  data: {
-    roles: [
-      'Propietario',
-      'Administrador'
-    ]
-  }
+data: {
+  roles: [
+    'Propietario',
+    'Administrador'
+  ]
+}
 },
-      // =========================
-      // CONFIGURACION
-      // =========================
-      {
-        path: 'configuracion',
+    // =========================
+    // CONFIGURACION
+    // =========================
+    {
+      path: 'configuracion',
 
-        loadComponent: () =>
-          import('./pages/configuracion/configuracion.component')
-            .then(m => m.ConfiguracionComponent),
+      loadComponent: () =>
+        import('./pages/configuracion/configuracion.component')
+          .then(m => m.ConfiguracionComponent),
 
-        canActivate: [
-          roleGuard
-        ],
+      canActivate: [
+        roleGuard
+      ],
 
-        data: {
-          roles: [
-            'Propietario',
-            
-          ]
-        }
-      },
-
-      // =========================
-      // SOPORTE
-      // =========================
-      {
-        path: 'soporte',
-
-        loadComponent: () =>
-          import('./pages/soporte/soporte.component')
-            .then(m => m.SoporteComponent)
-      },
-
-      // =========================
-      // REDIRECCION INTERNA
-      // =========================
-      {
-        path: '',
-
-        redirectTo: 'dashboard',
-
-        pathMatch: 'full'
+      data: {
+        roles: [
+          'Propietario',
+          
+        ]
       }
+    },
 
+// =========================
+// SEGURIDAD
+// =========================
+
+{
+  path: 'seguridad',
+
+  loadComponent: () =>
+    import('./pages/configuracion/seguridad/seguridad')
+      .then(m => m.SeguridadComponent),
+
+  canActivate: [
+    roleGuard
+  ],
+
+  data: {
+    roles: [
+      'Propietario'
     ]
-  },
-
-  // =========================
-  // RUTA NO ENCONTRADA
-  // =========================
-  {
-    path: '**',
-
-    redirectTo: 'login'
   }
+},
+    // =========================
+    // SOPORTE
+    // =========================
+    {
+      path: 'soporte',
+
+      loadComponent: () =>
+        import('./pages/soporte/soporte.component')
+          .then(m => m.SoporteComponent)
+    },
+
+    // =========================
+    // REDIRECCION INTERNA
+    // =========================
+    {
+      path: '',
+
+      redirectTo: 'dashboard',
+
+      pathMatch: 'full'
+    }
+
+  ]
+},
+
+// =========================
+// RUTA NO ENCONTRADA
+// =========================
+{
+  path: '**',
+
+  redirectTo: 'login'
+}
 
 ];
