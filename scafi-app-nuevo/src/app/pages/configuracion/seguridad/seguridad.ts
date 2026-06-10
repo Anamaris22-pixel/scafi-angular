@@ -18,7 +18,7 @@ export class SeguridadComponent {
 
   configuracion = {
     expiracionToken: 60,
-    longitudPassword: 8,
+    longitudPassword: 5,
     intentosMaximos: 5,
     dobleAutenticacion: false,
     sesionesActivas: 3

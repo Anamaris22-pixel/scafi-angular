@@ -113,48 +113,28 @@
       class="max-h-[400px] overflow-y-auto"
     >
 
-      <div
+      <div *ngFor="let n of notificaciones"
+     class="p-4 border-b hover:bg-gray-100 transition">
 
-        *ngFor="let n of notificaciones"
+  <div class="font-bold text-red-500">
+    {{ n.titulo }}
+  </div>
 
-        class="p-4
-               border-b
-               border-white/5
-               hover:bg-white/5
-               transition"
+  <div class="text-sm text-gray-700 mt-1">
+    {{ n.mensaje }}
+  </div>
 
-      >
+  <div class="text-xs text-gray-400 mt-2">
+    {{ n.fecha }}
+  </div>
 
-        <div
-          class="text-white
-                 font-semibold"
-        >
+  <div
+    *ngIf="n.nombre_remitente"
+    class="text-xs text-blue-600 mt-1 font-semibold">
+    Enviado por: {{ n.nombre_remitente }}
+  </div>
 
-          {{ n.titulo }}
-
-        </div>
-
-        <div
-          class="text-gray-300
-                 text-sm
-                 mt-1"
-        >
-
-          {{ n.mensaje }}
-
-        </div>
-
-        <div
-          class="text-xs
-                 text-gray-500
-                 mt-2"
-        >
-
-          {{ n.fecha }}
-
-        </div>
-
-      </div>
+</div>
 
     </div>
 

@@ -239,7 +239,7 @@ implements OnInit, AfterViewInit {
 
         this.cargando = false;
 
-        this.cdr.detectChanges();
+        //this.cdr.detectChanges();//
 
       },
 

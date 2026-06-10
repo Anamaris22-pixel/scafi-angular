@@ -130,10 +130,7 @@ implements OnInit, OnDestroy {
 
         next: (res: any) => {
 
-  console.log(
-    'PERMISOS =>',
-    res
-  );
+  console.log('PERMISOS =>', res);
 
   if (res.ok) {
 
@@ -148,8 +145,7 @@ implements OnInit, OnDestroy {
 
   });
 
-},
-        error: (err) => {
+},        error: (err) => {
 
           console.log(
             'ERROR PERMISOS =>',
