@@ -36,5 +36,27 @@ export class NotificacionesService {
     );
 
   }
+  // =========================
+  // MARCAR LEIDA
+  // =========================
+
+  marcarLeida(id: number) {
+
+    const formData = new FormData();
+
+    formData.append(
+      'id',
+      id.toString()
+    );
+
+    return this.http.post(
+
+      'http://localhost/scafi-angular/scafi-api/marcar_notificacion.php',
+
+      formData
+
+    );
+
+  }
 
 }

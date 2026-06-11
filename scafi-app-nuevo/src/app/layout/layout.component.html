@@ -38,28 +38,62 @@
           <div *ngFor="let n of notificaciones"
      class="p-4 border-b hover:bg-gray-100 transition">
 
-  <div class="font-bold text-red-500">
-    {{ n.titulo }}
-  </div>
+  <div class="flex justify-between items-start">
 
-  <div class="text-sm text-gray-700 mt-1">
-    {{ n.mensaje }}
-  </div>
+    <div>
 
-  <div class="text-xs text-gray-400 mt-2">
-    {{ n.fecha }}
-  </div>
+      <div class="font-bold text-red-500">
+        {{ n.titulo }}
+      </div>
 
-  <div *ngIf="n.nombre_remitente"
-       class="text-xs text-blue-500 mt-1">
-    Enviado por: {{ n.nombre_remitente }}
+      <div class="text-sm text-gray-700 mt-1">
+        {{ n.mensaje }}
+      </div>
+
+      <div class="text-xs text-gray-400 mt-2">
+        {{ n.fecha }}
+      </div>
+
+      <div
+        *ngIf="n.nombre_remitente"
+        class="text-xs text-blue-600 mt-1 font-semibold">
+
+        Enviado por: {{ n.nombre_remitente }}
+
+      </div>
+
+    </div>
+
+    <button
+      (click)="marcarLeida(n.id)"
+      class="text-green-600 text-lg hover:text-green-800">
+
+      ✔
+
+    </button>
+
   </div>
 
 </div>
+
+<!-- VER TODO SOLO UNA VEZ -->
+<div
+  class="p-3 text-center border-t bg-gray-50">
+
+  <a
+    routerLink="/notificaciones"
+    class="text-green-600 font-semibold hover:underline">
+
+    Ver todo
+
+  </a>
+
+</div>
+
           <div *ngIf="notificaciones.length === 0" class="p-6 text-center text-gray-500">Sin notificaciones</div>
         </div>
       </div>
-
+      
       <!-- MENSAJES -->
       <button *ngIf="user?.idRol == 1 || user?.idRol == 2 || user?.idRol == 3"
         routerLink="/mensajes"

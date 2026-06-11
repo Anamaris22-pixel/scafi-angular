@@ -145,7 +145,7 @@ implements OnInit, OnDestroy {
 
   });
 
-},        error: (err) => {
+},        error: (err: any) => {
 
           console.log(
             'ERROR PERMISOS =>',
@@ -189,7 +189,27 @@ implements OnInit, OnDestroy {
     }
 
   }
+  marcarLeida(id: number) {
 
+  this.notiService
+    .marcarLeida(id)
+    .subscribe({
+
+      next: () => {
+
+        this.cargarNotificaciones();
+
+      },
+
+      error: (err: any) => {
+
+        console.log(err);
+
+      }
+
+    });
+
+}
   // ======================
   // ROL
   // ======================
@@ -309,7 +329,7 @@ implements OnInit, OnDestroy {
 
         },
 
-        error: (err) => {
+        error: (err: any) => {
 
           console.log(
             'ERROR NOTI =>',
