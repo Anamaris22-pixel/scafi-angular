@@ -39,7 +39,6 @@ if (isset($_FILES['archivo'])) {
         pathinfo($nombre, PATHINFO_EXTENSION)
     );
 
-    // TIPO
     if (
         $extension == 'jpg' ||
         $extension == 'jpeg' ||
@@ -50,7 +49,7 @@ if (isset($_FILES['archivo'])) {
 
         $tipo = 'imagen';
 
-    } else if ($extension == 'pdf') {
+    } elseif ($extension == 'pdf') {
 
         $tipo = 'pdf';
 
@@ -59,38 +58,61 @@ if (isset($_FILES['archivo'])) {
         $tipo = 'archivo';
 
     }
-
 }
 
 // =========================
-// INSERTAR MENSAJE
+// GUARDAR MENSAJE
 // =========================
 
-$sql = "
+$sqlMensaje = "
 
-INSERT INTO mensajes (
-
+INSERT INTO mensajes
+(
     remitente_id,
     receptor_id,
     mensaje,
     archivo,
     tipo
-
 )
 
-VALUES (
-
+VALUES
+(
     '$remitente_id',
     '$receptor_id',
     '$mensaje',
     " . ($archivo ? "'$archivo'" : "NULL") . ",
     '$tipo'
-
 )
 
 ";
 
-if ($conexion->query($sql)) {
+if ($conexion->query($sqlMensaje)) {
+
+    // =========================
+    // CREAR NOTIFICACIÓN
+    // =========================
+
+    $sqlNotificacion = "
+
+    INSERT INTO notificaciones
+    (
+        usuario_id,
+        titulo,
+        mensaje,
+        enviado_por
+    )
+
+    VALUES
+    (
+        '$receptor_id',
+        'Nuevo mensaje',
+        'Has recibido un mensaje nuevo',
+        '$remitente_id'
+    )
+
+    ";
+
+    $conexion->query($sqlNotificacion);
 
     echo json_encode([
         "ok" => true
@@ -104,3 +126,5 @@ if ($conexion->query($sql)) {
     ]);
 
 }
+
+?>
