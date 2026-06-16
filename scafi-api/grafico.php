@@ -1,5 +1,5 @@
 <?php
-$conn = new mysqli("localhost", "root", "", "scafi", 3306);
+$conn = new mysqli("localhost", "root", "", "scafi", 3307);
 
 $sql = "SELECT p.tipoProducto, SUM(dv.cantidad) as total 
         FROM DetalleVenta dv
@@ -11,7 +11,7 @@ $result = $conn->query($sql);
 $productos = [];
 $totales = [];
 
-while($row = $result->fetch_assoc()){
+while ($row = $result->fetch_assoc()) {
     $productos[] = $row['tipoProducto'];
     $totales[] = $row['total'];
 }
@@ -19,30 +19,33 @@ while($row = $result->fetch_assoc()){
 
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Reporte de Ventas</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
 
-<h2>Ventas por Tipo de Café ☕</h2>
+    <h2>Ventas por Tipo de Café ☕</h2>
 
-<canvas id="grafico"></canvas>
+    <canvas id="grafico"></canvas>
 
-<script>
-const ctx = document.getElementById('grafico');
+    <script>
+        const ctx = document.getElementById('grafico');
 
-new Chart(ctx, {
-    type: 'bar',
-    data: {
-        labels: <?php echo json_encode($productos); ?>,
-        datasets: [{
-            label: 'Cantidad Vendida',
-            data: <?php echo json_encode($totales); ?>,
-        }]
-    }
-});
-</script>
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: <?php echo json_encode($productos); ?>,
+                datasets: [{
+                    label: 'Cantidad Vendida',
+                    data: <?php echo json_encode($totales); ?>,
+                }]
+            }
+        });
+    </script>
 
 </body>
+
 </html>

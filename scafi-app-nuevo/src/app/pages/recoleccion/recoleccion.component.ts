@@ -1,429 +1,205 @@
-import {
-  Component,
-  OnInit
+import { 
+  Component, 
+  OnInit, 
+  ChangeDetectionStrategy, 
+  inject, 
+  signal, 
+  computed 
 } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 
-import {
-  HttpClient,
-  HttpClientModule
-} from '@angular/common/http';
+// 1. Interfaces estrictas
+export interface Recoleccion {
+  idRecoleccion: number;
+  idRecolector: string | number;
+  recolector?: string;
+  variedad: string;
+  estado: string;
+  fecha: string;
+  kg: string | number;
+}
 
-import {
-  CommonModule
-} from '@angular/common';
+export interface Recolector {
+  idRecolector: string | number;
+  nombre: string;
+}
 
-import {
-  FormsModule
-} from '@angular/forms';
+export interface PesajePayload {
+  idRecolector: string;
+  variedad: string;
+  estado: string;
+  fecha: string;
+  kg: string;
+}
 
-import {
-  RouterModule
-} from '@angular/router';
+export interface User {
+  idRol: number;
+  [key: string]: unknown;
+}
+
+const FORMULARIO_VACIO: PesajePayload = { 
+  idRecolector: '', variedad: '', estado: '', fecha: '', kg: '' 
+};
 
 @Component({
   selector: 'app-recoleccion',
-
-  standalone: true,
-
-  imports: [
-    CommonModule,
-    FormsModule,
-    HttpClientModule,
-    RouterModule
-  ],
-
-  templateUrl: './recoleccion.component.html'
+  imports: [CommonModule, FormsModule, RouterModule],
+  templateUrl: './recoleccion.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
+export class RecoleccionComponent implements OnInit {
+  
+  // 2. Inyección moderna
+  private readonly http = inject(HttpClient);
+  
+  private readonly api = 'http://localhost/scafi-angular/scafi-api/recoleccion.php';
+  private readonly apiRecolectores = 'http://localhost/scafi-angular/scafi-api/recolectores.php';
 
-export class RecoleccionComponent
-implements OnInit {
+  // 3. Estados con Signals
+  readonly recolecciones = signal<Recoleccion[]>([]);
+  readonly recolectores = signal<Recolector[]>([]);
+  readonly buscar = signal<string>('');
+  readonly mostrarFormulario = signal<boolean>(false);
+  readonly editando = signal<boolean>(false);
+  readonly idEditar = signal<number>(0);
+  readonly user = signal<User | null>(null);
 
-  api =
-    'http://localhost/scafi-angular/scafi-api/recoleccion.php';
+  // Agrupamos los campos del formulario en un solo Signal
+  readonly formulario = signal<PesajePayload>({ ...FORMULARIO_VACIO });
 
-  apiRecolectores =
-    'http://localhost/scafi-angular/scafi-api/recolectores.php';
+  // 4. Estados Computados (Sustituyen a las funciones en el HTML)
+  readonly recoleccionesFiltradas = computed(() => {
+    const termino = this.buscar().toLowerCase().trim();
+    const lista = this.recolecciones();
+    
+    if (!termino) return lista;
 
-  recolecciones: any[] = [];
+    return lista.filter(r => {
+      const recolector = (r.recolector || '').toLowerCase();
+      const variedad = (r.variedad || '').toLowerCase();
+      return recolector.includes(termino) || variedad.includes(termino);
+    });
+  });
 
-  recolectores: any[] = [];
-
-  buscar = '';
-
-  mostrarFormulario = false;
-
-  idRecolector = '';
-
-  variedad = '';
-
-  estado = '';
-
-  fecha = '';
-
-  kg = '';
-
-  editando = false;
-
-  idEditar = 0;
-
-  user: any = null;
-
-  constructor(
-    private http: HttpClient
-  ) {}
+  readonly totalKg = computed(() => {
+    return this.recolecciones().reduce((total, r) => total + Number(r.kg || 0), 0);
+  });
 
   ngOnInit(): void {
-
-    const data =
-      localStorage.getItem('user');
-
+    const data = localStorage.getItem('user');
     if (data) {
-
-      this.user =
-        JSON.parse(data);
-
+      this.user.set(JSON.parse(data));
     }
-
     this.cargar();
-
     this.cargarRecolectores();
-
   }
 
   // ======================
   // CARGAR
   // ======================
-
   cargar(): void {
-
-    this.http
-      .get<any[]>(this.api)
-      .subscribe({
-
-        next: (res) => {
-
-          this.recolecciones =
-            res || [];
-
-        },
-
-        error: (err) => {
-
-          console.error(
-            'Error al cargar:',
-            err
-          );
-
-        }
-
-      });
-
+    this.http.get<Recoleccion[]>(this.api).subscribe({
+      next: (res) => this.recolecciones.set(res || []),
+      error: (err) => console.error('Error al cargar:', err)
+    });
   }
 
-  // ======================
-  // RECOLECTORES
-  // ======================
-
   cargarRecolectores(): void {
-
-    this.http
-      .get<any[]>(this.apiRecolectores)
-      .subscribe({
-
-        next: (res) => {
-
-          this.recolectores =
-            res || [];
-
-        },
-
-        error: (err) => {
-
-          console.error(
-            'Error recolectores:',
-            err
-          );
-
-        }
-
-      });
-
+    this.http.get<Recolector[]>(this.apiRecolectores).subscribe({
+      next: (res) => this.recolectores.set(res || []),
+      error: (err) => console.error('Error recolectores:', err)
+    });
   }
 
   // ======================
   // GUARDAR
   // ======================
-
   guardarPesaje(): void {
+    const payload = this.formulario();
+    const formData = new FormData();
+    
+    formData.append('idRecolector', payload.idRecolector);
+    formData.append('variedad', payload.variedad);
+    formData.append('estado', payload.estado);
+    formData.append('fecha', payload.fecha);
+    formData.append('kg', payload.kg);
 
-    const formData =
-      new FormData();
-
-    formData.append(
-      'idRecolector',
-      this.idRecolector
-    );
-
-    formData.append(
-      'variedad',
-      this.variedad
-    );
-
-    formData.append(
-      'estado',
-      this.estado
-    );
-
-    formData.append(
-      'fecha',
-      this.fecha
-    );
-
-    formData.append(
-      'kg',
-      this.kg
-    );
-
-    this.http
-      .post<any>(
-        this.api,
-        formData
-      )
-      .subscribe({
-
-        next: (res) => {
-
-          if (res.ok) {
-
-            alert(
-              'Pesaje guardado'
-            );
-
-            this.cargar();
-
-            this.limpiar();
-
-            this.mostrarFormulario =
-              false;
-
-          }
-
+    this.http.post<{ok: boolean}>(this.api, formData).subscribe({
+      next: (res) => {
+        if (res.ok) {
+          alert('Pesaje guardado');
+          this.cargar();
+          this.limpiar();
+          this.mostrarFormulario.set(false);
         }
-
-      });
-
+      }
+    });
   }
 
   // ======================
   // ELIMINAR
   // ======================
-
   eliminar(id: number): void {
+    if (!window.confirm('¿Eliminar registro?')) return;
 
-    if (
-      !confirm(
-        '¿Eliminar registro?'
-      )
-    ) {
-      return;
-    }
-
-    this.http
-      .delete<any>(
-        `${this.api}?id=${id}`
-      )
-      .subscribe({
-
-        next: (res) => {
-
-          if (res.ok) {
-
-            this.cargar();
-
-          }
-
-        }
-
-      });
-
+    this.http.delete<{ok: boolean}>(`${this.api}?id=${id}`).subscribe({
+      next: (res) => {
+        if (res.ok) this.cargar();
+      }
+    });
   }
 
   // ======================
   // EDITAR
   // ======================
-
-  editar(r: any): void {
-
-    this.editando = true;
-
-    this.mostrarFormulario = true;
-
-    this.idEditar =
-      r.idRecoleccion;
-
-    this.idRecolector =
-      r.idRecolector;
-
-    this.variedad =
-      r.variedad;
-
-    this.estado =
-      r.estado;
-
-    this.fecha =
-      r.fecha;
-
-    this.kg =
-      r.kg;
-
+  editar(r: Recoleccion): void {
+    this.editando.set(true);
+    this.mostrarFormulario.set(true);
+    this.idEditar.set(r.idRecoleccion);
+    
+    this.formulario.set({
+      idRecolector: String(r.idRecolector),
+      variedad: r.variedad,
+      estado: r.estado,
+      fecha: r.fecha,
+      kg: String(r.kg)
+    });
   }
 
   // ======================
   // ACTUALIZAR
   // ======================
-
   actualizar(): void {
-
     const datos = {
-
-      id:
-        this.idEditar,
-
-      idRecolector:
-        this.idRecolector,
-
-      variedad:
-        this.variedad,
-
-      estado:
-        this.estado,
-
-      fecha:
-        this.fecha,
-
-      kg:
-        this.kg
-
+      id: this.idEditar(),
+      ...this.formulario()
     };
 
-    this.http
-      .put<any>(
-        this.api,
-        datos
-      )
-      .subscribe({
-
-        next: (res) => {
-
-          if (res.ok) {
-
-            alert(
-              'Pesaje actualizado'
-            );
-
-            this.cargar();
-
-            this.cancelarEditar();
-
-          }
-
+    this.http.put<{ok: boolean}>(this.api, datos).subscribe({
+      next: (res) => {
+        if (res.ok) {
+          alert('Pesaje actualizado');
+          this.cargar();
+          this.cancelarEditar();
         }
-
-      });
-
+      }
+    });
   }
 
   // ======================
-  // CANCELAR
+  // CANCELAR Y LIMPIAR
   // ======================
-
   cancelarEditar(): void {
-
-    this.editando = false;
-
-    this.idEditar = 0;
-
+    this.editando.set(false);
+    this.idEditar.set(0);
     this.limpiar();
-
-    this.mostrarFormulario =
-      false;
-
+    this.mostrarFormulario.set(false);
   }
-
-  // ======================
-  // LIMPIAR
-  // ======================
 
   limpiar(): void {
-
-    this.idRecolector = '';
-
-    this.variedad = '';
-
-    this.estado = '';
-
-    this.fecha = '';
-
-    this.kg = '';
-
+    this.formulario.set({ ...FORMULARIO_VACIO });
   }
-
-  // ======================
-  // FILTRAR
-  // ======================
-
-  recoleccionesFiltradas() {
-
-    return this.recolecciones.filter(
-      (r: any) => {
-
-        const recolector =
-          (r.recolector || '')
-          .toLowerCase();
-
-        const variedad =
-          (r.variedad || '')
-          .toLowerCase();
-
-        const buscar =
-          this.buscar.toLowerCase();
-
-        return (
-
-          recolector.includes(
-            buscar
-          )
-
-          ||
-
-          variedad.includes(
-            buscar
-          )
-
-        );
-
-      }
-    );
-
-  }
-
-  // ======================
-  // TOTAL
-  // ======================
-
-  totalKg(): number {
-
-    return this.recolecciones.reduce(
-
-      (total, r) =>
-
-        total +
-        Number(r.kg),
-
-      0
-
-    );
-
-  }
-
 }

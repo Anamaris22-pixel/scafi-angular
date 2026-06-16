@@ -1,478 +1,210 @@
-<div class="min-h-screen bg-cover bg-center p-6"
-     style="background-image: url('assets/cafe.jpg');">
+<div class="min-h-screen bg-cover bg-center p-6" style="background-image: url('assets/cafe.jpg');">
 
-  <!-- BOTON VOLVER -->
-  <button
-    routerLink="/dashboard"
-    class="bg-[#0f172a]
-           hover:bg-[#1e293b]
-           text-white
-           px-6 py-4
-           rounded-2xl
-           font-bold
-           shadow-xl
-           mb-6"
-  >
-
+  <button routerLink="/dashboard" class="bg-[#0f172a] hover:bg-[#1e293b] text-white px-6 py-4 rounded-2xl font-bold shadow-xl mb-6 transition">
     ← Dashboard
-
   </button>
 
-  <!-- TARJETAS -->
   <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-
-    <!-- TOTAL -->
-    <div
-      class="bg-green-500
-             text-white
-             rounded-3xl
-             p-6
-             shadow-2xl"
-    >
-
+    <div class="bg-green-500 text-white rounded-3xl p-6 shadow-2xl">
       <div class="text-3xl font-bold">
-
         {{ totalKg() }} KG
-
       </div>
-
       <div class="opacity-90 mt-2">
-
         Total Recolectado
-
       </div>
-
     </div>
 
-    <!-- REGISTROS -->
-    <div
-      class="bg-slate-800
-             text-white
-             rounded-3xl
-             p-6
-             shadow-2xl"
-    >
-
+    <div class="bg-slate-800 text-white rounded-3xl p-6 shadow-2xl">
       <div class="text-3xl font-bold">
-
-        {{ recolecciones.length }}
-
+        {{ recolecciones().length }}
       </div>
-
       <div class="opacity-90 mt-2">
-
         Registros
-
       </div>
-
     </div>
-
   </div>
 
-  <!-- CONTENEDOR -->
-  <div
-    class="bg-white/90
-           backdrop-blur-md
-           rounded-3xl
-           shadow-2xl
-           overflow-hidden"
-  >
+  <div class="bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden">
 
-    <!-- HEADER -->
-    <div
-      class="flex
-             items-center
-             justify-between
-             gap-4
-             p-4
-             bg-gray-100"
-    >
-
-      <!-- BUSCADOR -->
+    <div class="flex items-center justify-between gap-4 p-4 bg-gray-100">
+      
       <div class="flex w-full max-w-md">
-
         <input
           type="text"
-          [(ngModel)]="buscar"
-          placeholder="Buscar..."
-          class="w-full
-                 px-4
-                 py-3
-                 rounded-l-2xl
-                 border
-                 outline-none"
+          [ngModel]="buscar()"
+          (ngModelChange)="buscar.set($event)"
+          placeholder="Buscar variedad o recolector..."
+          class="w-full px-4 py-3 rounded-l-2xl border outline-none focus:ring-2 focus:ring-green-500"
+          aria-label="Buscar pesajes"
         />
-
-        <button
-          class="bg-white
-                 border
-                 border-l-0
-                 px-4
-                 rounded-r-2xl"
-        >
-
+        <button class="bg-white border border-l-0 px-4 rounded-r-2xl hover:bg-gray-50" aria-label="Botón de búsqueda">
           🔎
-
         </button>
-
       </div>
 
-      <!-- NUEVO -->
-      <button
-        *ngIf="user?.idRol != 3"
-        (click)="mostrarFormulario = true"
-        class="bg-white
-               hover:bg-gray-200
-               px-6
-               py-3
-               rounded-2xl
-               shadow
-               font-semibold"
-      >
-
-        🌿 Nuevo Pesaje
-
-      </button>
-
+      @if (user()?.idRol != 3) {
+        <button
+          (click)="mostrarFormulario.set(true)"
+          class="bg-white hover:bg-gray-200 px-6 py-3 rounded-2xl shadow font-semibold transition"
+        >
+          🌿 Nuevo Pesaje
+        </button>
+      }
     </div>
 
-    <!-- FORMULARIO -->
-    <div
-      *ngIf="mostrarFormulario"
-      class="p-6 border-b bg-white"
-    >
+    @if (mostrarFormulario()) {
+      <div class="p-6 border-b bg-white">
+        
+        <h2 class="text-2xl font-bold text-green-700 mb-6">
+          {{ editando() ? 'Editar Pesaje' : 'Nuevo Pesaje' }}
+        </h2>
 
-      <h2
-        class="text-2xl
-               font-bold
-               text-green-700
-               mb-6"
-      >
+        <form (ngSubmit)="editando() ? actualizar() : guardarPesaje()">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            
+            <select
+              [ngModel]="formulario().idRecolector"
+              (ngModelChange)="formulario.update(f => ({...f, idRecolector: $event}))"
+              name="idRecolector"
+              class="p-4 border rounded-xl outline-none focus:ring-2 focus:ring-green-500"
+              aria-label="Seleccione recolector"
+              required
+            >
+              <option value="">Seleccione recolector</option>
+              @for (r of recolectores(); track r.idRecolector) {
+                <option [value]="r.idRecolector">{{ r.nombre }}</option>
+              }
+            </select>
 
-        {{ editando ? 'Editar Pesaje' : 'Nuevo Pesaje' }}
+            <select
+              [ngModel]="formulario().variedad"
+              (ngModelChange)="formulario.update(f => ({...f, variedad: $event}))"
+              name="variedad"
+              class="p-4 border rounded-xl outline-none focus:ring-2 focus:ring-green-500"
+              aria-label="Variedad"
+              required
+            >
+              <option value="">Variedad</option>
+              <option value="Arábico">Arábico</option>
+              <option value="Robusta">Robusta</option>
+            </select>
 
-      </h2>
+            <select
+              [ngModel]="formulario().estado"
+              (ngModelChange)="formulario.update(f => ({...f, estado: $event}))"
+              name="estado"
+              class="p-4 border rounded-xl outline-none focus:ring-2 focus:ring-green-500"
+              aria-label="Estado"
+              required
+            >
+              <option value="">Estado</option>
+              <option value="Maduro">Maduro</option>
+              <option value="Pintón">Pintón</option>
+            </select>
 
-      <div class="grid grid-cols-2 gap-4">
+            <input
+              type="date"
+              [ngModel]="formulario().fecha"
+              (ngModelChange)="formulario.update(f => ({...f, fecha: $event}))"
+              name="fecha"
+              class="p-4 border rounded-xl outline-none focus:ring-2 focus:ring-green-500"
+              aria-label="Fecha"
+              required
+            />
 
-        <!-- RECOLECTOR -->
-        <select
-          [(ngModel)]="idRecolector"
-          class="p-4 border rounded-xl"
-        >
+            <input
+              type="number"
+              [ngModel]="formulario().kg"
+              (ngModelChange)="formulario.update(f => ({...f, kg: $event}))"
+              name="kg"
+              placeholder="Kilogramos"
+              class="p-4 border rounded-xl outline-none focus:ring-2 focus:ring-green-500"
+              aria-label="Kilogramos"
+              required
+            />
+          </div>
 
-          <option value="">
+          <div class="flex gap-3 mt-6">
+            <button
+              type="submit"
+              class="text-white px-6 py-3 rounded-xl font-semibold transition"
+              [class.bg-blue-600]="editando()" [class.hover:bg-blue-700]="editando()"
+              [class.bg-green-600]="!editando()" [class.hover:bg-green-700]="!editando()"
+            >
+              {{ editando() ? 'Actualizar' : 'Guardar' }}
+            </button>
 
-            Seleccione recolector
-
-          </option>
-
-          <option
-            *ngFor="let r of recolectores"
-            [value]="r.idRecolector"
-          >
-
-            {{ r.nombre }}
-
-          </option>
-
-        </select>
-
-        <!-- VARIEDAD -->
-        <select
-          [(ngModel)]="variedad"
-          class="p-4 border rounded-xl"
-        >
-
-          <option value="">
-
-            Variedad
-
-          </option>
-
-          <option value="Arábico">
-
-            Arábico
-
-          </option>
-
-          <option value="Robusta">
-
-            Robusta
-
-          </option>
-
-        </select>
-
-        <!-- ESTADO -->
-        <select
-          [(ngModel)]="estado"
-          class="p-4 border rounded-xl"
-        >
-
-          <option value="">
-
-            Estado
-
-          </option>
-
-          <option value="Maduro">
-
-            Maduro
-
-          </option>
-
-          
-
-          <option value="Pintón">
-
-            Pintón
-
-          </option>
-
-        </select>
-
-        <!-- FECHA -->
-        <input
-          type="date"
-          [(ngModel)]="fecha"
-          class="p-4 border rounded-xl"
-        />
-
-        <!-- KG -->
-        <input
-          type="number"
-          [(ngModel)]="kg"
-          placeholder="Kilogramos"
-          class="p-4 border rounded-xl"
-        />
-
+            <button
+              type="button"
+              (click)="cancelarEditar()"
+              class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-xl font-semibold transition"
+            >
+              Cancelar
+            </button>
+          </div>
+        </form>
       </div>
+    }
 
-      <!-- BOTONES -->
-      <div class="flex gap-3 mt-6">
-
-        <button
-          *ngIf="!editando"
-          (click)="guardarPesaje()"
-          class="bg-green-600
-                 hover:bg-green-700
-                 text-white
-                 px-6
-                 py-3
-                 rounded-xl"
-        >
-
-          Guardar
-
-        </button>
-
-        <button
-          *ngIf="editando"
-          (click)="actualizar()"
-          class="bg-blue-600
-                 hover:bg-blue-700
-                 text-white
-                 px-6
-                 py-3
-                 rounded-xl"
-        >
-
-          Actualizar
-
-        </button>
-
-        <button
-          (click)="cancelarEditar()"
-          class="bg-gray-500
-                 hover:bg-gray-600
-                 text-white
-                 px-6
-                 py-3
-                 rounded-xl"
-        >
-
-          Cancelar
-
-        </button>
-
-      </div>
-
-    </div>
-
-    <!-- TABLA -->
     <div class="overflow-auto">
-
       <table class="w-full">
-
-        <!-- HEAD -->
-        <thead
-          class="bg-slate-800
-                 text-white"
-        >
-
+        <thead class="bg-slate-800 text-white">
           <tr>
-
-            <th class="p-4 text-center">
-
-              Fecha
-
-            </th>
-
-            <th class="p-4 text-center">
-
-              Recolector
-
-            </th>
-
-            <th class="p-4 text-center">
-
-              Producto
-
-            </th>
-
-            <th class="p-4 text-center">
-
-              Estado
-
-            </th>
-
-            <th class="p-4 text-center">
-
-              KG
-
-            </th>
-
-            <th class="p-4 text-center">
-
-              Acciones
-
-            </th>
-
+            <th class="p-4 text-center">Fecha</th>
+            <th class="p-4 text-center">Recolector</th>
+            <th class="p-4 text-center">Producto</th>
+            <th class="p-4 text-center">Estado</th>
+            <th class="p-4 text-center">KG</th>
+            <th class="p-4 text-center">Acciones</th>
           </tr>
-
         </thead>
-
-        <!-- BODY -->
         <tbody>
-
-          <tr
-            *ngFor="let r of recoleccionesFiltradas()"
-            class="border-b hover:bg-gray-50 transition"
-          >
-
-            <!-- FECHA -->
-            <td class="p-4 text-center">
-
-              {{ r.fecha }}
-
-            </td>
-
-            <!-- RECOLECTOR -->
-            <td class="p-4 text-center">
-
-              {{ r.recolector }}
-
-            </td>
-
-            <!-- PRODUCTO -->
-            <td class="p-4 text-center">
-
-              {{ r.variedad }}
-
-            </td>
-
-            <!-- ESTADO -->
-            <td class="p-4 text-center">
-
-              <span
-                class="px-4
-                       py-1
-                       rounded-full
-                       text-white
-                       font-bold"
-                [ngClass]="{
-                  'bg-green-500': r.estado === 'Maduro',
-                  'bg-yellow-500': r.estado === 'Pintón'
-                  
-                }"
-              >
-
-                {{ r.estado }}
-
-              </span>
-
-            </td>
-
-            <!-- KG -->
-            <td class="p-4 text-center">
-
-              {{ r.kg }} KG
-
-            </td>
-
-            <!-- ACCIONES -->
-            <td class="p-4">
-
-              <div class="flex justify-center gap-2">
-
-                <!-- ADMIN Y PROPIETARIO -->
-                <ng-container *ngIf="user?.idRol != 3">
-
-                  <button
-                    (click)="editar(r)"
-                    class="bg-blue-500
-                           hover:bg-blue-600
-                           text-white
-                           px-4
-                           py-2
-                           rounded-xl"
-                  >
-
-                    Editar
-
-                  </button>
-
-                  <button
-                    (click)="eliminar(r.id)"
-                    class="bg-red-500
-                           hover:bg-red-600
-                           text-white
-                           px-4
-                           py-2
-                           rounded-xl"
-                  >
-
-                    Eliminar
-
-                  </button>
-
-                </ng-container>
-
-                <!-- RECOLECTOR -->
+          
+          @for (r of recoleccionesFiltradas(); track r.idRecoleccion) {
+            <tr class="border-b hover:bg-gray-50 transition">
+              <td class="p-4 text-center">{{ r.fecha }}</td>
+              <td class="p-4 text-center font-semibold">{{ r.recolector }}</td>
+              <td class="p-4 text-center">{{ r.variedad }}</td>
+              <td class="p-4 text-center">
                 <span
-                  *ngIf="user?.idRol == 3"
-                  class="text-gray-500
-                         text-sm
-                         font-semibold"
+                  class="px-4 py-1 rounded-full text-white font-bold text-sm"
+                  [ngClass]="{
+                    'bg-green-500': r.estado === 'Maduro',
+                    'bg-yellow-500': r.estado === 'Pintón'
+                  }"
                 >
-
-                  Sin permisos
-
+                  {{ r.estado }}
                 </span>
+              </td>
+              <td class="p-4 text-center font-bold text-slate-700">{{ r.kg }} KG</td>
+              <td class="p-4">
+                <div class="flex justify-center gap-2">
+                  
+                  @if (user()?.idRol != 3) {
+                    <button (click)="editar(r)" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-xl transition">
+                      Editar
+                    </button>
+                    <button (click)="eliminar(r.idRecoleccion)" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl transition">
+                      Eliminar
+                    </button>
+                  } @else {
+                    <span class="text-gray-500 text-sm font-semibold">Sin permisos</span>
+                  }
 
-              </div>
-
-            </td>
-
-          </tr>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" class="text-center p-10 text-gray-500 font-medium">
+                No hay pesajes registrados.
+              </td>
+            </tr>
+          }
 
         </tbody>
-
       </table>
-
     </div>
 
   </div>
-
 </div>

@@ -6,7 +6,7 @@ header("Content-Type: application/json");
 include 'conexion.php';
 
 $idUsuario =
-$_GET['idUsuario'] ?? 0;
+    $_GET['idUsuario'] ?? 0;
 
 $sql = "
 
@@ -15,24 +15,23 @@ SELECT
     nombre,
     correo,
     idRol
-FROM usuarios
+FROM usuario
 WHERE id != '$idUsuario'
 ORDER BY nombre ASC
 
 ";
 
 $resultado =
-mysqli_query($conexion, $sql);
+    mysqli_query($conexion, $sql);
 
-$usuarios = [];
+$usuario = [];
 
 while ($fila = mysqli_fetch_assoc($resultado)) {
 
-    $usuarios[] = $fila;
-
+    $usuario[] = $fila;
 }
 
 echo json_encode([
     "ok" => true,
-    "usuarios" => $usuarios
+    "usuario" => $usuario
 ]);
