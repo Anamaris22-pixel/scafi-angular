@@ -10,18 +10,19 @@ include 'conexion.php';
 try {
 
     $nombre = $_POST['nombre'] ?? '';
-
     $correo = $_POST['correo'] ?? '';
-
     $password = $_POST['contrasena'] ?? '';
-
     $rol = $_POST['rol'] ?? '';
-
     $estado = $_POST['estado'] ?? '';
+
+    // NUEVOS CAMPOS
+    $documento = $_POST['documento'] ?? '';
+    $telefono = $_POST['telefono'] ?? '';
+    $direccion = $_POST['direccion'] ?? '';
 
     $foto = '';
 
-    if(isset($_FILES['foto'])){
+    if (isset($_FILES['foto']) && $_FILES['foto']['error'] === 0) {
 
         $nombreFoto = time() . '_' . $_FILES['foto']['name'];
 
@@ -35,31 +36,46 @@ try {
         $foto = $ruta;
     }
 
-    $sql = "INSERT INTO usuario
-    (nombre, correo, contrasena, idRol, estado, foto)
-    VALUES
-    (?, ?, ?, ?, ?, ?)";
+    $sql = "
+        INSERT INTO usuario
+        (
+            nombre,
+            correo,
+            contrasena,
+            idRol,
+            foto,
+            telefono,
+            documento,
+            direccion,
+            estado
+        )
+        VALUES
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ";
 
     $stmt = $conexion->prepare($sql);
 
     $stmt->bind_param(
-        "sssiss",
+        "sssisssss",
         $nombre,
         $correo,
         $password,
         $rol,
-        $estado,
-        $foto
+        $foto,
+        $telefono,
+        $documento,
+        $direccion,
+        $estado
     );
 
     $stmt->execute();
 
     echo json_encode([
         "ok" => true,
-        "mensaje" => "Usuario creado"
+        "mensaje" => "Usuario creado correctamente"
     ]);
 
-} catch(Exception $e){
+} catch (Exception $e) {
 
     echo json_encode([
         "ok" => false,
