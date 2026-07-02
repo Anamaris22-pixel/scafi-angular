@@ -7,7 +7,7 @@
   <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
     <div class="bg-green-500 text-white rounded-3xl p-6 shadow-2xl">
       <div class="text-3xl font-bold">
-        {{ totalKg() }} KG
+        {{ totalKg() | number:'1.1-1' }} KG
       </div>
       <div class="opacity-90 mt-2">
         Total Recolectado
