@@ -114,7 +114,7 @@ export class RecoleccionComponent implements OnInit {
     });
   }
 
-  // ======================
+// ======================
   // GUARDAR
   // ======================
   guardarPesaje(): void {
@@ -127,14 +127,24 @@ export class RecoleccionComponent implements OnInit {
     formData.append('fecha', payload.fecha);
     formData.append('kg', payload.kg);
 
-    this.http.post<{ok: boolean}>(this.api, formData).subscribe({
+    // Tipamos la respuesta para aceptar la propiedad 'mensaje' que viene de PHP
+    this.http.post<{ok: boolean, mensaje?: string}>(this.api, formData).subscribe({
       next: (res) => {
         if (res.ok) {
-          alert('Pesaje guardado');
+          // Caso Éxito: Todo salió bien en el servidor
+          alert('Pesaje guardado correctamente.');
           this.cargar();
           this.limpiar();
           this.mostrarFormulario.set(false);
+        } else {
+          // Caso Error controlado: PHP respondió pero la validación o el SQL falló
+          alert('Error del servidor: ' + (res.mensaje || 'No se pudo registrar.'));
         }
+      },
+      error: (err) => {
+        // Caso Error de red/servidor: Caída de conexión, CORS o error 500 crítico
+        console.error('Error en la petición POST:', err);
+        alert('No se pudo conectar con el servidor o hubo un error interno en la red.');
       }
     });
   }
