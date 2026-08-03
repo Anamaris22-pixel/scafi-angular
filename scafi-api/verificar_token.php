@@ -21,18 +21,18 @@ if (!$token) {
 $sql = "
 SELECT id, nombre, correo
 FROM usuario
-WHERE token_recuperacion = '$token'
+WHERE token_recuperacion='$token'
 AND token_expira > NOW()
 LIMIT 1
 ";
 
-$resultado = mysqli_query($conn, $sql);
+$resultado = mysqli_query($conexion, $sql);
 
 if (!$resultado) {
 
     echo json_encode([
         "ok" => false,
-        "mensaje" => mysqli_error($conn)
+        "mensaje" => mysqli_error($conexion)
     ]);
 
     exit;
@@ -54,3 +54,5 @@ echo json_encode([
     "ok" => true,
     "usuario" => $usuario
 ]);
+
+?>

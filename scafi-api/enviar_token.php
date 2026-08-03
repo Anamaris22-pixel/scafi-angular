@@ -110,6 +110,8 @@ try {
     ";
 
     $mail->send();
+     echo "LLEGO HASTA AQUI";
+exit;
 
     echo json_encode([
         "ok" => true,

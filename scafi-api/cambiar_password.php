@@ -21,7 +21,17 @@ WHERE token_recuperacion='$token'
 AND token_expira > NOW()
 ";
 
-$resultado = mysqli_query($conn, $sql);
+$resultado = mysqli_query($conexion, $sql);
+
+if (!$resultado) {
+
+    echo json_encode([
+        "ok" => false,
+        "mensaje" => mysqli_error($conexion)
+    ]);
+
+    exit;
+}
 
 if (mysqli_num_rows($resultado) == 0) {
 
@@ -46,7 +56,7 @@ token_expira=NULL
 WHERE id='$idUsuario'
 ";
 
-if (mysqli_query($conn, $update)) {
+if (mysqli_query($conexion, $update)) {
 
     echo json_encode([
         "ok" => true,
@@ -57,6 +67,7 @@ if (mysqli_query($conn, $update)) {
 
     echo json_encode([
         "ok" => false,
-        "mensaje" => "Error al actualizar"
+        "mensaje" => mysqli_error($conexion)
     ]);
+
 }

@@ -57,9 +57,16 @@ export class RecuperarPasswordComponent implements OnInit {
         this.token = params['token'];
 
         this.verificarToken();
+
       }
+
     });
+
   }
+
+  // ==========================
+  // VERIFICAR TOKEN
+  // ==========================
 
   verificarToken() {
 
@@ -74,17 +81,16 @@ export class RecuperarPasswordComponent implements OnInit {
         if (res.ok) {
 
           this.tokenValido = true;
-
           this.usuarioEncontrado = true;
-
           this.usuario = res.usuario;
-
           this.correo = res.usuario.correo;
 
         } else {
 
           this.error = 'Token inválido o expirado';
+
         }
+
       },
 
       error: (err) => {
@@ -92,9 +98,16 @@ export class RecuperarPasswordComponent implements OnInit {
         console.log(err);
 
         this.error = 'Error verificando token';
+
       }
+
     });
+
   }
+
+  // ==========================
+  // BUSCAR USUARIO
+  // ==========================
 
   buscarUsuario() {
 
@@ -104,11 +117,13 @@ export class RecuperarPasswordComponent implements OnInit {
     if (!this.correo) {
 
       this.error = 'Ingrese un correo';
-
       return;
+
     }
 
     this.cargandoBusqueda = true;
+
+    console.log("ANTES DEL GET");
 
     this.http.get<any>(
       this.api + 'buscar_usuario.php?correo=' + this.correo
@@ -116,6 +131,7 @@ export class RecuperarPasswordComponent implements OnInit {
 
       next: (res) => {
 
+        console.log("ENTRO AL NEXT");
         console.log(res);
 
         this.cargandoBusqueda = false;
@@ -123,27 +139,34 @@ export class RecuperarPasswordComponent implements OnInit {
         if (res.ok) {
 
           this.usuarioEncontrado = true;
-
           this.usuario = res.usuario;
 
         } else {
 
           this.usuarioEncontrado = false;
-
           this.error = 'Usuario no encontrado';
+
         }
+
       },
 
       error: (err) => {
 
+        console.log("ENTRO AL ERROR");
         console.log(err);
 
         this.cargandoBusqueda = false;
-
         this.error = 'Error del servidor';
+
       }
+
     });
+
   }
+
+  // ==========================
+  // ENVIAR TOKEN AL CORREO
+  // ==========================
 
   enviarToken() {
 
@@ -153,8 +176,8 @@ export class RecuperarPasswordComponent implements OnInit {
     if (!this.correo) {
 
       this.error = 'Ingrese un correo';
-
       return;
+
     }
 
     this.cargandoToken = true;
@@ -174,14 +197,16 @@ export class RecuperarPasswordComponent implements OnInit {
 
         if (res.ok) {
 
-          alert('Correo enviado');
+          alert('Correo enviado correctamente');
 
-          this.mensaje = 'Correo enviado';
+          this.mensaje = 'Correo enviado correctamente';
 
         } else {
 
           this.error = res.mensaje;
+
         }
+
       },
 
       error: (err) => {
@@ -191,9 +216,16 @@ export class RecuperarPasswordComponent implements OnInit {
         this.cargandoToken = false;
 
         this.error = 'Error del servidor';
+
       }
+
     });
+
   }
+
+  // ==========================
+  // CAMBIAR PASSWORD
+  // ==========================
 
   guardarPassword() {
 
@@ -205,6 +237,7 @@ export class RecuperarPasswordComponent implements OnInit {
       this.error = 'Ingrese una nueva contraseña';
 
       return;
+
     }
 
     this.cargando = true;
@@ -234,7 +267,9 @@ export class RecuperarPasswordComponent implements OnInit {
         } else {
 
           this.error = res.mensaje;
+
         }
+
       },
 
       error: (err) => {
@@ -244,8 +279,11 @@ export class RecuperarPasswordComponent implements OnInit {
         this.cargando = false;
 
         this.error = 'Error del servidor';
+
       }
+
     });
+
   }
 
 }
