@@ -9,12 +9,10 @@ include 'conexion.php';
 $token = $_GET['token'] ?? '';
 
 if (!$token) {
-
     echo json_encode([
         "ok" => false,
         "mensaje" => "Token requerido"
     ]);
-
     exit;
 }
 
@@ -29,22 +27,18 @@ LIMIT 1
 $resultado = mysqli_query($conexion, $sql);
 
 if (!$resultado) {
-
     echo json_encode([
         "ok" => false,
         "mensaje" => mysqli_error($conexion)
     ]);
-
     exit;
 }
 
 if (mysqli_num_rows($resultado) == 0) {
-
     echo json_encode([
         "ok" => false,
         "mensaje" => "Token inválido o expirado"
     ]);
-
     exit;
 }
 
@@ -54,5 +48,3 @@ echo json_encode([
     "ok" => true,
     "usuario" => $usuario
 ]);
-
-?>

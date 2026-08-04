@@ -11,48 +11,40 @@ require 'vendor/autoload.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-$data = json_decode(
-    file_get_contents("php://input"),
-    true
-);
+$data = json_decode(file_get_contents("php://input"), true);
 
 if (!$data) {
-
     echo json_encode([
         "ok" => false,
         "mensaje" => "No llegaron datos"
     ]);
-
     exit;
 }
 
 $correo = $data['correo'];
 
-$sql = "
-SELECT * FROM usuario
-WHERE correo='$correo'
-";
-
+$sql = "SELECT * FROM usuario WHERE correo='$correo'";
 $resultado = mysqli_query($conexion, $sql);
 
-if (mysqli_num_rows($resultado) == 0) {
+if (!$resultado) {
+    echo json_encode([
+        "ok" => false,
+        "mensaje" => mysqli_error($conexion)
+    ]);
+    exit;
+}
 
+if (mysqli_num_rows($resultado) == 0) {
     echo json_encode([
         "ok" => false,
         "mensaje" => "Correo no encontrado"
     ]);
-
     exit;
 }
 
-$token = bin2hex(
-    random_bytes(32)
-);
+$token = bin2hex(random_bytes(32));
 
-$expira = date(
-    'Y-m-d H:i:s',
-    strtotime('+1 hour')
-);
+$expira = date('Y-m-d H:i:s', strtotime('+1 hour'));
 
 $update = "
 UPDATE usuario
@@ -62,67 +54,50 @@ token_expira='$expira'
 WHERE correo='$correo'
 ";
 
-mysqli_query($conexion, $update);
+if (!mysqli_query($conexion, $update)) {
+    echo json_encode([
+        "ok" => false,
+        "mensaje" => mysqli_error($conexion)
+    ]);
+    exit;
+}
 
 $link = "http://localhost:4200/recuperar-password?token=$token";
 $mail = new PHPMailer(true);
 
 try {
-
     $mail->isSMTP();
-
     $mail->Host = 'smtp.gmail.com';
-
     $mail->SMTPAuth = true;
-
-    $mail->Username =
-        'ceciliavargas8812@gmail.com';
-
-    $mail->Password =
-        'rrgu bnyo hlrd dvhl';
-
-    $mail->SMTPSecure = 'tls';
-
+    $mail->Username = 'ceciliavargas8812@gmail.com';
+    $mail->Password = 'rrgu bnyo hlrd dvhl';
+    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
     $mail->Port = 587;
+    $mail->CharSet = 'UTF-8';
 
-    $mail->setFrom(
-        'ceciliavargas8812@gmail.com',
-        'SCAFI RECUPERAR'
-    );
-
+    $mail->setFrom('ceciliavargas8812@gmail.com', 'SCAFI');
     $mail->addAddress($correo);
-
     $mail->isHTML(true);
-
-    $mail->Subject =
-        'Recuperar contraseña';
-
+    $mail->Subject = 'Recuperación de contraseña';
     $mail->Body = "
         <h2>Recuperar contraseña</h2>
-
-        <p>
-            Haz click en el siguiente enlace:
-        </p>
-
-        <a href='$link'>
-            Recuperar contraseña
-        </a>
+        <p>Haz clic en el siguiente enlace:</p>
+        <a href='$link'>$link</a>
+        <br><br>
+        <p>El enlace expira en 1 hora.</p>
     ";
 
     $mail->send();
-     echo "LLEGO HASTA AQUI";
-exit;
 
     echo json_encode([
         "ok" => true,
-        "mensaje" => "Correo enviado"
+        "mensaje" => "Correo enviado correctamente"
     ]);
+    exit;
 
 } catch (Exception $e) {
-
     echo json_encode([
         "ok" => false,
         "mensaje" => $mail->ErrorInfo
     ]);
 }
-?>
