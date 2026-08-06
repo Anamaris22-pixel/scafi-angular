@@ -24,9 +24,14 @@
     "polyfills": [],
     "tsConfig": "tsconfig.app.json",
     "assets": [
-      "src/favicon.ico",
-      "src/assets"
-    ],
+  "src/favicon.ico",
+  "src/assets",
+  {
+    "glob": ".htaccess",
+    "input": ".",
+    "output": "."
+  }
+],
     "styles": [
   "node_modules/@fortawesome/fontawesome-free/css/all.min.css",
   "src/styles.css"
