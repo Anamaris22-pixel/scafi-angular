@@ -50,7 +50,7 @@ implements OnInit, AfterViewInit {
   // ==========================================
 
   private readonly API =
-'http://localhost/scafi-angular/scafi-api/dashboard.php';
+'http://localhost:8080/dashboard.php';
 
   // ==========================================
   // SIDEBAR

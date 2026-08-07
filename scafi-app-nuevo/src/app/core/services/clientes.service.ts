@@ -11,7 +11,7 @@ import { HttpClient } from '@angular/common/http';
 export class ClientesService {
 
   API =
-  'http://localhost/scafi-angular/scafi-api/clientes.php';
+  'http://localhost:8080/clientes.php';
 
   constructor(
 

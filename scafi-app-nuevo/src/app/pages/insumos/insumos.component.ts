@@ -38,10 +38,10 @@ export class InsumosComponent
 implements OnInit {
 
   API =
-  'http://localhost/scafi-angular/scafi-api/insumos.php';
+  'http://localhost:8080/insumos.php';
 
   API_PROVEEDORES =
-  'http://localhost/scafi-angular/scafi-api/proveedores.php';
+  'http://localhost:8080/proveedores.php';
 
   insumos: any[] = [];
 

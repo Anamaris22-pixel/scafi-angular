@@ -47,7 +47,7 @@ export class ConfiguracionComponent implements OnInit {
 
   obtenerUsuarios() {
     this.http
-      .get<any>('http://localhost/scafi-angular/scafi-api/obtener_usuarios.php')
+      .get<any>('http://localhost:8080/obtener_usuarios.php')
       .subscribe({
         next: (resp) => {
           console.log('USUARIOS =>', resp);
@@ -135,8 +135,8 @@ export class ConfiguracionComponent implements OnInit {
     }
 
     const url = this.editando
-      ? 'http://localhost/scafi-angular/scafi-api/editar_usuario.php'
-      : 'http://localhost/scafi-angular/scafi-api/crear_usuario.php';
+      ? 'http://localhost:8080/editar_usuario.php'
+      : 'http://localhost:8080/crear_usuario.php';
 
     if (this.editando) {
       formData.append('id', String(this.idUsuarioEditar));
@@ -160,7 +160,7 @@ export class ConfiguracionComponent implements OnInit {
       return;
     }
 
-    this.http.post<any>('http://localhost/scafi-angular/scafi-api/eliminar_usuario.php', { id })
+    this.http.post<any>('http://localhost:8080/eliminar_usuario.php', { id })
       .subscribe({
         next: (resp) => {
           console.log('Usuario eliminado =>', resp);

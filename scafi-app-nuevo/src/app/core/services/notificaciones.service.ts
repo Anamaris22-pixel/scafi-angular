@@ -15,7 +15,7 @@ export class NotificacionesService {
   // =========================
 
   api =
-  'http://localhost/scafi-angular/scafi-api/notificaciones.php';
+  'http://localhost:8080/notificaciones.php';
 
   // =========================
   // CONSTRUCTOR
@@ -51,7 +51,7 @@ export class NotificacionesService {
 
     return this.http.post(
 
-      'http://localhost/scafi-angular/scafi-api/marcar_notificacion.php',
+      'http://localhost:8080/marcar_notificacion.php',
 
       formData
 

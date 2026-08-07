@@ -9,7 +9,7 @@ import { HttpClient } from '@angular/common/http';
 export class PermisosService {
 
   api =
-  'http://localhost/scafi-angular/scafi-api/permisos.php';
+  'http://localhost:8080/permisos.php';
 
   constructor(
     private http: HttpClient

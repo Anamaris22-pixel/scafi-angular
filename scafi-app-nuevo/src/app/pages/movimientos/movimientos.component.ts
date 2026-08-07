@@ -28,7 +28,7 @@ import { RouterModule } from '@angular/router';
 export class MovimientosComponent implements OnInit {
 
   API =
-  'http://localhost/scafi-angular/scafi-api/movimientos.php';
+  'http://localhost:8080/movimientos.php';
 
   movimientos: any[] = [];
 
@@ -105,7 +105,7 @@ export class MovimientosComponent implements OnInit {
 
     this.http
       .get<any[]>(
-        'http://localhost/scafi-angular/scafi-api/insumos.php'
+        'http://localhost:8080/insumos.php'
       )
 
       .subscribe({

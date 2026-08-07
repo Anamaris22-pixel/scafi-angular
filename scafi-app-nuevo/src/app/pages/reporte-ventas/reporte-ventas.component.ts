@@ -19,7 +19,7 @@ import autoTable from 'jspdf-autotable';
 })
 export class ReporteVentasComponent implements OnInit {
 
-  private readonly API = 'http://localhost/scafi-angular/scafi-api/reporte-ventas.php';
+  private readonly API = 'http://localhost:8080/reporte-ventas.php';
 
   ventas: any[] = [];
   ventasFiltradas: any[] = [];

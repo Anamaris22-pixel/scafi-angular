@@ -11,8 +11,8 @@ import { RouterModule } from '@angular/router';
   templateUrl: './cultivos.component.html'
 })
 export class CultivosComponent implements OnInit {
-  api = 'http://localhost/scafi-angular/scafi-api/cultivos.php';
-  apiLotes = 'http://localhost/scafi-angular/scafi-api/lotes.php';
+  api = 'http://localhost:8080/cultivos.php';
+  apiLotes = 'http://localhost:8080/lotes.php';
 
   cultivos: any[] = [];
   lotes: any[] = [];

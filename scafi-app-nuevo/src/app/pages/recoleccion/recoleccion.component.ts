@@ -55,8 +55,8 @@ export class RecoleccionComponent implements OnInit {
   // 2. Inyección moderna
   private readonly http = inject(HttpClient);
   
-  private readonly api = 'http://localhost/scafi-angular/scafi-api/recoleccion.php';
-  private readonly apiRecolectores = 'http://localhost/scafi-angular/scafi-api/recolectores.php';
+  private readonly api = 'http://localhost:8080/recoleccion.php';
+  private readonly apiRecolectores = 'http://localhost:8080/recolectores.php';
 
   // 3. Estados con Signals
   readonly recolecciones = signal<Recoleccion[]>([]);

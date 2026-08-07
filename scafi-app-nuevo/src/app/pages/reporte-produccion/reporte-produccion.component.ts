@@ -49,7 +49,7 @@ implements OnInit {
   // =========================
 
   API =
-  'http://localhost/scafi-angular/scafi-api/reporte-produccion.php';
+  'http://localhost:8080/reporte-produccion.php';
 
   // =========================
   // VARIABLES

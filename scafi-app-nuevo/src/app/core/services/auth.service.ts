@@ -25,7 +25,7 @@ import {
 export class AuthService {
 
   API =
-  'http://localhost/scafi-angular/scafi-api/login.php';
+  'http://localhost:8080/login.php';
 
   constructor(
 

@@ -7,7 +7,7 @@ import { HttpClient } from '@angular/common/http';
 
 export class VentasService {
 
-  api = 'http://localhost/scafi-angular/scafi-api/ventas.php';
+  api = 'http://localhost:8080/ventas.php';
 
   constructor(
     private http: HttpClient

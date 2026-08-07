@@ -57,7 +57,7 @@ export class MensajesComponent implements OnInit {
   enviando = false;
 
   api =
-    'http://localhost/scafi-angular/scafi-api/';
+    'http://localhost:8080/';
 
   constructor(
 

@@ -56,7 +56,7 @@ implements OnInit, AfterViewInit {
   // API
 
   API =
-  'http://localhost/scafi-angular/scafi-api/reporte-inventario.php';
+  'http://localhost:8080/reporte-inventario.php';
 
   // VARIABLES
 

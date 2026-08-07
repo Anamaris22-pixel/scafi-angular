@@ -40,7 +40,7 @@ export class RecuperarPasswordComponent implements OnInit {
   token = '';
   tokenValido = false;
 
-  api = 'http://localhost/scafi-angular/scafi-api/';
+  api = 'http://localhost:8080/';
 
   constructor(
     private http: HttpClient,

@@ -11,7 +11,7 @@ import { FormsModule } from '@angular/forms';
 })
 export class LotesComponent implements OnInit {
 
-  api = 'http://localhost/scafi-angular/scafi-api/lotes.php';
+  api = 'http://localhost:8080/lotes.php';
 
   lotes: any[] = [];
 

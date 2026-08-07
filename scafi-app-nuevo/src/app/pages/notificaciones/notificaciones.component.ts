@@ -48,7 +48,7 @@ implements OnInit {
   // =========================
 
   api =
-'http://localhost/scafi-angular/scafi-api/notificaciones.php';
+'http://localhost:8080/notificaciones.php';
 
   // =========================
   // CONSTRUCTOR

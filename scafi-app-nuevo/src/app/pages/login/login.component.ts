@@ -32,7 +32,7 @@ export class LoginComponent {
   cargando = false;
 
   api =
-    'http://localhost/scafi-angular/scafi-api/';
+    'http://localhost:8080/';
 
   constructor(
 

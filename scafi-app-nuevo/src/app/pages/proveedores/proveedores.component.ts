@@ -17,7 +17,7 @@ import { RouterModule } from '@angular/router';
 export class ProveedoresComponent implements OnInit {
 
   // API
-  api = 'http://localhost/scafi-angular/scafi-api/proveedores.php';
+  api = 'http://localhost:8080/proveedores.php';
 
   // LISTA
   proveedores: any[] = [];
