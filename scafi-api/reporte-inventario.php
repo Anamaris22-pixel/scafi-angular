@@ -4,35 +4,7 @@ header("Access-Control-Allow-Origin: *");
 
 header("Content-Type: application/json");
 
-// =========================
-// CONEXIÓN
-// =========================
-
-$conn = new mysqli(
-    "127.0.0.1",
-    "root",
-    "",
-    "scafi",
-    3307
-);
-
-// =========================
-// ERROR
-// =========================
-
-if ($conn->connect_error) {
-
-    echo json_encode([
-
-        "ok" => false,
-
-        "msg" => $conn->connect_error
-
-    ]);
-
-    exit;
-
-}
+require 'conexion.php';
 
 // =========================
 // SQL
@@ -64,7 +36,7 @@ ORDER BY nombre ASC
 // CONSULTA
 // =========================
 
-$resultado = $conn->query($sql);
+$resultado = $conexion->query($sql);
 
 $data = [];
 

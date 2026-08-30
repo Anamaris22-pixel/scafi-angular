@@ -7,16 +7,10 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 @Component({
   selector: 'app-configuracion',
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    FormsModule,
-    HttpClientModule
-  ],
-  templateUrl: './configuracion.component.html'
+  imports: [CommonModule, RouterModule, FormsModule, HttpClientModule],
+  templateUrl: './configuracion.component.html',
 })
 export class ConfiguracionComponent implements OnInit {
-
   constructor(private http: HttpClient) {}
 
   mostrarModalUsuario = false;
@@ -36,7 +30,7 @@ export class ConfiguracionComponent implements OnInit {
     estado: 'Activo',
     documento: '',
     telefono: '',
-    direccion: ''
+    direccion: '',
   };
 
   fotoSeleccionada: any = null;
@@ -46,17 +40,15 @@ export class ConfiguracionComponent implements OnInit {
   }
 
   obtenerUsuarios() {
-    this.http
-      .get<any>('http://localhost/scafi-angular/scafi-api/obtener_usuarios.php')
-      .subscribe({
-        next: (resp) => {
-          console.log('USUARIOS =>', resp);
-          this.usuarios = resp.usuarios || resp.data || resp || [];
-        },
-        error: (error) => {
-          console.error(error);
-        }
-      });
+    this.http.get<any>('http://localhost:8080/obtener_usuarios.php').subscribe({
+      next: (resp) => {
+        console.log('USUARIOS =>', resp);
+        this.usuarios = resp.usuarios || resp.data || resp || [];
+      },
+      error: (error) => {
+        console.error(error);
+      },
+    });
   }
 
   usuariosFiltrados() {
@@ -66,19 +58,24 @@ export class ConfiguracionComponent implements OnInit {
 
     const texto = this.textoBusqueda.toLowerCase();
 
-    return this.usuarios.filter((u: any) =>
-      (u.nombre && u.nombre.toLowerCase().includes(texto)) ||
-      (u.correo && u.correo.toLowerCase().includes(texto)) ||
-      (this.obtenerNombreRol(u.idRol).toLowerCase().includes(texto))
+    return this.usuarios.filter(
+      (u: any) =>
+        (u.nombre && u.nombre.toLowerCase().includes(texto)) ||
+        (u.correo && u.correo.toLowerCase().includes(texto)) ||
+        this.obtenerNombreRol(u.idRol).toLowerCase().includes(texto),
     );
   }
 
   obtenerNombreRol(idRol: number): string {
     switch (Number(idRol)) {
-      case 1: return 'Propietario';
-      case 2: return 'Administrador';
-      case 3: return 'Recolector';
-      default: return 'Sin rol';
+      case 1:
+        return 'Propietario';
+      case 2:
+        return 'Administrador';
+      case 3:
+        return 'Recolector';
+      default:
+        return 'Sin rol';
     }
   }
 
@@ -108,7 +105,7 @@ export class ConfiguracionComponent implements OnInit {
       confirmarContrasena: '',
       documento: usuario.documento,
       telefono: usuario.telefono,
-      direccion: usuario.direccion
+      direccion: usuario.direccion,
     };
 
     this.mostrarModalUsuario = true;
@@ -135,8 +132,8 @@ export class ConfiguracionComponent implements OnInit {
     }
 
     const url = this.editando
-      ? 'http://localhost/scafi-angular/scafi-api/editar_usuario.php'
-      : 'http://localhost/scafi-angular/scafi-api/crear_usuario.php';
+      ? 'http://localhost:8080/editar_usuario.php'
+      : 'http://localhost:8080/crear_usuario.php';
 
     if (this.editando) {
       formData.append('id', String(this.idUsuarioEditar));
@@ -151,7 +148,7 @@ export class ConfiguracionComponent implements OnInit {
       },
       error: (error) => {
         console.error(error);
-      }
+      },
     });
   }
 
@@ -160,16 +157,15 @@ export class ConfiguracionComponent implements OnInit {
       return;
     }
 
-    this.http.post<any>('http://localhost/scafi-angular/scafi-api/eliminar_usuario.php', { id })
-      .subscribe({
-        next: (resp) => {
-          console.log('Usuario eliminado =>', resp);
-          this.obtenerUsuarios();
-        },
-        error: (error) => {
-          console.error(error);
-        }
-      });
+    this.http.post<any>('http://localhost:8080/eliminar_usuario.php', { id }).subscribe({
+      next: (resp) => {
+        console.log('Usuario eliminado =>', resp);
+        this.obtenerUsuarios();
+      },
+      error: (error) => {
+        console.error(error);
+      },
+    });
   }
 
   resetFormulario() {
@@ -182,7 +178,7 @@ export class ConfiguracionComponent implements OnInit {
       estado: 'Activo',
       documento: '',
       telefono: '',
-      direccion: ''
+      direccion: '',
     };
     this.fotoSeleccionada = null;
   }

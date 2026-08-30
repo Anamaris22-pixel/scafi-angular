@@ -2,11 +2,10 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class MensajesService {
-
-  API = 'http://localhost/scafi-angular/scafi-api/mensajes.php';
+  API = 'http://localhost:8080/mensajes.php';
 
   constructor(private http: HttpClient) {}
 

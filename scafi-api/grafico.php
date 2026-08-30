@@ -1,12 +1,12 @@
 <?php
-$conn = new mysqli("localhost", "root", "", "scafi", 3307);
+require 'conexion.php';
 
 $sql = "SELECT p.tipoProducto, SUM(dv.cantidad) as total 
         FROM DetalleVenta dv
         JOIN Producto p ON dv.idProducto = p.idProducto
         GROUP BY p.tipoProducto";
 
-$result = $conn->query($sql);
+$result = $conexion->query($sql);
 
 $productos = [];
 $totales = [];

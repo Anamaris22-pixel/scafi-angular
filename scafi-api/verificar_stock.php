@@ -17,7 +17,7 @@ WHERE stock <= stockMinimo
 ";
 
 $resultado =
-$conn->query($sql);
+$conexion->query($sql);
 
 
 while (
@@ -49,7 +49,7 @@ while (
     ";
 
     $existe =
-    $conn->query($buscar);
+    $conexion->query($buscar);
 
 
     if (
@@ -82,7 +82,7 @@ while (
 
         ";
 
-        $conn->query($insertar);
+        $conexion->query($insertar);
 
     }
 

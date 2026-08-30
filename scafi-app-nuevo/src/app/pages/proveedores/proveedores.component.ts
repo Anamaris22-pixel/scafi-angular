@@ -7,17 +7,12 @@ import { RouterModule } from '@angular/router';
 @Component({
   selector: 'app-proveedores',
   standalone: true,
-  imports: [
-  CommonModule,
-  FormsModule,
-  RouterModule
-],
-  templateUrl: './proveedores.component.html'
+  imports: [CommonModule, FormsModule, RouterModule],
+  templateUrl: './proveedores.component.html',
 })
 export class ProveedoresComponent implements OnInit {
-
   // API
-  api = 'http://localhost/scafi-angular/scafi-api/proveedores.php';
+  api = 'http://localhost:8080/proveedores.php';
 
   // LISTA
   proveedores: any[] = [];
@@ -33,7 +28,6 @@ export class ProveedoresComponent implements OnInit {
 
   // OBJETO
   nuevo: any = {
-
     idProveedor: '',
 
     nombre: '',
@@ -41,18 +35,15 @@ export class ProveedoresComponent implements OnInit {
     telefono: '',
     correo: '',
     direccion: '',
-    estado: 'Activo'
+    estado: 'Activo',
   };
 
-  constructor(
-    private http: HttpClient
-  ) {}
+  constructor(private http: HttpClient) {}
 
   // ======================================
   // INICIO
   // ======================================
   ngOnInit(): void {
-
     this.cargar();
   }
 
@@ -60,28 +51,21 @@ export class ProveedoresComponent implements OnInit {
   // CARGAR
   // ======================================
   cargar(): void {
+    this.http.get<any[]>(this.api).subscribe({
+      next: (res) => {
+        this.proveedores = res;
+      },
 
-    this.http.get<any[]>(this.api)
-      .subscribe({
-
-        next: (res) => {
-
-          this.proveedores = res;
-        },
-
-        error: (err) => {
-
-          console.log(err);
-        }
-
-      });
+      error: (err) => {
+        console.log(err);
+      },
+    });
   }
 
   // ======================================
   // GUARDAR
   // ======================================
   guardar(): void {
-
     const formData = new FormData();
 
     formData.append('nombre', this.nuevo.nombre);
@@ -91,41 +75,34 @@ export class ProveedoresComponent implements OnInit {
     formData.append('direccion', this.nuevo.direccion);
     formData.append('estado', this.nuevo.estado);
 
-    this.http.post<any>(this.api, formData)
-      .subscribe({
+    this.http.post<any>(this.api, formData).subscribe({
+      next: (res) => {
+        console.log(res);
 
-        next: (res) => {
+        alert('Proveedor registrado');
 
-          console.log(res);
+        this.cancelar();
 
-          alert('Proveedor registrado');
+        this.cargar();
+      },
 
-          this.cancelar();
+      error: (err) => {
+        console.log(err);
 
-          this.cargar();
-        },
-
-        error: (err) => {
-
-          console.log(err);
-
-          alert('Error al guardar');
-        }
-
-      });
+        alert('Error al guardar');
+      },
+    });
   }
 
   // ======================================
   // EDITAR
   // ======================================
   editar(p: any): void {
-
     this.editando = true;
 
     this.mostrarFormulario = true;
 
     this.nuevo = {
-
       idProveedor: p.idProveedor,
 
       nombre: p.nombre,
@@ -133,7 +110,7 @@ export class ProveedoresComponent implements OnInit {
       telefono: p.telefono,
       correo: p.correo,
       direccion: p.direccion,
-      estado: p.estado
+      estado: p.estado,
     };
   }
 
@@ -141,7 +118,6 @@ export class ProveedoresComponent implements OnInit {
   // ACTUALIZAR
   // ======================================
   actualizar(): void {
-
     const formData = new FormData();
 
     formData.append('idProveedor', this.nuevo.idProveedor);
@@ -155,79 +131,58 @@ export class ProveedoresComponent implements OnInit {
 
     formData.append('_method', 'PUT');
 
-    this.http.post<any>(this.api, formData)
-      .subscribe({
+    this.http.post<any>(this.api, formData).subscribe({
+      next: (res) => {
+        console.log(res);
 
-        next: (res) => {
+        alert('Proveedor actualizado');
 
-          console.log(res);
+        this.cancelar();
 
-          alert('Proveedor actualizado');
+        this.cargar();
+      },
 
-          this.cancelar();
+      error: (err) => {
+        console.log(err);
 
-          this.cargar();
-        },
-
-        error: (err) => {
-
-          console.log(err);
-
-          alert('Error al actualizar');
-        }
-
-      });
+        alert('Error al actualizar');
+      },
+    });
   }
 
   // ======================================
   // ELIMINAR
   // ======================================
   eliminar(id: number): void {
-
     if (!confirm('¿Eliminar proveedor?')) {
-
       return;
     }
 
-    this.http.delete<any>(`${this.api}?id=${id}`)
-      .subscribe({
+    this.http.delete<any>(`${this.api}?id=${id}`).subscribe({
+      next: (res) => {
+        console.log(res);
 
-        next: (res) => {
+        alert('Proveedor eliminado');
 
-          console.log(res);
+        this.cargar();
+      },
 
-          alert('Proveedor eliminado');
+      error: (err) => {
+        console.log(err);
 
-          this.cargar();
-        },
-
-        error: (err) => {
-
-          console.log(err);
-
-          alert('Error al eliminar');
-        }
-
-      });
+        alert('Error al eliminar');
+      },
+    });
   }
 
   // ======================================
   // FILTRAR
   // ======================================
   proveedoresFiltrados() {
-
-    return this.proveedores.filter((p: any) =>
-
-      p.nombre
-        .toLowerCase()
-        .includes(this.buscar.toLowerCase())
-
-      ||
-
-      p.empresa
-        .toLowerCase()
-        .includes(this.buscar.toLowerCase())
-
+    return this.proveedores.filter(
+      (p: any) =>
+        p.nombre.toLowerCase().includes(this.buscar.toLowerCase()) ||
+        p.empresa.toLowerCase().includes(this.buscar.toLowerCase()),
     );
   }
 
@@ -235,13 +190,11 @@ export class ProveedoresComponent implements OnInit {
   // CANCELAR
   // ======================================
   cancelar(): void {
-
     this.editando = false;
 
     this.mostrarFormulario = false;
 
     this.nuevo = {
-
       idProveedor: '',
 
       nombre: '',
@@ -249,8 +202,7 @@ export class ProveedoresComponent implements OnInit {
       telefono: '',
       correo: '',
       direccion: '',
-      estado: 'Activo'
+      estado: 'Activo',
     };
   }
-
 }

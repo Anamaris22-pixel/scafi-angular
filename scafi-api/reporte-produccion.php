@@ -12,40 +12,7 @@ header(
   "Content-Type: application/json; charset=UTF-8"
 );
 
-// =========================
-// CONEXION
-// =========================
-
-$conn = new mysqli(
-    "127.0.0.1",
-    "root",
-    "",
-    "scafi",
-    3307
-);
-
-// UTF8
-
-$conn->set_charset("utf8");
-
-// =========================
-// ERROR CONEXION
-// =========================
-
-if ($conn->connect_error) {
-
-    echo json_encode([
-
-        "ok" => false,
-
-        "mensaje" =>
-        $conn->connect_error
-
-    ]);
-
-    exit;
-
-}
+require 'conexion.php';
 
 // =========================
 // PRODUCCION
@@ -86,7 +53,7 @@ ORDER BY p.id DESC
 // =========================
 
 $resultado =
-$conn->query($sql);
+$conexion->query($sql);
 
 // =========================
 // VALIDAR ERROR SQL
@@ -99,7 +66,7 @@ if(!$resultado){
         "ok" => false,
 
         "mensaje" =>
-        $conn->error
+        $conexion->error
 
     ]);
 
@@ -154,7 +121,7 @@ LIMIT 5
 // =========================
 
 $resultadoRecolectores =
-$conn->query($sqlRecolectores);
+$conexion->query($sqlRecolectores);
 
 // =========================
 // VALIDAR ERROR TOP
@@ -167,7 +134,7 @@ if(!$resultadoRecolectores){
         "ok" => false,
 
         "mensaje" =>
-        $conn->error
+        $conexion->error
 
     ]);
 
@@ -215,6 +182,6 @@ echo json_encode([
 // CERRAR
 // =========================
 
-$conn->close();
+$conexion->close();
 
 ?>

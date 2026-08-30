@@ -9,18 +9,11 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 
   standalone: true,
 
-  imports: [
-    CommonModule,
-    FormsModule,
-    RouterLink,
-    HttpClientModule
-  ],
+  imports: [CommonModule, FormsModule, RouterLink, HttpClientModule],
 
-  templateUrl: './login.component.html'
+  templateUrl: './login.component.html',
 })
-
 export class LoginComponent {
-
   correo = '';
 
   password = '';
@@ -31,138 +24,92 @@ export class LoginComponent {
 
   cargando = false;
 
-  api =
-    'http://localhost/scafi-angular/scafi-api/';
+  api = 'http://localhost:8080/';
 
   constructor(
-
     private http: HttpClient,
 
     private router: Router,
 
-    private cd: ChangeDetectorRef
-
+    private cd: ChangeDetectorRef,
   ) {}
 
   entrar() {
-
     this.error = '';
 
     this.cargando = true;
 
-    this.http.post<any>(
+    this.http
+      .post<any>(
+        this.api + 'login.php',
 
-      this.api + 'login.php',
+        {
+          correo: this.correo,
+          password: this.password,
+        },
+      )
+      .subscribe({
+        next: (res: any) => {
+          console.log('RESPUESTA LOGIN =>', res);
 
-      {
-        correo: this.correo,
-        password: this.password
-      }
+          if (res.ok) {
+            // ======================
+            // GUARDAR USUARIO
+            // ======================
 
-    ).subscribe({
+            localStorage.setItem('usuario', JSON.stringify(res.usuario));
 
-      next: (res: any) => {
+            // ======================
+            // TOKEN
+            // ======================
 
-        console.log(
-          'RESPUESTA LOGIN =>',
-          res
-        );
+            localStorage.setItem('token', 'ok');
 
-        if (res.ok) {
+            // ======================
+            // ROL
+            // ======================
 
-          // ======================
-          // GUARDAR USUARIO
-          // ======================
+            localStorage.setItem('rol', String(res.usuario.idRol));
 
-          localStorage.setItem(
-            'usuario',
-            JSON.stringify(res.usuario)
-          );
+            // ======================
+            // ID USUARIO
+            // ======================
 
-          // ======================
-          // TOKEN
-          // ======================
+            localStorage.setItem('idUsuario', String(res.usuario.id));
 
-          localStorage.setItem(
-            'token',
-            'ok'
-          );
+            console.log('USUARIO GUARDADO =>', res.usuario);
 
-          // ======================
-          // ROL
-          // ======================
+            // ======================
+            // REDIRECT
+            // ======================
 
-          localStorage.setItem(
-            'rol',
-            String(res.usuario.idRol)
-          );
+            this.router.navigate(['/dashboard']);
+          } else {
+            this.error = res.mensaje;
 
-          // ======================
-          // ID USUARIO
-          // ======================
+            alert(res.mensaje);
+          }
 
-          localStorage.setItem(
-            'idUsuario',
-            String(res.usuario.id)
-          );
+          this.cargando = false;
 
-          console.log(
-            'USUARIO GUARDADO =>',
-            res.usuario
-          );
+          this.cd.detectChanges();
+        },
 
-          // ======================
-          // REDIRECT
-          // ======================
+        error: (err: any) => {
+          console.error(err);
 
-          this.router.navigate([
-            '/dashboard'
-          ]);
+          this.error = 'Error del servidor';
 
-        } else {
+          alert('Error del servidor');
 
-          this.error =
-            res.mensaje;
+          this.cargando = false;
 
-          alert(
-            res.mensaje
-          );
+          this.cd.detectChanges();
+        },
 
-        }
-
-        this.cargando = false;
-
-        this.cd.detectChanges();
-
-      },
-
-      error: (err: any) => {
-
-        console.error(err);
-
-        this.error =
-          'Error del servidor';
-
-        alert(
-          'Error del servidor'
-        );
-
-        this.cargando = false;
-
-        this.cd.detectChanges();
-
-      },
-
-      complete: () => {
-
-        console.log(
-          'Login finalizado'
-        );
-
-      }
-
-    });
-
+        complete: () => {
+          console.log('Login finalizado');
+        },
+      });
   }
-
 }

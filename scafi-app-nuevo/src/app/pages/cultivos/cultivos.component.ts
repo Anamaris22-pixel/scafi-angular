@@ -8,11 +8,11 @@ import { RouterModule } from '@angular/router';
   selector: 'app-cultivos',
   standalone: true,
   imports: [CommonModule, FormsModule, HttpClientModule, RouterModule],
-  templateUrl: './cultivos.component.html'
+  templateUrl: './cultivos.component.html',
 })
 export class CultivosComponent implements OnInit {
-  api = 'http://localhost/scafi-angular/scafi-api/cultivos.php';
-  apiLotes = 'http://localhost/scafi-angular/scafi-api/lotes.php';
+  api = 'http://localhost:8080/cultivos.php';
+  apiLotes = 'http://localhost:8080/lotes.php';
 
   cultivos: any[] = [];
   lotes: any[] = [];
@@ -51,7 +51,7 @@ export class CultivosComponent implements OnInit {
       },
       complete: () => {
         console.log('Carga de cultivos finalizada');
-      }
+      },
     });
   }
 
@@ -69,7 +69,7 @@ export class CultivosComponent implements OnInit {
       },
       complete: () => {
         console.log('Carga de lotes finalizada');
-      }
+      },
     });
   }
 
@@ -98,7 +98,7 @@ export class CultivosComponent implements OnInit {
       },
       complete: () => {
         console.log('Guardado de cultivo finalizado');
-      }
+      },
     });
   }
 
@@ -125,7 +125,7 @@ export class CultivosComponent implements OnInit {
       idLote: this.idLote,
       tipoCafe: this.tipoCafe,
       fechaSiembra: this.fechaSiembra,
-      estado: this.estado
+      estado: this.estado,
     };
 
     this.http.put<any>(this.api, datos).subscribe({
@@ -142,7 +142,7 @@ export class CultivosComponent implements OnInit {
       },
       complete: () => {
         console.log('Actualización de cultivo finalizada');
-      }
+      },
     });
   }
 
@@ -164,7 +164,7 @@ export class CultivosComponent implements OnInit {
       },
       complete: () => {
         console.log('Eliminación de cultivo finalizada');
-      }
+      },
     });
   }
 

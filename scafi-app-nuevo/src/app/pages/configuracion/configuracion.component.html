@@ -1,8 +1,6 @@
 <div class="min-h-screen bg-[#071223] text-white flex">
-
   <!-- Sidebar -->
   <aside class="w-64 bg-[#081120] border-r border-white/5 flex flex-col">
-
     <div class="mb-6 p-4">
       <button
         routerLink="/dashboard"
@@ -24,23 +22,16 @@
         👥 Usuarios
       </button>
     </div>
-
   </aside>
 
   <!-- Contenido -->
   <main class="flex-1 p-10 overflow-auto">
-
     <!-- Cabecera -->
     <div class="flex justify-between items-center mb-10">
-
       <div>
-        <h1 class="text-5xl font-black mb-3">
-          Gestión de Usuarios
-        </h1>
+        <h1 class="text-5xl font-black mb-3">Gestión de Usuarios</h1>
 
-        <p class="text-white/60 text-lg">
-          Administración de usuarios del sistema
-        </p>
+        <p class="text-white/60 text-lg">Administración de usuarios del sistema</p>
       </div>
 
       <button
@@ -49,24 +40,20 @@
       >
         + Nuevo usuario
       </button>
-
     </div>
 
     <!-- Buscador -->
     <div class="mb-6">
-
       <input
         type="text"
         placeholder="Buscar usuario..."
         [(ngModel)]="textoBusqueda"
         class="w-full max-w-md bg-[#0E1A33] border border-white/10 rounded-xl p-4 text-white placeholder-white/40 outline-none focus:border-blue-500 transition"
-      >
-
+      />
     </div>
 
     <!-- Tabla -->
     <div class="bg-[#0E1A33] border border-white/5 rounded-2xl overflow-hidden">
-
       <!-- Encabezado -->
       <div
         class="grid grid-cols-[2fr_1.3fr_1.3fr_2fr_2fr_1.2fr_1fr_1.2fr] gap-4 px-6 py-5 bg-white/5 font-bold text-white/80"
@@ -86,34 +73,27 @@
         *ngFor="let usuario of usuariosFiltrados()"
         class="grid grid-cols-[2fr_1.3fr_1.3fr_2fr_2fr_1.2fr_1fr_1.2fr] gap-4 px-6 py-4 border-t border-white/5 items-center hover:bg-white/5 transition"
       >
-
         <!-- Usuario -->
         <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-full overflow-hidden bg-green-500">
+            <img
+              *ngIf="usuario.foto"
+              [src]="'http://localhost:8080/' + usuario.foto"
+              class="w-full h-full object-cover"
+            />
 
-  <div class="w-12 h-12 rounded-full overflow-hidden bg-green-500">
+            <div
+              *ngIf="!usuario.foto"
+              class="w-full h-full flex items-center justify-center font-bold text-white uppercase"
+            >
+              {{ usuario.nombre?.charAt(0) }}
+            </div>
+          </div>
 
-    <img
-      *ngIf="usuario.foto"
-      [src]="'http://localhost/scafi-angular/scafi-api/' + usuario.foto"
-      class="w-full h-full object-cover"
-    >
-
-    <div
-      *ngIf="!usuario.foto"
-      class="w-full h-full flex items-center justify-center font-bold text-white uppercase"
-    >
-      {{ usuario.nombre?.charAt(0) }}
-    </div>
-
-  </div>
-
-  <div class="font-semibold">
-    {{ usuario.nombre }}
-  </div>
-
-</div>
-
-          
+          <div class="font-semibold">
+            {{ usuario.nombre }}
+          </div>
+        </div>
 
         <!-- Documento -->
         <div class="text-center text-white/70 truncate">
@@ -142,23 +122,20 @@
 
         <!-- Estado -->
         <div class="text-center">
-
           <span
             [ngClass]="
               usuario.estado === 'Activo'
-              ? 'bg-green-500/20 text-green-400'
-              : 'bg-red-500/20 text-red-400'
+                ? 'bg-green-500/20 text-green-400'
+                : 'bg-red-500/20 text-red-400'
             "
             class="px-4 py-2 rounded-xl text-sm"
           >
             {{ usuario.estado }}
           </span>
-
         </div>
 
         <!-- Acciones -->
         <div class="flex justify-center gap-3">
-
           <button
             (click)="editarUsuario(usuario)"
             class="w-11 h-11 rounded-xl bg-yellow-400 hover:bg-yellow-300 text-black flex items-center justify-center"
@@ -172,15 +149,10 @@
           >
             🗑️
           </button>
-
         </div>
-
       </div>
-
     </div>
-
   </main>
-
 </div>
 
 <!-- MODAL -->
@@ -188,76 +160,64 @@
   *ngIf="mostrarModalUsuario"
   class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-6"
 >
-
-  <div
-    class="bg-[#0B162C] w-full max-w-5xl rounded-[35px] border border-white/10 p-10 shadow-2xl"
-  >
-
+  <div class="bg-[#0B162C] w-full max-w-5xl rounded-[35px] border border-white/10 p-10 shadow-2xl">
     <div class="flex justify-between items-center mb-10">
-
       <h2 class="text-4xl font-black">
         {{ editando ? 'Editar usuario' : 'Nuevo usuario' }}
       </h2>
 
-      <button
-        (click)="mostrarModalUsuario = false"
-        class="text-3xl hover:text-red-400"
-      >
-        ✕
-      </button>
-
+      <button (click)="mostrarModalUsuario = false" class="text-3xl hover:text-red-400">✕</button>
     </div>
 
     <div class="grid grid-cols-2 gap-6">
-
       <input
         type="text"
         placeholder="Nombre completo"
         [(ngModel)]="nuevoUsuario.nombre"
         class="bg-white/5 border border-white/10 rounded-2xl p-5"
-      >
+      />
 
       <input
         type="email"
         placeholder="Correo"
         [(ngModel)]="nuevoUsuario.correo"
         class="bg-white/5 border border-white/10 rounded-2xl p-5"
-      >
+      />
 
       <input
         type="password"
         placeholder="Contraseña"
         [(ngModel)]="nuevoUsuario.contrasena"
         class="bg-white/5 border border-white/10 rounded-2xl p-5"
-      >
+      />
 
       <input
         type="password"
         placeholder="Confirmar contraseña"
         [(ngModel)]="nuevoUsuario.confirmarContrasena"
         class="bg-white/5 border border-white/10 rounded-2xl p-5"
-      >
+      />
 
       <input
         type="text"
         placeholder="Documento"
         [(ngModel)]="nuevoUsuario.documento"
         class="bg-white/5 border border-white/10 rounded-2xl p-5"
-      >
+      />
 
       <input
         type="text"
         placeholder="Teléfono"
         [(ngModel)]="nuevoUsuario.telefono"
         class="bg-white/5 border border-white/10 rounded-2xl p-5"
-      >
+      />
 
       <input
         type="text"
         placeholder="Dirección"
         [(ngModel)]="nuevoUsuario.direccion"
         class="bg-white/5 border border-white/10 rounded-2xl p-5"
-      >
+      />
 
       <select
         [(ngModel)]="nuevoUsuario.idRol"
@@ -281,12 +241,10 @@
         type="file"
         (change)="seleccionarFoto($event)"
         class="bg-white/5 border border-white/10 rounded-2xl p-5"
-      >
-
+      />
     </div>
 
     <div class="flex justify-end gap-5 mt-10">
-
       <button
         (click)="mostrarModalUsuario = false"
         class="bg-white/10 hover:bg-white/20 px-8 py-4 rounded-2xl"
@@ -300,9 +258,6 @@
       >
         Guardar usuario
       </button>
-
     </div>
-
   </div>
-
 </div>

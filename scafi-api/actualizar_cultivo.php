@@ -23,7 +23,7 @@ estado='$estado'
 
 WHERE idCultivo='$idCultivo'";
 
-if ($conn->query($sql)) {
+if ($conexion->query($sql)) {
 
     echo json_encode([
         "ok" => true

@@ -11,7 +11,7 @@ if ($tipo == 'entrada') {
     $sql = "SELECT * FROM movimientos ORDER BY id DESC";
 }
 
-$result = $conn->query($sql);
+$result = $conexion->query($sql);
 
 $data = [];
 

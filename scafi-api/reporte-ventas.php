@@ -4,23 +4,7 @@ header("Access-Control-Allow-Origin: *");
 
 header("Content-Type: application/json");
 
-$conn = new mysqli(
-    "127.0.0.1",
-    "root",
-    "",
-    "scafi",
-    3307
-);
-
-if ($conn->connect_error) {
-
-    echo json_encode([
-        "error" => $conn->connect_error
-    ]);
-
-    exit;
-
-}
+require 'conexion.php';
 
 $sql = "
 
@@ -41,7 +25,7 @@ ORDER BY idVenta DESC
 
 ";
 
-$resultado = $conn->query($sql);
+$resultado = $conexion->query($sql);
 
 $data = [];
 
@@ -53,6 +37,6 @@ while($fila = $resultado->fetch_assoc()){
 
 echo json_encode($data);
 
-$conn->close();
+$conexion->close();
 
 ?>

@@ -3,26 +3,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
-
 export class PermisosService {
+  api = 'http://localhost:8080/permisos.php';
 
-  api =
-  'http://localhost/scafi-angular/scafi-api/permisos.php';
-
-  constructor(
-    private http: HttpClient
-  ) {}
+  constructor(private http: HttpClient) {}
 
   obtenerPorRol(idRol: number) {
-
-    return this.http.get(
-
-      `${this.api}?idRol=${idRol}`
-
-    );
-
+    return this.http.get(`${this.api}?idRol=${idRol}`);
   }
-
 }

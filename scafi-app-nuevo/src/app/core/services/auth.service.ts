@@ -1,52 +1,27 @@
-import {
+import { Injectable } from '@angular/core';
 
-  Injectable
+import { HttpClient } from '@angular/common/http';
 
-} from '@angular/core';
-
-import {
-
-  HttpClient
-
-} from '@angular/common/http';
-
-import {
-
-  Observable
-
-} from 'rxjs';
+import { Observable } from 'rxjs';
 
 @Injectable({
-
-  providedIn: 'root'
-
+  providedIn: 'root',
 })
-
 export class AuthService {
+  API = 'http://localhost:8080/login.php';
 
-  API =
-  'http://localhost/scafi-angular/scafi-api/login.php';
-
-  constructor(
-
-    private http: HttpClient
-
-  ) {}
+  constructor(private http: HttpClient) {}
 
   // =========================
   // LOGIN
   // =========================
 
   login(datos: any): Observable<any> {
-
     return this.http.post(
-
       this.API,
 
-      datos
-
+      datos,
     );
-
   }
 
   // =========================
@@ -54,15 +29,11 @@ export class AuthService {
   // =========================
 
   guardarUsuario(usuario: any) {
-
     localStorage.setItem(
-
       'usuario',
 
-      JSON.stringify(usuario)
-
+      JSON.stringify(usuario),
     );
-
   }
 
   // =========================
@@ -70,13 +41,7 @@ export class AuthService {
   // =========================
 
   getUser() {
-
-    return JSON.parse(
-
-      localStorage.getItem('usuario') || '{}'
-
-    );
-
+    return JSON.parse(localStorage.getItem('usuario') || '{}');
   }
 
   // =========================
@@ -84,13 +49,10 @@ export class AuthService {
   // =========================
 
   logout() {
-
     localStorage.removeItem('usuario');
 
     localStorage.removeItem('token');
 
     localStorage.removeItem('rol');
-
   }
-
 }

@@ -1,36 +1,19 @@
-import {
-  Component,
-  OnInit
-} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
-import {
-  CommonModule
-} from '@angular/common';
+import { CommonModule } from '@angular/common';
 
-import {
-  HttpClient,
-  HttpClientModule
-} from '@angular/common/http';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 @Component({
-
   selector: 'app-notificaciones',
 
   standalone: true,
 
-  imports: [
-    CommonModule,
-    HttpClientModule
-  ],
+  imports: [CommonModule, HttpClientModule],
 
-  templateUrl:
-  './notificaciones.component.html'
-
+  templateUrl: './notificaciones.component.html',
 })
-
-export class NotificacionesComponent
-implements OnInit {
-
+export class NotificacionesComponent implements OnInit {
   // =========================
   // VARIABLES
   // =========================
@@ -47,25 +30,20 @@ implements OnInit {
   // API
   // =========================
 
-  api =
-'http://localhost/scafi-angular/scafi-api/notificaciones.php';
+  api = 'http://localhost:8080/notificaciones.php';
 
   // =========================
   // CONSTRUCTOR
   // =========================
 
-  constructor(
-    private http: HttpClient
-  ) {}
+  constructor(private http: HttpClient) {}
 
   // =========================
   // INIT
   // =========================
 
   ngOnInit(): void {
-
     this.cargarNotificaciones();
-
   }
 
   // =========================
@@ -73,39 +51,27 @@ implements OnInit {
   // =========================
 
   cargarNotificaciones() {
+    this.http
+      .get<any>(this.api)
 
-    this.http.get<any>(this.api)
+      .subscribe({
+        next: (resp) => {
+          console.log(resp);
 
-    .subscribe({
+          if (resp.ok) {
+            this.notificaciones = resp.notificaciones || [];
 
-      next: (resp) => {
+            this.total = resp.total || 0;
+          }
 
-        console.log(resp);
+          this.cargando = false;
+        },
 
-        if(resp.ok){
+        error: (error) => {
+          console.log(error);
 
-          this.notificaciones =
-          resp.notificaciones || [];
-
-          this.total =
-          resp.total || 0;
-
-        }
-
-        this.cargando = false;
-
-      },
-
-      error: (error) => {
-
-        console.log(error);
-
-        this.cargando = false;
-
-      }
-
-    });
-
+          this.cargando = false;
+        },
+      });
   }
-
 }

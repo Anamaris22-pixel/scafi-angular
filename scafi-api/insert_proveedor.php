@@ -8,7 +8,7 @@ $nit = $data['nit'];
 $telefono = $data['telefono'];
 $tipo = $data['tipo'];
 
-$conn->query("INSERT INTO proveedores (empresa, nit, telefono, tipo)
+$conexion->query("INSERT INTO proveedores (empresa, nit, telefono, tipo)
 VALUES ('$empresa', '$nit', '$telefono', '$tipo')");
 
 echo json_encode(["ok" => true]);

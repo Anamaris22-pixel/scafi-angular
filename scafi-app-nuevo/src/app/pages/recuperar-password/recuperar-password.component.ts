@@ -1,28 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import {
-  HttpClient,
-  HttpClientModule
-} from '@angular/common/http';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
-import {
-  Router,
-  ActivatedRoute
-} from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-recuperar-password',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    HttpClientModule
-  ],
-  templateUrl: './recuperar-password.component.html'
+  imports: [CommonModule, FormsModule, HttpClientModule],
+  templateUrl: './recuperar-password.component.html',
 })
 export class RecuperarPasswordComponent implements OnInit {
-
   correo = '';
   nuevaPassword = '';
 
@@ -40,28 +29,22 @@ export class RecuperarPasswordComponent implements OnInit {
   token = '';
   tokenValido = false;
 
-  api = 'http://localhost/scafi-angular/scafi-api/';
+  api = 'http://localhost:8080/';
 
   constructor(
     private http: HttpClient,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
-
-    this.route.queryParams.subscribe(params => {
-
+    this.route.queryParams.subscribe((params) => {
       if (params['token']) {
-
         this.token = params['token'];
 
         this.verificarToken();
-
       }
-
     });
-
   }
 
   // ==========================
@@ -69,40 +52,26 @@ export class RecuperarPasswordComponent implements OnInit {
   // ==========================
 
   verificarToken() {
-
-    this.http.get<any>(
-      this.api + 'verificar_token.php?token=' + this.token
-    ).subscribe({
-
+    this.http.get<any>(this.api + 'verificar_token.php?token=' + this.token).subscribe({
       next: (res) => {
-
         console.log(res);
 
         if (res.ok) {
-
           this.tokenValido = true;
           this.usuarioEncontrado = true;
           this.usuario = res.usuario;
           this.correo = res.usuario.correo;
-
         } else {
-
           this.error = 'Token inválido o expirado';
-
         }
-
       },
 
       error: (err) => {
-
         console.log(err);
 
         this.error = 'Error verificando token';
-
-      }
-
+      },
     });
-
   }
 
   // ==========================
@@ -110,58 +79,42 @@ export class RecuperarPasswordComponent implements OnInit {
   // ==========================
 
   buscarUsuario() {
-
     this.error = '';
     this.mensaje = '';
 
     if (!this.correo) {
-
       this.error = 'Ingrese un correo';
       return;
-
     }
 
     this.cargandoBusqueda = true;
 
-    console.log("ANTES DEL GET");
+    console.log('ANTES DEL GET');
 
-    this.http.get<any>(
-      this.api + 'buscar_usuario.php?correo=' + this.correo
-    ).subscribe({
-
+    this.http.get<any>(this.api + 'buscar_usuario.php?correo=' + this.correo).subscribe({
       next: (res) => {
-
-        console.log("ENTRO AL NEXT");
+        console.log('ENTRO AL NEXT');
         console.log(res);
 
         this.cargandoBusqueda = false;
 
         if (res.ok) {
-
           this.usuarioEncontrado = true;
           this.usuario = res.usuario;
-
         } else {
-
           this.usuarioEncontrado = false;
           this.error = 'Usuario no encontrado';
-
         }
-
       },
 
       error: (err) => {
-
-        console.log("ENTRO AL ERROR");
+        console.log('ENTRO AL ERROR');
         console.log(err);
 
         this.cargandoBusqueda = false;
         this.error = 'Error del servidor';
-
-      }
-
+      },
     });
-
   }
 
   // ==========================
@@ -169,58 +122,43 @@ export class RecuperarPasswordComponent implements OnInit {
   // ==========================
 
   enviarToken() {
-
     this.error = '';
     this.mensaje = '';
 
     if (!this.correo) {
-
       this.error = 'Ingrese un correo';
       return;
-
     }
 
     this.cargandoToken = true;
 
-    this.http.post<any>(
-      this.api + 'enviar_token.php',
-      {
-        correo: this.correo
-      }
-    ).subscribe({
+    this.http
+      .post<any>(this.api + 'enviar_token.php', {
+        correo: this.correo,
+      })
+      .subscribe({
+        next: (res) => {
+          console.log(res);
 
-      next: (res) => {
+          this.cargandoToken = false;
 
-        console.log(res);
+          if (res.ok) {
+            alert('Correo enviado correctamente');
 
-        this.cargandoToken = false;
+            this.mensaje = 'Correo enviado correctamente';
+          } else {
+            this.error = res.mensaje;
+          }
+        },
 
-        if (res.ok) {
+        error: (err) => {
+          console.log(err);
 
-          alert('Correo enviado correctamente');
+          this.cargandoToken = false;
 
-          this.mensaje = 'Correo enviado correctamente';
-
-        } else {
-
-          this.error = res.mensaje;
-
-        }
-
-      },
-
-      error: (err) => {
-
-        console.log(err);
-
-        this.cargandoToken = false;
-
-        this.error = 'Error del servidor';
-
-      }
-
-    });
-
+          this.error = 'Error del servidor';
+        },
+      });
   }
 
   // ==========================
@@ -228,62 +166,46 @@ export class RecuperarPasswordComponent implements OnInit {
   // ==========================
 
   guardarPassword() {
-
     this.error = '';
     this.mensaje = '';
 
     if (!this.nuevaPassword) {
-
       this.error = 'Ingrese una nueva contraseña';
 
       return;
-
     }
 
     this.cargando = true;
 
-    this.http.post<any>(
-      this.api + 'cambiar_password.php',
-      {
+    this.http
+      .post<any>(this.api + 'cambiar_password.php', {
         token: this.token,
-        nuevaPassword: this.nuevaPassword
-      }
-    ).subscribe({
+        nuevaPassword: this.nuevaPassword,
+      })
+      .subscribe({
+        next: (res) => {
+          console.log(res);
 
-      next: (res) => {
+          this.cargando = false;
 
-        console.log(res);
+          if (res.ok) {
+            alert('Contraseña cambiada');
 
-        this.cargando = false;
+            this.mensaje = 'Contraseña cambiada';
 
-        if (res.ok) {
+            this.router.navigate(['/login']);
+          } else {
+            this.error = res.mensaje;
+          }
+        },
 
-          alert('Contraseña cambiada');
+        error: (err) => {
+          console.log(err);
 
-          this.mensaje = 'Contraseña cambiada';
+          this.cargando = false;
 
-          this.router.navigate(['/login']);
-
-        } else {
-
-          this.error = res.mensaje;
-
-        }
-
-      },
-
-      error: (err) => {
-
-        console.log(err);
-
-        this.cargando = false;
-
-        this.error = 'Error del servidor';
-
-      }
-
-    });
-
+          this.error = 'Error del servidor';
+        },
+      });
   }
-
 }

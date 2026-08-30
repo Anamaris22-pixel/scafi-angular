@@ -3,30 +3,19 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({
-
-  providedIn: 'root'
-
+  providedIn: 'root',
 })
-
 export class ClientesService {
+  API = 'http://localhost:8080/clientes.php';
 
-  API =
-  'http://localhost/scafi-angular/scafi-api/clientes.php';
-
-  constructor(
-
-    private http: HttpClient
-
-  ) {}
+  constructor(private http: HttpClient) {}
 
   // =========================
   // LISTAR
   // =========================
 
   getClientes() {
-
     return this.http.get(this.API);
-
   }
 
   // =========================
@@ -34,15 +23,11 @@ export class ClientesService {
   // =========================
 
   addCliente(data: any) {
-
     return this.http.post(
-
       this.API,
 
-      data
-
+      data,
     );
-
   }
 
   // =========================
@@ -50,15 +35,11 @@ export class ClientesService {
   // =========================
 
   updateCliente(data: any) {
-
     return this.http.put(
-
       this.API,
 
-      data
-
+      data,
     );
-
   }
 
   // =========================
@@ -66,13 +47,6 @@ export class ClientesService {
   // =========================
 
   deleteCliente(id: number) {
-
-    return this.http.delete(
-
-      `${this.API}?id=${id}`
-
-    );
-
+    return this.http.delete(`${this.API}?id=${id}`);
   }
-
 }

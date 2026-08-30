@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  # Contenedor de Base de Datos
+  db:
+    image: mysql:8.0
+    container_name: scafi-mysql
+    restart: always
+    command: --port=3307
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: scafi
+    ports:
+      - "3307:3307"
+    volumes:
+      # Monta el script SQL específico en la carpeta de inicialización de MySQL
+      - ./scafi_base_datos.sql:/docker-entrypoint-initdb.d/scafi_base_datos.sql
+      # Volumen para persistir los datos aunque se apague el contenedor
+      - db_data:/var/lib/mysql
+
+  # Contenedor del Backend PHP
+  api:
+    build:
+      context: ./scafi-api
+      dockerfile: Dockerfile
+    container_name: scafi-php-api
+    restart: always
+    ports:
+      - "8080:80"
+    volumes:
+      # Monta el código en tiempo real para reflejar cambios sin reconstruir
+      - ./scafi-api:/var/www/html
+    depends_on:
+      - db
+
+  # Contenedor del Frontend Angular
+  frontend:
+    build:
+      context: ./scafi-app-nuevo
+      dockerfile: Dockerfile
+    container_name: scafi-angular-app
+    restart: always
+    ports:
+      - "4200:80"
+    depends_on:
+      - api
+
+volumes:
+  db_data:

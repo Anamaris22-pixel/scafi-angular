@@ -7,11 +7,10 @@ import { FormsModule } from '@angular/forms';
   selector: 'app-lotes',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './lotes.component.html'
+  templateUrl: './lotes.component.html',
 })
 export class LotesComponent implements OnInit {
-
-  api = 'http://localhost/scafi-angular/scafi-api/lotes.php';
+  api = 'http://localhost:8080/lotes.php';
 
   lotes: any[] = [];
 
@@ -25,7 +24,6 @@ export class LotesComponent implements OnInit {
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
-
     this.cargar();
   }
 
@@ -33,28 +31,21 @@ export class LotesComponent implements OnInit {
   // CARGAR
   // =========================
   cargar(): void {
+    this.http.get<any[]>(this.api).subscribe({
+      next: (res) => {
+        this.lotes = res;
+      },
 
-    this.http.get<any[]>(this.api)
-      .subscribe({
-
-        next: (res) => {
-
-          this.lotes = res;
-        },
-
-        error: (err) => {
-
-          console.log(err);
-        }
-
-      });
+      error: (err) => {
+        console.log(err);
+      },
+    });
   }
 
   // =========================
   // GUARDAR
   // =========================
   guardar(): void {
-
     const formData = new FormData();
 
     formData.append('nombreLote', this.nombreLote);
@@ -62,52 +53,37 @@ export class LotesComponent implements OnInit {
     formData.append('hectareas', this.hectareas);
     formData.append('estado', this.estado);
 
-    this.http.post<any>(this.api, formData)
-      .subscribe({
+    this.http.post<any>(this.api, formData).subscribe({
+      next: (res) => {
+        if (res.ok) {
+          alert('Lote guardado');
 
-        next: (res) => {
+          this.limpiar();
 
-          if (res.ok) {
-
-            alert('Lote guardado');
-
-            this.limpiar();
-
-            this.cargar();
-          }
-        },
-
-        error: (err) => {
-
-          console.log(err);
+          this.cargar();
         }
+      },
 
-      });
+      error: (err) => {
+        console.log(err);
+      },
+    });
   }
 
   // =========================
   // FILTRAR
   // =========================
   lotesFiltrados() {
-
-    return this.lotes.filter(l =>
-
-      l.nombreLote
-        .toLowerCase()
-        .includes(this.buscar.toLowerCase())
-
-    );
+    return this.lotes.filter((l) => l.nombreLote.toLowerCase().includes(this.buscar.toLowerCase()));
   }
 
   // =========================
   // LIMPIAR
   // =========================
   limpiar(): void {
-
     this.nombreLote = '';
     this.ubicacion = '';
     this.hectareas = '';
     this.estado = '';
   }
-
 }

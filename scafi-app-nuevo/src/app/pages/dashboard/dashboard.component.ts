@@ -1,56 +1,30 @@
-import {
-  Component,
-  OnInit,
-  AfterViewInit,
-  ChangeDetectorRef
-} from '@angular/core';
+import { Component, OnInit, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 
-import {
-  CommonModule
-} from '@angular/common';
+import { CommonModule } from '@angular/common';
 
-import {
-  RouterModule
-} from '@angular/router';
+import { RouterModule } from '@angular/router';
 
-import {
-  HttpClient,
-  HttpClientModule
-} from '@angular/common/http';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
-import {
-  Chart,
-  registerables
-} from 'chart.js';
+import { Chart, registerables } from 'chart.js';
 
 Chart.register(...registerables);
 
 @Component({
-
   selector: 'app-dashboard',
 
   standalone: true,
 
-  imports: [
-    CommonModule,
-    RouterModule,
-    HttpClientModule
-  ],
+  imports: [CommonModule, RouterModule, HttpClientModule],
 
-  templateUrl:
-  './dashboard.component.html'
-
+  templateUrl: './dashboard.component.html',
 })
-
-export class DashboardComponent
-implements OnInit, AfterViewInit {
-
+export class DashboardComponent implements OnInit, AfterViewInit {
   // ==========================================
   // API
   // ==========================================
 
-  private readonly API =
-'http://localhost/scafi-angular/scafi-api/dashboard.php';
+  private readonly API = 'http://localhost:8080/dashboard.php';
 
   // ==========================================
   // SIDEBAR
@@ -116,7 +90,7 @@ implements OnInit, AfterViewInit {
 
   constructor(
     private http: HttpClient,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {}
 
   // ==========================================
@@ -124,7 +98,6 @@ implements OnInit, AfterViewInit {
   // ==========================================
 
   ngOnInit(): void {
-
     // CARGA INICIAL
 
     this.obtenerDatosDashboard();
@@ -132,11 +105,8 @@ implements OnInit, AfterViewInit {
     // AUTO ACTUALIZAR
 
     setInterval(() => {
-
       this.obtenerDatosDashboard();
-
     }, 30000);
-
   }
 
   // ==========================================
@@ -144,9 +114,7 @@ implements OnInit, AfterViewInit {
   // ==========================================
 
   ngAfterViewInit(): void {
-
     this.inicializarGrafica();
-
   }
 
   // ==========================================
@@ -154,105 +122,73 @@ implements OnInit, AfterViewInit {
   // ==========================================
 
   obtenerDatosDashboard(): void {
-
     this.http
-    .get<any>(this.API)
+      .get<any>(this.API)
 
-    .subscribe({
+      .subscribe({
+        next: (res) => {
+          this.totalProduccionKG = Number(res.tarjetas?.produccion || 0);
 
-      next: (res) => {
+          this.totalVentasMes = Number(res.tarjetas?.ventas || 0);
 
-        this.totalProduccionKG =
-        Number(res.tarjetas?.produccion || 0);
+          this.totalRecolectores = Number(res.tarjetas?.recolectores || 0);
 
-        this.totalVentasMes =
-        Number(res.tarjetas?.ventas || 0);
+          this.totalCultivos = Number(res.tarjetas?.lotes || 0);
 
-        this.totalRecolectores =
-        Number(res.tarjetas?.recolectores || 0);
+          this.inventarioBajoCount = Number(res.alertas?.bajo_stock || 0);
 
-        this.totalCultivos =
-        Number(res.tarjetas?.lotes || 0);
+          this.ventasHoy = Number(res.alertas?.ventas_hoy || 0);
 
-        this.inventarioBajoCount =
-        Number(res.alertas?.bajo_stock || 0);
+          this.cultivosActivosCount = Number(res.alertas?.lotes_activos || 0);
 
-        this.ventasHoy =
-        Number(res.alertas?.ventas_hoy || 0);
+          this.ultimosMovimientos = res.ultimos_movimientos || [];
 
-        this.cultivosActivosCount =
-        Number(res.alertas?.lotes_activos || 0);
+          this.mesesGraficaLabels = [];
 
-        this.ultimosMovimientos =
-        res.ultimos_movimientos || [];
+          this.datosGraficaVentas = [];
 
-        this.mesesGraficaLabels = [];
+          if (res.grafica) {
+            const ordenMeses = [
+              'Jan',
+              'Feb',
+              'Mar',
+              'Apr',
+              'May',
+              'Jun',
+              'Jul',
+              'Aug',
+              'Sep',
+              'Oct',
+              'Nov',
+              'Dec',
+            ];
 
-        this.datosGraficaVentas = [];
+            res.grafica.sort(
+              (a: any, b: any) => ordenMeses.indexOf(a.mes) - ordenMeses.indexOf(b.mes),
+            );
 
-       if (res.grafica) {
+            res.grafica.forEach((item: any) => {
+              this.mesesGraficaLabels.push(item.mes);
 
-  const ordenMeses = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec'
-  ];
+              this.datosGraficaVentas.push(Number(item.ventas));
+            });
+          }
 
-  res.grafica.sort(
+          setTimeout(() => {
+            this.actualizarGraficaReal();
+          }, 300);
 
-    (a: any, b: any) =>
+          this.cargando = false;
 
-      ordenMeses.indexOf(a.mes)
-      -
-      ordenMeses.indexOf(b.mes)
+          //this.cdr.detectChanges();//
+        },
 
-  );
+        error: (err) => {
+          console.log(err);
 
-  res.grafica.forEach((item: any) => {
-
-    this.mesesGraficaLabels.push(
-      item.mes
-    );
-
-    this.datosGraficaVentas.push(
-      Number(item.ventas)
-    );
-
-  });
-
-}
-
-        setTimeout(() => {
-
-          this.actualizarGraficaReal();
-
-        }, 300);
-
-        this.cargando = false;
-
-        //this.cdr.detectChanges();//
-
-      },
-
-      error: (err) => {
-
-        console.log(err);
-
-        this.cargando = false;
-
-      }
-
-    });
-
+          this.cargando = false;
+        },
+      });
   }
 
   // ==========================================
@@ -260,99 +196,63 @@ implements OnInit, AfterViewInit {
   // ==========================================
 
   inicializarGrafica() {
-
-    const ctx =
-
-    document.getElementById(
-      'graficaVentas'
-    ) as HTMLCanvasElement;
+    const ctx = document.getElementById('graficaVentas') as HTMLCanvasElement;
 
     if (!ctx) return;
 
     this.graficaInstance = new Chart(
-
       ctx,
 
       {
-
         type: 'bar',
 
         data: {
-
-          labels:
-          this.mesesGraficaLabels,
+          labels: this.mesesGraficaLabels,
 
           datasets: [
-
             {
+              label: 'Ventas Mensuales',
 
-              label:
-              'Ventas Mensuales',
+              data: this.datosGraficaVentas,
 
-              data:
-              this.datosGraficaVentas,
-
-              backgroundColor:
-              '#16a34a',
+              backgroundColor: '#16a34a',
 
               borderRadius: 12,
 
-              borderSkipped: false
-
-            }
-
-          ]
-
+              borderSkipped: false,
+            },
+          ],
         },
 
         options: {
-
           responsive: true,
 
           maintainAspectRatio: false,
 
           plugins: {
-
             legend: {
-
-              display: false
-
-            }
-
+              display: false,
+            },
           },
 
           scales: {
-
             y: {
-
               beginAtZero: true,
 
               grid: {
-
-                color: '#f1f5f9'
-
-              }
-
+                color: '#f1f5f9',
+              },
             },
 
             x: {
-
               grid: {
-
-                display: false
-
-              }
-
-            }
-
-          }
-
-        }
-
-      }
-
+                display: false,
+              },
+            },
+          },
+        },
+      },
     );
-
   }
 
   // ==========================================
@@ -360,26 +260,13 @@ implements OnInit, AfterViewInit {
   // ==========================================
 
   actualizarGraficaReal() {
-
     if (this.graficaInstance) {
+      this.graficaInstance.data.labels = this.mesesGraficaLabels;
 
-      this.graficaInstance
-      .data
-      .labels =
-
-      this.mesesGraficaLabels;
-
-      this.graficaInstance
-      .data
-      .datasets[0]
-      .data =
-
-      this.datosGraficaVentas;
+      this.graficaInstance.data.datasets[0].data = this.datosGraficaVentas;
 
       this.graficaInstance.update();
-
     }
-
   }
 
   // ==========================================
@@ -387,38 +274,22 @@ implements OnInit, AfterViewInit {
   // ==========================================
 
   toggleSidebar() {
-
-    this.sidebarAbierto =
-    !this.sidebarAbierto;
-
+    this.sidebarAbierto = !this.sidebarAbierto;
   }
 
   toggleProductividad() {
-
-    this.menuProductividad =
-    !this.menuProductividad;
-
+    this.menuProductividad = !this.menuProductividad;
   }
 
   toggleInventario() {
-
-    this.menuInventario =
-    !this.menuInventario;
-
+    this.menuInventario = !this.menuInventario;
   }
 
   toggleVentas() {
-
-    this.menuVentas =
-    !this.menuVentas;
-
+    this.menuVentas = !this.menuVentas;
   }
 
   toggleReportes() {
-
-    this.menuReportes =
-    !this.menuReportes;
-
+    this.menuReportes = !this.menuReportes;
   }
-
 }

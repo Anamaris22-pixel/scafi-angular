@@ -2,11 +2,10 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class RecolectoresService {
-
-  API = 'http://localhost/scafi-angular/scafi-api/recolectores.php';
+  API = 'http://localhost:8080/recolectores.php';
 
   constructor(private http: HttpClient) {}
 
@@ -14,7 +13,6 @@ export class RecolectoresService {
   // GET
   // =========================
   getAll() {
-
     return this.http.get(this.API);
   }
 
@@ -22,31 +20,20 @@ export class RecolectoresService {
   // CREATE
   // =========================
   create(data: any) {
-
-    return this.http.post(
-      this.API,
-      data
-    );
+    return this.http.post(this.API, data);
   }
 
   // =========================
   // UPDATE
   // =========================
   update(id: number, data: any) {
-
-    return this.http.put(
-      `${this.API}?id=${id}`,
-      data
-    );
+    return this.http.put(`${this.API}?id=${id}`, data);
   }
 
   // =========================
   // DELETE
   // =========================
   delete(id: number) {
-
-    return this.http.delete(
-      `${this.API}?id=${id}`
-    );
+    return this.http.delete(`${this.API}?id=${id}`);
   }
 }
