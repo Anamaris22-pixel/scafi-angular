@@ -42,21 +42,27 @@ $sql = "
 
 SELECT
 
-    idInsumo,
+    i.idInsumo,
 
-    nombre,
+    i.nombre,
 
-    tipo,
+    i.tipo,
 
-    stock,
+    i.stock,
 
-    stockMinimo,
+    i.stockMinimo,
 
-    precio
+    i.precio,
 
-FROM insumos
+    (
+        SELECT MAX(m.fecha)
+        FROM movimientos m
+        WHERE m.idInsumo = i.idInsumo
+    ) AS fechaIngreso
 
-ORDER BY nombre ASC
+FROM insumos i
+
+ORDER BY i.nombre ASC
 
 ";
 

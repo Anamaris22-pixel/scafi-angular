@@ -2,8 +2,8 @@
 
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: *");
-header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
-header("Content-Type: application/json");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+header("Content-Type: application/json; charset=UTF-8");
 
 include 'conexion.php';
 
@@ -12,7 +12,7 @@ include 'conexion.php';
 // LISTAR
 // =========================
 
-if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
     $sql = "
         SELECT *
@@ -21,6 +21,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     ";
 
     $resultado = $conexion->query($sql);
+
+    if (!$resultado) {
+
+        echo json_encode([
+            "ok" => false,
+            "error" => $conexion->error
+        ]);
+
+        exit;
+    }
 
     $datos = [];
 
@@ -32,6 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 
     echo json_encode($datos);
 
+    exit;
 }
 
 
@@ -39,28 +50,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 // INSERTAR
 // =========================
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    $nit =
-    $_POST['nit'];
+    $input = json_decode(
+        file_get_contents("php://input"),
+        true
+    );
 
-    $nombre =
-    $_POST['nombre'];
+    if (!$input) {
 
-    $telefono =
-    $_POST['telefono'];
+        echo json_encode([
+            "ok" => false,
+            "error" => "No se recibieron datos"
+        ]);
 
-    $correo =
-    $_POST['correo'];
+        exit;
+    }
 
-    $ciudad =
-    $_POST['ciudad'];
-
-    $direccion =
-    $_POST['direccion'];
-
-    $tipo =
-    $_POST['tipo'];
+    $nit = $input['nit'] ?? '';
+    $nombre = $input['nombre'] ?? '';
+    $telefono = $input['telefono'] ?? '';
+    $correo = $input['correo'] ?? '';
+    $ciudad = $input['ciudad'] ?? '';
+    $direccion = $input['direccion'] ?? '';
+    $tipo = $input['tipo'] ?? '';
 
     $sql = "
         INSERT INTO clientes
@@ -88,7 +101,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($conexion->query($sql)) {
 
         echo json_encode([
-            "ok" => true
+            "ok" => true,
+            "id" => $conexion->insert_id
         ]);
 
     } else {
@@ -100,6 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     }
 
+    exit;
 }
 
 
@@ -107,55 +122,42 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 // ACTUALIZAR
 // =========================
 
-if ($_SERVER['REQUEST_METHOD'] == 'PUT') {
+if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
 
-    parse_str(
+    $input = json_decode(
         file_get_contents("php://input"),
-        $putData
+        true
     );
 
-    $id =
-    $putData['id'];
+    if (!$input) {
 
-    $nit =
-    $putData['nit'];
+        echo json_encode([
+            "ok" => false,
+            "error" => "No se recibieron datos"
+        ]);
 
-    $nombre =
-    $putData['nombre'];
+        exit;
+    }
 
-    $telefono =
-    $putData['telefono'];
-
-    $correo =
-    $putData['correo'];
-
-    $ciudad =
-    $putData['ciudad'];
-
-    $direccion =
-    $putData['direccion'];
-
-    $tipo =
-    $putData['tipo'];
+    $id = $input['id'] ?? 0;
+    $nit = $input['nit'] ?? '';
+    $nombre = $input['nombre'] ?? '';
+    $telefono = $input['telefono'] ?? '';
+    $correo = $input['correo'] ?? '';
+    $ciudad = $input['ciudad'] ?? '';
+    $direccion = $input['direccion'] ?? '';
+    $tipo = $input['tipo'] ?? '';
 
     $sql = "
         UPDATE clientes
         SET
-
             nit = '$nit',
-
             nombre = '$nombre',
-
             telefono = '$telefono',
-
             correo = '$correo',
-
             ciudad = '$ciudad',
-
             direccion = '$direccion',
-
             tipo = '$tipo'
-
         WHERE id = '$id'
     ";
 
@@ -174,6 +176,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'PUT') {
 
     }
 
+    exit;
 }
 
 
@@ -181,10 +184,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'PUT') {
 // ELIMINAR
 // =========================
 
-if ($_SERVER['REQUEST_METHOD'] == 'DELETE') {
+if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
 
-    $id =
-    $_GET['id'];
+    $id = $_GET['id'] ?? 0;
 
     $sql = "
         DELETE FROM clientes
@@ -200,11 +202,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'DELETE') {
     } else {
 
         echo json_encode([
-            "ok" => false
+            "ok" => false,
+            "error" => $conexion->error
         ]);
 
     }
 
+    exit;
 }
+
+
+// =========================
+// MÉTODO NO PERMITIDO
+// =========================
+
+echo json_encode([
+    "ok" => false,
+    "error" => "Método no permitido"
+]);
 
 ?>

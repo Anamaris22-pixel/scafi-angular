@@ -77,43 +77,58 @@ export class ProveedoresComponent implements OnInit {
       });
   }
 
-  // ======================================
-  // GUARDAR
-  // ======================================
-  guardar(): void {
+// ======================================
+// GUARDAR
+// ======================================
+guardar(): void {
 
-    const formData = new FormData();
+  const datos = {
 
-    formData.append('nombre', this.nuevo.nombre);
-    formData.append('empresa', this.nuevo.empresa);
-    formData.append('telefono', this.nuevo.telefono);
-    formData.append('correo', this.nuevo.correo);
-    formData.append('direccion', this.nuevo.direccion);
-    formData.append('estado', this.nuevo.estado);
+    nombre: this.nuevo.nombre,
+    empresa: this.nuevo.empresa,
+    telefono: this.nuevo.telefono,
+    correo: this.nuevo.correo,
+    direccion: this.nuevo.direccion,
+    estado: this.nuevo.estado
 
-    this.http.post<any>(this.api, formData)
-      .subscribe({
+  };
 
-        next: (res) => {
+  this.http.post<any>(this.api, datos)
+    .subscribe({
 
-          console.log(res);
+      next: (res) => {
+
+        console.log('RESPUESTA GUARDAR:', res);
+
+        if (res.ok) {
 
           alert('Proveedor registrado');
 
           this.cancelar();
 
           this.cargar();
-        },
 
-        error: (err) => {
+        } else {
 
-          console.log(err);
+          alert(
+            'Error al guardar: ' +
+            (res.error || 'Error desconocido')
+          );
 
-          alert('Error al guardar');
         }
 
-      });
-  }
+      },
+
+      error: (err) => {
+
+        console.log('ERROR AL GUARDAR:', err);
+
+        alert('Error al guardar');
+
+      }
+
+    });
+}
 
   // ======================================
   // EDITAR
@@ -138,46 +153,59 @@ export class ProveedoresComponent implements OnInit {
   }
 
   // ======================================
-  // ACTUALIZAR
-  // ======================================
-  actualizar(): void {
+// ACTUALIZAR
+// ======================================
+actualizar(): void {
 
-    const formData = new FormData();
+  const datos = {
 
-    formData.append('idProveedor', this.nuevo.idProveedor);
+    idProveedor: this.nuevo.idProveedor,
 
-    formData.append('nombre', this.nuevo.nombre);
-    formData.append('empresa', this.nuevo.empresa);
-    formData.append('telefono', this.nuevo.telefono);
-    formData.append('correo', this.nuevo.correo);
-    formData.append('direccion', this.nuevo.direccion);
-    formData.append('estado', this.nuevo.estado);
+    nombre: this.nuevo.nombre,
+    empresa: this.nuevo.empresa,
+    telefono: this.nuevo.telefono,
+    correo: this.nuevo.correo,
+    direccion: this.nuevo.direccion,
+    estado: this.nuevo.estado
 
-    formData.append('_method', 'PUT');
+  };
 
-    this.http.post<any>(this.api, formData)
-      .subscribe({
+  this.http.put<any>(this.api, datos)
+    .subscribe({
 
-        next: (res) => {
+      next: (res) => {
 
-          console.log(res);
+        console.log('RESPUESTA ACTUALIZAR:', res);
+
+        if (res.ok) {
 
           alert('Proveedor actualizado');
 
           this.cancelar();
 
           this.cargar();
-        },
 
-        error: (err) => {
+        } else {
 
-          console.log(err);
+          alert(
+            'Error al actualizar: ' +
+            (res.error || 'Error desconocido')
+          );
 
-          alert('Error al actualizar');
         }
 
-      });
-  }
+      },
+
+      error: (err) => {
+
+        console.log('ERROR AL ACTUALIZAR:', err);
+
+        alert('Error al actualizar');
+
+      }
+
+    });
+}
 
   // ======================================
   // ELIMINAR

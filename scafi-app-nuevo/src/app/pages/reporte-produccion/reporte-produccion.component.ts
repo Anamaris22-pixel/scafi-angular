@@ -132,43 +132,80 @@ implements OnInit {
   }
 
   // =========================
-  // FILTRAR FECHAS
-  // =========================
+// FILTRAR FECHAS
+// =========================
 
-  filtrarFechas() {
+filtrarFechas() {
 
-    if(
-      !this.fechaInicio ||
-
-      !this.fechaFin
-    ){
-
-      this.produccion =
-      [...this.produccionOriginal];
-
-      return;
-
-    }
+  if (!this.fechaInicio || !this.fechaFin) {
 
     this.produccion =
-    this.produccionOriginal.filter(
+      [...this.produccionOriginal];
 
-      item => {
+    this.actualizarTopRecolectores();
 
-        return (
-
-          item.fecha >= this.fechaInicio &&
-
-          item.fecha <= this.fechaFin
-
-        );
-
-      }
-
-    );
+    return;
 
   }
 
+  this.produccion =
+    this.produccionOriginal.filter(item => {
+
+      const fecha =
+        String(item.fecha).substring(0, 10);
+
+      return (
+        fecha >= this.fechaInicio &&
+        fecha <= this.fechaFin
+      );
+
+    });
+
+  // Actualizar top según el filtro
+  this.actualizarTopRecolectores();
+
+}
+// =========================
+// ACTUALIZAR TOP RECOLECTORES
+// =========================
+
+actualizarTopRecolectores() {
+
+  const resumen: any = {};
+
+  this.produccion.forEach(item => {
+
+    const nombre =
+      item.recolector || 'Sin nombre';
+
+    const cantidad =
+      Number(item.cantidad || 0);
+
+    if (!resumen[nombre]) {
+
+      resumen[nombre] = {
+        recolector: nombre,
+        total: 0,
+        registros: 0
+      };
+
+    }
+
+    resumen[nombre].total += cantidad;
+
+    resumen[nombre].registros++;
+
+  });
+
+  this.topRecolectores =
+    Object.values(resumen)
+      .sort(
+        (a: any, b: any) =>
+          b.total - a.total
+      )
+      .slice(0, 5);
+
+}
   // =========================
   // LIMPIAR FILTRO
   // =========================

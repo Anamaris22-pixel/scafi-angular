@@ -310,89 +310,61 @@ export class VentasComponent {
   // =========================
 
   ventasDelMesActual() {
+  const hoy = new Date();
 
-    const hoy = new Date();
+  const mesActual = hoy.getMonth() + 1;
+  const anioActual = hoy.getFullYear();
 
-    const mesActual =
-      hoy.getMonth();
+  return this.ventas
+    .filter(v => {
+      if (!v.fecha) {
+        return false;
+      }
 
-    const anioActual =
-      hoy.getFullYear();
+      const fecha = String(v.fecha).substring(0, 10);
+      const partes = fecha.split('-');
 
-    return this.ventas
+      const anio = Number(partes[0]);
+      const mes = Number(partes[1]);
 
-      .filter(v => {
-
-        const fecha =
-          new Date(v.fecha);
-
-        return (
-
-          fecha.getMonth() === mesActual &&
-
-          fecha.getFullYear() === anioActual
-
-        );
-
-      })
-
-      .reduce(
-
-        (sum, v) =>
-
-          sum + Number(v.total),
-
-        0
-
-      );
-
-  }
-
+      return mes === mesActual && anio === anioActual;
+    })
+    .reduce(
+      (sum, v) => sum + Number(v.total),
+      0
+    );
+}
   // =========================
   // TOTAL POR MES
   // =========================
 
   totalPorMes(
-    mes: number,
-    anio: number
-  ) {
+  mes: number,
+  anio: number
+) {
+  return this.ventas
+    .filter((v: any) => {
+      if (!v.fecha) {
+        return false;
+      }
 
-    return this.ventas
+      const fecha = String(v.fecha).substring(0, 10);
+      const partes = fecha.split('-');
 
-      .filter((v: any) => {
+      const anioVenta = Number(partes[0]);
+      const mesVenta = Number(partes[1]);
 
-        if (!v.fecha) {
-
-          return false;
-
-        }
-
-        const fecha =
-          new Date(v.fecha);
-
-        return (
-
-          fecha.getMonth() + 1 === Number(mes)
-
-          &&
-
-          fecha.getFullYear() === Number(anio)
-
-        );
-
-      })
-
-      .reduce(
-
-        (sum: number, v: any) =>
-
-          sum + Number(v.total),
-
-        0
-
+      return (
+        mesVenta === Number(mes) &&
+        anioVenta === Number(anio)
       );
-
-  }
+    })
+    .reduce(
+      (sum: number, v: any) =>
+        sum + Number(v.total),
+      0
+    );
+}
 
   // =========================
   // RESUMEN MES SELECCIONADO

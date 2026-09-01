@@ -4,16 +4,11 @@
 // HEADERS
 // =========================
 
-header(
-  "Access-Control-Allow-Origin: *"
-);
-
-header(
-  "Content-Type: application/json; charset=UTF-8"
-);
+header("Access-Control-Allow-Origin: *");
+header("Content-Type: application/json; charset=UTF-8");
 
 // =========================
-// CONEXION
+// CONEXIÓN
 // =========================
 
 $conn = new mysqli(
@@ -24,60 +19,59 @@ $conn = new mysqli(
     3307
 );
 
-// UTF8
-
 $conn->set_charset("utf8");
 
 // =========================
-// ERROR CONEXION
+// ERROR CONEXIÓN
 // =========================
 
 if ($conn->connect_error) {
 
     echo json_encode([
-
         "ok" => false,
-
-        "mensaje" =>
-        $conn->connect_error
-
+        "mensaje" => $conn->connect_error
     ]);
 
     exit;
-
 }
 
 // =========================
-// PRODUCCION
+// PRODUCCIÓN
+// =========================
+// Los datos reales de producción
+// se encuentran en la tabla recoleccion.
+//
+// kg      -> cantidad
+// idRecoleccion -> id
 // =========================
 
 $sql = "
 
 SELECT
 
-    p.id,
+    rec.idRecoleccion AS id,
 
     r.nombre AS recolector,
 
     l.nombreLote AS lote,
 
-    p.cantidad,
+    rec.kg AS cantidad,
 
-    p.fecha,
+    rec.fecha,
 
-    p.observacion,
+    '' AS observacion,
 
-    p.responsable
+    '' AS responsable
 
-FROM produccion p
+FROM recoleccion rec
 
 INNER JOIN recolectores r
-ON p.idRecolector = r.idRecolector
+    ON rec.idRecolector = r.idRecolector
 
-INNER JOIN lotes l
-ON p.idLote = l.idLote
+LEFT JOIN lotes l
+    ON rec.idLote = l.idLote
 
-ORDER BY p.id DESC
+ORDER BY rec.idRecoleccion DESC
 
 ";
 
@@ -85,38 +79,29 @@ ORDER BY p.id DESC
 // EJECUTAR
 // =========================
 
-$resultado =
-$conn->query($sql);
+$resultado = $conn->query($sql);
 
 // =========================
 // VALIDAR ERROR SQL
 // =========================
 
-if(!$resultado){
+if (!$resultado) {
 
     echo json_encode([
-
         "ok" => false,
-
-        "mensaje" =>
-        $conn->error
-
+        "mensaje" => $conn->error
     ]);
 
     exit;
-
 }
 
 // =========================
-// ARRAY PRODUCCION
+// ARRAY PRODUCCIÓN
 // =========================
 
 $produccion = [];
 
-while(
-    $fila =
-    $resultado->fetch_assoc()
-){
+while ($fila = $resultado->fetch_assoc()) {
 
     $produccion[] = $fila;
 
@@ -132,16 +117,16 @@ SELECT
 
     r.nombre AS recolector,
 
-    SUM(p.cantidad) AS total,
+    SUM(rec.kg) AS total,
 
     COUNT(*) AS registros
 
-FROM produccion p
+FROM recoleccion rec
 
 INNER JOIN recolectores r
-ON p.idRecolector = r.idRecolector
+    ON rec.idRecolector = r.idRecolector
 
-GROUP BY r.nombre
+GROUP BY r.idRecolector, r.nombre
 
 ORDER BY total DESC
 
@@ -154,25 +139,20 @@ LIMIT 5
 // =========================
 
 $resultadoRecolectores =
-$conn->query($sqlRecolectores);
+    $conn->query($sqlRecolectores);
 
 // =========================
 // VALIDAR ERROR TOP
 // =========================
 
-if(!$resultadoRecolectores){
+if (!$resultadoRecolectores) {
 
     echo json_encode([
-
         "ok" => false,
-
-        "mensaje" =>
-        $conn->error
-
+        "mensaje" => $conn->error
     ]);
 
     exit;
-
 }
 
 // =========================
@@ -181,17 +161,11 @@ if(!$resultadoRecolectores){
 
 $topRecolectores = [];
 
-while(
-
-    $filaRecolector =
-
-    $resultadoRecolectores
-    ->fetch_assoc()
-
-){
+while ($filaRecolector =
+       $resultadoRecolectores->fetch_assoc()) {
 
     $topRecolectores[] =
-    $filaRecolector;
+        $filaRecolector;
 
 }
 
@@ -204,10 +178,10 @@ echo json_encode([
     "ok" => true,
 
     "produccion" =>
-    $produccion,
+        $produccion,
 
     "topRecolectores" =>
-    $topRecolectores
+        $topRecolectores
 
 ], JSON_UNESCAPED_UNICODE);
 

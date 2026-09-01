@@ -96,64 +96,69 @@ implements OnInit, AfterViewInit {
 
   // CARGAR
 
-  cargar() {
+  cargar(): void {
+  this.http.get<any[]>(this.API).subscribe({
+    next: (res: any[]) => {
 
-    this.http
-      .get<any[]>(this.API)
+      console.log('DATOS DEL REPORTE DE INVENTARIO:', res);
 
-      .subscribe({
+      if (Array.isArray(res)) {
+        this.inventario = res;
+      } else {
+        this.inventario = [];
+      }
 
-        next: (res) => {
+      this.inventarioOriginal = [...this.inventario];
 
-          this.inventario = res || [];
+      console.log(
+        'PRODUCTOS CARGADOS:',
+        this.inventario.length
+      );
 
-          this.inventarioOriginal =
-          [...this.inventario];
+    },
 
-         setTimeout(() => {
+    error: (err: any) => {
 
-         }, 500);
+      console.error(
+        'ERROR AL CARGAR REPORTE DE INVENTARIO:',
+        err
+      );
 
-        },
+      this.inventario = [];
+      this.inventarioOriginal = [];
 
-        error: (err: any) => {
-
-          console.log(err);
-
-        }
-
-      });
-
-  }
-
+    }
+  });
+}
   // FILTRO FECHAS
 
  filtrarFechas() {
 
-  if(
-    !this.fechaInicio ||
-    !this.fechaFin
-  ){
+  if (!this.fechaInicio || !this.fechaFin) {
 
     this.inventario =
-    [...this.inventarioOriginal];
+      [...this.inventarioOriginal];
 
     return;
 
   }
 
   this.inventario =
-  this.inventarioOriginal.filter(i => {
+    this.inventarioOriginal.filter(i => {
 
-    return (
+      if (!i.fechaIngreso) {
+        return false;
+      }
 
-      i.fechaIngreso >= this.fechaInicio &&
+      const fechaMovimiento =
+        String(i.fechaIngreso).substring(0, 10);
 
-      i.fechaIngreso <= this.fechaFin
+      return (
+        fechaMovimiento >= this.fechaInicio &&
+        fechaMovimiento <= this.fechaFin
+      );
 
-    );
-
-  });
+    });
 
 }
   // LIMPIAR FILTRO
