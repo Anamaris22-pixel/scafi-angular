@@ -148,28 +148,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
           this.datosGraficaVentas = [];
 
           if (res.grafica) {
-            const ordenMeses = [
-              'Jan',
-              'Feb',
-              'Mar',
-              'Apr',
-              'May',
-              'Jun',
-              'Jul',
-              'Aug',
-              'Sep',
-              'Oct',
-              'Nov',
-              'Dec',
-            ];
-
-            res.grafica.sort(
-              (a: any, b: any) => ordenMeses.indexOf(a.mes) - ordenMeses.indexOf(b.mes),
-            );
-
             res.grafica.forEach((item: any) => {
               this.mesesGraficaLabels.push(item.mes);
-
               this.datosGraficaVentas.push(Number(item.ventas));
             });
           }

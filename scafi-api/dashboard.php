@@ -1,6 +1,17 @@
 <?php
-
+// Permitir acceso desde cualquier origen
 header("Access-Control-Allow-Origin: *");
+// Permitir los métodos que Angular va a usar
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+// Permitir encabezados personalizados
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
+
+// Si la petición es OPTIONS (Preflight de Angular), salir inmediatamente con código 200 (OK)
+if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
+
 header("Content-Type: application/json");
 
 include 'conexion.php';
@@ -196,7 +207,7 @@ while (
 
 
 // =============================
-// GRAFICA VENTAS
+// GRAFICA VENTAS (Corregido para MySQL 8)
 // =============================
 
 $sqlGrafica = "
@@ -204,7 +215,7 @@ $sqlGrafica = "
     SELECT
 
         DATE_FORMAT(
-            fecha,
+            MIN(fecha), 
             '%b %Y'
         ) AS mes,
 
@@ -223,23 +234,18 @@ $sqlGrafica = "
     MONTH(fecha)
 
 ";
-$resGrafica =
-$conexion->query($sqlGrafica);
+
+$resGrafica = $conexion->query($sqlGrafica);
 
 $grafica = [];
 
 while (
-    $fila =
-    $resGrafica->fetch_assoc()
+    $fila = $resGrafica->fetch_assoc()
 ) {
 
     $grafica[] = [
-
         "mes" => $fila['mes'],
-
-        "ventas" =>
-        (float)$fila['ventas']
-
+        "ventas" => (float)$fila['ventas']
     ];
 
 }
