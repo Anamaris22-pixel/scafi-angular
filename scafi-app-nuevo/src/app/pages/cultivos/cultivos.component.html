@@ -267,15 +267,21 @@
     <td class="p-4 text-center">
 
       <span
-        class="px-3 py-1 rounded-xl text-white font-bold"
-        [ngClass]="
-          c.estado === 'Activo'
-          ? 'bg-green-600'
-          : 'bg-red-600'
-        "
+        class="inline-flex items-center justify-center min-w-[90px] px-3 py-1 rounded-xl text-white font-bold text-sm"
+        [ngClass]="{
+          'bg-green-600': c.estado === 'Activo',
+          'bg-red-600': c.estado === 'Inactivo',
+          'bg-gray-500': !c.estado
+        }"
       >
 
-        {{ c.estado }}
+        {{
+          c.estado === 'Activo'
+            ? 'Activo'
+            : c.estado === 'Inactivo'
+              ? 'Inactivo'
+              : 'Sin estado'
+        }}
 
       </span>
 
