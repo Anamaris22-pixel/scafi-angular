@@ -18,19 +18,17 @@ export class LotesComponent implements OnInit {
   nombreLote = '';
   ubicacion = '';
   hectareas = '';
-  estado = '';
 
   buscar = '';
 
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
-
     this.cargar();
   }
 
   // =========================
-  // CARGAR
+  // CARGAR LOTES
   // =========================
   cargar(): void {
 
@@ -38,29 +36,39 @@ export class LotesComponent implements OnInit {
       .subscribe({
 
         next: (res) => {
-
           this.lotes = res;
         },
 
         error: (err) => {
-
-          console.log(err);
+          console.error('Error al cargar lotes:', err);
         }
 
       });
   }
 
   // =========================
-  // GUARDAR
+  // GUARDAR LOTE
   // =========================
   guardar(): void {
 
+    if (
+      !this.nombreLote.trim() ||
+      !this.ubicacion.trim() ||
+      !this.hectareas
+    ) {
+      alert('Por favor complete todos los campos obligatorios.');
+      return;
+    }
+
     const formData = new FormData();
 
+    formData.append('accion', 'guardar');
     formData.append('nombreLote', this.nombreLote);
     formData.append('ubicacion', this.ubicacion);
     formData.append('hectareas', this.hectareas);
-    formData.append('estado', this.estado);
+
+    // Todo lote nuevo se registra automáticamente como Activo.
+    formData.append('estado', 'Activo');
 
     this.http.post<any>(this.api, formData)
       .subscribe({
@@ -68,18 +76,64 @@ export class LotesComponent implements OnInit {
         next: (res) => {
 
           if (res.ok) {
-
-            alert('Lote guardado');
-
+            alert('Lote registrado correctamente como Activo.');
             this.limpiar();
-
             this.cargar();
+          } else {
+            alert(res.error || 'No fue posible registrar el lote.');
+            console.error(res);
           }
         },
 
         error: (err) => {
+          console.error('Error al guardar lote:', err);
+          alert('Error de conexión con el servidor.');
+        }
 
-          console.log(err);
+      });
+  }
+
+  // =========================
+  // ACTIVAR / INACTIVAR LOTE
+  // =========================
+  cambiarEstado(lote: any): void {
+
+    const nuevoEstado =
+      lote.estado === 'Activo'
+        ? 'Inactivo'
+        : 'Activo';
+
+    const confirmar = confirm(
+      `¿Desea cambiar el lote "${lote.nombreLote}" a ${nuevoEstado}?`
+    );
+
+    if (!confirmar) {
+      return;
+    }
+
+    const formData = new FormData();
+
+    formData.append('accion', 'actualizar_estado');
+    formData.append('idLote', String(lote.idLote));
+    formData.append('estado', nuevoEstado);
+
+    this.http.post<any>(this.api, formData)
+      .subscribe({
+
+        next: (res) => {
+
+          if (res.ok) {
+            alert(`Lote actualizado a ${nuevoEstado}.`);
+            this.cargar();
+          } else {
+            alert(res.error || 'No fue posible actualizar el estado.');
+            console.error(res);
+          }
+        },
+
+        error: (err) => {
+          console.error('Error al actualizar estado:', err);
+          alert('Error de conexión con el servidor.');
         }
 
       });
@@ -91,11 +145,9 @@ export class LotesComponent implements OnInit {
   lotesFiltrados() {
 
     return this.lotes.filter(l =>
-
-      l.nombreLote
+      String(l.nombreLote || '')
         .toLowerCase()
         .includes(this.buscar.toLowerCase())
-
     );
   }
 
@@ -103,11 +155,9 @@ export class LotesComponent implements OnInit {
   // LIMPIAR
   // =========================
   limpiar(): void {
-
     this.nombreLote = '';
     this.ubicacion = '';
     this.hectareas = '';
-    this.estado = '';
   }
 
 }
