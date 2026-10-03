@@ -9,7 +9,7 @@ include 'conexion.php';
 
 
 // =========================
-// LISTAR
+// LISTAR LOTES
 // =========================
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
@@ -24,41 +24,92 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $data = [];
 
     while ($fila = $resultado->fetch_assoc()) {
-
         $data[] = $fila;
     }
 
     echo json_encode($data);
+    exit;
 }
 
 
 // =========================
-// GUARDAR
+// OPERACIONES POST
 // =========================
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    $nombreLote =
-    $_POST['nombreLote'] ?? '';
+    $accion = $_POST['accion'] ?? 'guardar';
 
-    $ubicacion =
-    $_POST['ubicacion'] ?? '';
 
-    $hectareas =
-    $_POST['hectareas'] ?? '';
+    // =========================
+    // ACTIVAR / INACTIVAR LOTE
+    // =========================
+    if ($accion === 'actualizar_estado') {
 
-    $estado =
-    $_POST['estado'] ?? '';
+        $idLote = (int)($_POST['idLote'] ?? 0);
+        $estado = $_POST['estado'] ?? '';
 
-    $stmt = $conexion->prepare("
-        INSERT INTO lotes
-        (
-            nombreLote,
-            ubicacion,
-            hectareas,
-            estado
-        )
-        VALUES (?, ?, ?, ?)
-    ");
+        if ($idLote <= 0 || !in_array($estado, ['Activo', 'Inactivo'], true)) {
+
+            echo json_encode([
+                "ok" => false,
+                "error" => "Datos de estado no válidos."
+            ]);
+
+            exit;
+        }
+
+        $stmt = $conexion->prepare(""
+            . "UPDATE lotes SET estado = ? WHERE idLote = ?"
+        );
+
+        $stmt->bind_param("si", $estado, $idLote);
+
+        if ($stmt->execute()) {
+
+            echo json_encode([
+                "ok" => true,
+                "mensaje" => "Estado del lote actualizado correctamente.",
+                "estado" => $estado
+            ]);
+
+        } else {
+
+            echo json_encode([
+                "ok" => false,
+                "error" => $stmt->error
+            ]);
+        }
+
+        $stmt->close();
+        exit;
+    }
+
+
+    // =========================
+    // GUARDAR LOTE NUEVO
+    // =========================
+    $nombreLote = trim($_POST['nombreLote'] ?? '');
+    $ubicacion = trim($_POST['ubicacion'] ?? '');
+    $hectareas = $_POST['hectareas'] ?? '';
+
+    if ($nombreLote === '' || $ubicacion === '' || $hectareas === '') {
+
+        echo json_encode([
+            "ok" => false,
+            "error" => "Todos los campos son obligatorios."
+        ]);
+
+        exit;
+    }
+
+    // Todo lote nuevo se registra automáticamente como Activo.
+    $estado = 'Activo';
+
+    $stmt = $conexion->prepare(""
+        . "INSERT INTO lotes "
+        . "(nombreLote, ubicacion, hectareas, estado) "
+        . "VALUES (?, ?, ?, ?)"
+    );
 
     $stmt->bind_param(
         "ssds",
@@ -71,7 +122,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($stmt->execute()) {
 
         echo json_encode([
-            "ok" => true
+            "ok" => true,
+            "mensaje" => "Lote registrado correctamente.",
+            "estado" => "Activo"
         ]);
 
     } else {
@@ -81,6 +134,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             "error" => $stmt->error
         ]);
     }
+
+    $stmt->close();
+    exit;
 }
+
+
+echo json_encode([
+    "ok" => false,
+    "error" => "Método no permitido."
+]);
 
 ?>
