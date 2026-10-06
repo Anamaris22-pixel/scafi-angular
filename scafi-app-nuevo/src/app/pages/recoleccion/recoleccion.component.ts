@@ -11,11 +11,13 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 
-// 1. Interfaces estrictas
 export interface Recoleccion {
   idRecoleccion: number;
   idRecolector: string | number;
+  idLote: string | number;
   recolector?: string;
+  nombreLote?: string;
+  ubicacion?: string;
   variedad: string;
   estado: string;
   fecha: string;
@@ -27,8 +29,17 @@ export interface Recolector {
   nombre: string;
 }
 
+export interface Lote {
+  idLote: number;
+  nombreLote: string;
+  ubicacion: string;
+  hectareas: number;
+  estado: string;
+}
+
 export interface PesajePayload {
   idRecolector: string;
+  idLote: string;
   variedad: string;
   estado: string;
   fecha: string;
@@ -41,7 +52,12 @@ export interface User {
 }
 
 const FORMULARIO_VACIO: PesajePayload = { 
-  idRecolector: '', variedad: '', estado: '', fecha: '', kg: '' 
+  idRecolector: '',
+  idLote: '',
+  variedad: '',
+  estado: '',
+  fecha: '',
+  kg: '' 
 };
 
 @Component({
@@ -52,25 +68,22 @@ const FORMULARIO_VACIO: PesajePayload = {
 })
 export class RecoleccionComponent implements OnInit {
   
-  // 2. Inyección moderna
   private readonly http = inject(HttpClient);
   
   private readonly api = 'http://localhost/scafi-angular/scafi-api/recoleccion.php';
   private readonly apiRecolectores = 'http://localhost/scafi-angular/scafi-api/recolectores.php';
 
-  // 3. Estados con Signals
   readonly recolecciones = signal<Recoleccion[]>([]);
   readonly recolectores = signal<Recolector[]>([]);
+  readonly lotes = signal<Lote[]>([]);
   readonly buscar = signal<string>('');
   readonly mostrarFormulario = signal<boolean>(false);
   readonly editando = signal<boolean>(false);
   readonly idEditar = signal<number>(0);
   readonly user = signal<User | null>(null);
 
-  // Agrupamos los campos del formulario en un solo Signal
   readonly formulario = signal<PesajePayload>({ ...FORMULARIO_VACIO });
 
-  // 4. Estados Computados (Sustituyen a las funciones en el HTML)
   readonly recoleccionesFiltradas = computed(() => {
     const termino = this.buscar().toLowerCase().trim();
     const lista = this.recolecciones();
@@ -80,7 +93,10 @@ export class RecoleccionComponent implements OnInit {
     return lista.filter(r => {
       const recolector = (r.recolector || '').toLowerCase();
       const variedad = (r.variedad || '').toLowerCase();
-      return recolector.includes(termino) || variedad.includes(termino);
+      const lote = (r.nombreLote || '').toLowerCase();
+      return recolector.includes(termino) ||
+             variedad.includes(termino) ||
+             lote.includes(termino);
     });
   });
 
@@ -91,15 +107,18 @@ export class RecoleccionComponent implements OnInit {
   ngOnInit(): void {
     const data = localStorage.getItem('user');
     if (data) {
-      this.user.set(JSON.parse(data));
+      try {
+        this.user.set(JSON.parse(data));
+      } catch {
+        console.error('Error leyendo usuario.');
+      }
     }
+
     this.cargar();
     this.cargarRecolectores();
+    this.cargarLotes();
   }
 
-  // ======================
-  // CARGAR
-  // ======================
   cargar(): void {
     this.http.get<Recoleccion[]>(this.api).subscribe({
       next: (res) => this.recolecciones.set(res || []),
@@ -114,44 +133,49 @@ export class RecoleccionComponent implements OnInit {
     });
   }
 
-// ======================
-  // GUARDAR
-  // ======================
+  cargarLotes(): void {
+    this.http.get<Lote[]>(`${this.api}?accion=lotes`).subscribe({
+      next: (res) => this.lotes.set(res || []),
+      error: (err) => console.error('Error lotes:', err)
+    });
+  }
+
   guardarPesaje(): void {
     const payload = this.formulario();
+
+    if (!payload.idRecolector || !payload.idLote ||
+        !payload.variedad || !payload.estado ||
+        !payload.fecha || !payload.kg) {
+      alert('Todos los campos son obligatorios.');
+      return;
+    }
+
     const formData = new FormData();
-    
     formData.append('idRecolector', payload.idRecolector);
+    formData.append('idLote', payload.idLote);
     formData.append('variedad', payload.variedad);
     formData.append('estado', payload.estado);
     formData.append('fecha', payload.fecha);
     formData.append('kg', payload.kg);
 
-    // Tipamos la respuesta para aceptar la propiedad 'mensaje' que viene de PHP
     this.http.post<{ok: boolean, mensaje?: string}>(this.api, formData).subscribe({
       next: (res) => {
         if (res.ok) {
-          // Caso Éxito: Todo salió bien en el servidor
           alert('Pesaje guardado correctamente.');
           this.cargar();
           this.limpiar();
           this.mostrarFormulario.set(false);
         } else {
-          // Caso Error controlado: PHP respondió pero la validación o el SQL falló
           alert('Error del servidor: ' + (res.mensaje || 'No se pudo registrar.'));
         }
       },
       error: (err) => {
-        // Caso Error de red/servidor: Caída de conexión, CORS o error 500 crítico
         console.error('Error en la petición POST:', err);
         alert('No se pudo conectar con el servidor o hubo un error interno en la red.');
       }
     });
   }
 
-  // ======================
-  // ELIMINAR
-  // ======================
   eliminar(id: number): void {
     if (!window.confirm('¿Eliminar registro?')) return;
 
@@ -162,9 +186,6 @@ export class RecoleccionComponent implements OnInit {
     });
   }
 
-  // ======================
-  // EDITAR
-  // ======================
   editar(r: Recoleccion): void {
     this.editando.set(true);
     this.mostrarFormulario.set(true);
@@ -172,6 +193,7 @@ export class RecoleccionComponent implements OnInit {
     
     this.formulario.set({
       idRecolector: String(r.idRecolector),
+      idLote: String(r.idLote),
       variedad: r.variedad,
       estado: r.estado,
       fecha: r.fecha,
@@ -179,29 +201,26 @@ export class RecoleccionComponent implements OnInit {
     });
   }
 
-  // ======================
-  // ACTUALIZAR
-  // ======================
   actualizar(): void {
     const datos = {
       id: this.idEditar(),
       ...this.formulario()
     };
 
-    this.http.put<{ok: boolean}>(this.api, datos).subscribe({
+    this.http.put<{ok: boolean, mensaje?: string}>(this.api, datos).subscribe({
       next: (res) => {
         if (res.ok) {
           alert('Pesaje actualizado');
           this.cargar();
           this.cancelarEditar();
+        } else {
+          alert(res.mensaje || 'No se pudo actualizar.');
         }
-      }
+      },
+      error: (err) => console.error('Error PUT:', err)
     });
   }
 
-  // ======================
-  // CANCELAR Y LIMPIAR
-  // ======================
   cancelarEditar(): void {
     this.editando.set(false);
     this.idEditar.set(0);
