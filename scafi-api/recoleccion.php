@@ -15,16 +15,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 require_once 'conexion.php';
 
-//====================================
-// GET
-//====================================
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+
+    if (isset($_GET['accion']) && $_GET['accion'] === 'lotes') {
+
+        $sqlLotes = "
+            SELECT
+                idLote,
+                nombreLote,
+                ubicacion,
+                hectareas,
+                estado
+            FROM lotes
+            WHERE estado = 'Activo'
+            ORDER BY idLote ASC
+        ";
+
+        $resultadoLotes = $conexion->query($sqlLotes);
+
+        if (!$resultadoLotes) {
+            http_response_code(500);
+            echo json_encode([
+                "ok" => false,
+                "mensaje" => "Error al consultar los lotes: " . $conexion->error
+            ]);
+            exit();
+        }
+
+        $lotes = [];
+
+        while ($fila = $resultadoLotes->fetch_assoc()) {
+            $lotes[] = $fila;
+        }
+
+        echo json_encode($lotes, JSON_UNESCAPED_UNICODE);
+        exit();
+    }
 
     $sql = "
         SELECT
             r.idRecoleccion,
             r.idRecolector,
+            r.idLote,
             rec.nombre AS recolector,
+            l.nombreLote,
+            l.ubicacion,
             r.variedad,
             r.estado,
             r.fecha,
@@ -32,18 +67,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         FROM recoleccion r
         LEFT JOIN recolectores rec
             ON rec.idRecolector = r.idRecolector
+        LEFT JOIN lotes l
+            ON l.idLote = r.idLote
         ORDER BY r.idRecoleccion DESC
     ";
 
     $resultado = $conexion->query($sql);
 
     if (!$resultado) {
-
-        die(json_encode([
+        http_response_code(500);
+        echo json_encode([
             "ok" => false,
-            "error" => $conexion->error
-        ]));
-
+            "mensaje" => "Error al consultar las recolecciones: " . $conexion->error
+        ]);
+        exit();
     }
 
     $datos = [];
@@ -52,16 +89,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $datos[] = $fila;
     }
 
-    echo json_encode($datos);
+    echo json_encode($datos, JSON_UNESCAPED_UNICODE);
     exit();
 }
 
-//====================================
-// POST
-//====================================
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $idRecolector = $_POST['idRecolector'] ?? '';
+    $idLote       = $_POST['idLote'] ?? '';
     $variedad     = trim($_POST['variedad'] ?? '');
     $estado       = trim($_POST['estado'] ?? '');
     $fecha        = $_POST['fecha'] ?? '';
@@ -69,60 +104,130 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (
         empty($idRecolector) ||
+        empty($idLote) ||
         empty($variedad) ||
         empty($estado) ||
         empty($fecha) ||
-        empty($kg)
+        $kg === ''
     ) {
-
         echo json_encode([
             "ok" => false,
             "mensaje" => "Todos los campos son obligatorios."
         ]);
-
         exit();
     }
 
-    $idLote = 1;
+    if (!is_numeric($kg) || floatval($kg) <= 0) {
+        echo json_encode([
+            "ok" => false,
+            "mensaje" => "La cantidad de kilogramos debe ser mayor que cero."
+        ]);
+        exit();
+    }
 
-$stmt = $conexion->prepare("
-INSERT INTO recoleccion
-(
-    idRecolector,
-    idLote,
-    variedad,
-    estado,
-    fecha,
-    kg
-)
-VALUES
-(?,?,?,?,?,?)
-");
+    $verificarRecolector = $conexion->prepare("
+        SELECT idRecolector
+        FROM recolectores
+        WHERE idRecolector = ?
+    ");
 
-$stmt->bind_param(
-    "iisssd",
-    $idRecolector,
-    $idLote,
-    $variedad,
-    $estado,
-    $fecha,
-    $kg
-);
+    if (!$verificarRecolector) {
+        http_response_code(500);
+        echo json_encode([
+            "ok" => false,
+            "mensaje" => $conexion->error
+        ]);
+        exit();
+    }
+
+    $verificarRecolector->bind_param("i", $idRecolector);
+    $verificarRecolector->execute();
+    $resultadoRecolector = $verificarRecolector->get_result();
+
+    if ($resultadoRecolector->num_rows === 0) {
+        echo json_encode([
+            "ok" => false,
+            "mensaje" => "El recolector seleccionado no existe."
+        ]);
+        $verificarRecolector->close();
+        exit();
+    }
+
+    $verificarRecolector->close();
+
+    $verificarLote = $conexion->prepare("
+        SELECT idLote
+        FROM lotes
+        WHERE idLote = ?
+        AND estado = 'Activo'
+    ");
+
+    if (!$verificarLote) {
+        http_response_code(500);
+        echo json_encode([
+            "ok" => false,
+            "mensaje" => $conexion->error
+        ]);
+        exit();
+    }
+
+    $verificarLote->bind_param("i", $idLote);
+    $verificarLote->execute();
+    $resultadoLote = $verificarLote->get_result();
+
+    if ($resultadoLote->num_rows === 0) {
+        echo json_encode([
+            "ok" => false,
+            "mensaje" => "El lote seleccionado no existe o está inactivo."
+        ]);
+        $verificarLote->close();
+        exit();
+    }
+
+    $verificarLote->close();
+
+    $stmt = $conexion->prepare("
+        INSERT INTO recoleccion
+        (
+            idRecolector,
+            idLote,
+            variedad,
+            estado,
+            fecha,
+            kg
+        )
+        VALUES (?, ?, ?, ?, ?, ?)
+    ");
+
+    if (!$stmt) {
+        http_response_code(500);
+        echo json_encode([
+            "ok" => false,
+            "mensaje" => "No se pudo preparar el registro: " . $conexion->error
+        ]);
+        exit();
+    }
+
+    $stmt->bind_param(
+        "iisssd",
+        $idRecolector,
+        $idLote,
+        $variedad,
+        $estado,
+        $fecha,
+        $kg
+    );
 
     if ($stmt->execute()) {
-
         echo json_encode([
             "ok" => true,
             "mensaje" => "Pesaje guardado correctamente."
         ]);
-
     } else {
-
         http_response_code(500);
-
         echo json_encode([
             "ok" => false,
-            "mensaje" => $stmt->error
+            "mensaje" => "No se pudo guardar el pesaje: " . $stmt->error
         ]);
     }
 
@@ -130,34 +235,98 @@ $stmt->bind_param(
     exit();
 }
 
-//====================================
-// PUT
-//====================================
 if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
 
     $input = json_decode(file_get_contents("php://input"), true);
 
-    $id            = $input['id'] ?? 0;
-    $idRecolector  = $input['idRecolector'] ?? '';
-    $variedad      = $input['variedad'] ?? '';
-    $estado        = $input['estado'] ?? '';
-    $fecha         = $input['fecha'] ?? '';
-    $kg            = $input['kg'] ?? '';
+    $id           = $input['id'] ?? 0;
+    $idRecolector = $input['idRecolector'] ?? '';
+    $idLote       = $input['idLote'] ?? '';
+    $variedad     = trim($input['variedad'] ?? '');
+    $estado       = trim($input['estado'] ?? '');
+    $fecha        = $input['fecha'] ?? '';
+    $kg           = $input['kg'] ?? '';
+
+    if (
+        empty($id) ||
+        empty($idRecolector) ||
+        empty($idLote) ||
+        empty($variedad) ||
+        empty($estado) ||
+        empty($fecha) ||
+        $kg === ''
+    ) {
+        echo json_encode([
+            "ok" => false,
+            "mensaje" => "Todos los campos son obligatorios."
+        ]);
+        exit();
+    }
+
+    if (!is_numeric($kg) || floatval($kg) <= 0) {
+        echo json_encode([
+            "ok" => false,
+            "mensaje" => "La cantidad de kilogramos debe ser mayor que cero."
+        ]);
+        exit();
+    }
+
+    $verificarLote = $conexion->prepare("
+        SELECT idLote
+        FROM lotes
+        WHERE idLote = ?
+        AND estado = 'Activo'
+    ");
+
+    if (!$verificarLote) {
+        http_response_code(500);
+        echo json_encode([
+            "ok" => false,
+            "mensaje" => $conexion->error
+        ]);
+        exit();
+    }
+
+    $verificarLote->bind_param("i", $idLote);
+    $verificarLote->execute();
+    $resultadoLote = $verificarLote->get_result();
+
+    if ($resultadoLote->num_rows === 0) {
+        echo json_encode([
+            "ok" => false,
+            "mensaje" => "El lote seleccionado no existe o está inactivo."
+        ]);
+        $verificarLote->close();
+        exit();
+    }
+
+    $verificarLote->close();
 
     $stmt = $conexion->prepare("
         UPDATE recoleccion
         SET
-            idRecolector=?,
-            variedad=?,
-            estado=?,
-            fecha=?,
-            kg=?
-        WHERE idRecoleccion=?
+            idRecolector = ?,
+            idLote = ?,
+            variedad = ?,
+            estado = ?,
+            fecha = ?,
+            kg = ?
+        WHERE idRecoleccion = ?
     ");
 
+    if (!$stmt) {
+        http_response_code(500);
+        echo json_encode([
+            "ok" => false,
+            "mensaje" => "No se pudo preparar la actualización: " . $conexion->error
+        ]);
+        exit();
+    }
+
     $stmt->bind_param(
-        "isssdi",
+        "iisssdi",
         $idRecolector,
+        $idLote,
         $variedad,
         $estado,
         $fecha,
@@ -166,19 +335,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     );
 
     if ($stmt->execute()) {
-
         echo json_encode([
             "ok" => true,
-            "mensaje" => "Registro actualizado."
+            "mensaje" => "Registro actualizado correctamente."
         ]);
-
     } else {
-
         http_response_code(500);
-
         echo json_encode([
             "ok" => false,
-            "mensaje" => $stmt->error
+            "mensaje" => "No se pudo actualizar el registro: " . $stmt->error
         ]);
     }
 
@@ -186,34 +351,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     exit();
 }
 
-//====================================
-// DELETE
-//====================================
 if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
 
     $id = $_GET['id'] ?? 0;
 
+    if (empty($id)) {
+        echo json_encode([
+            "ok" => false,
+            "mensaje" => "ID de registro requerido."
+        ]);
+        exit();
+    }
+
     $stmt = $conexion->prepare("
         DELETE FROM recoleccion
-        WHERE idRecoleccion=?
+        WHERE idRecoleccion = ?
     ");
+
+    if (!$stmt) {
+        http_response_code(500);
+        echo json_encode([
+            "ok" => false,
+            "mensaje" => "No se pudo preparar la eliminación: " . $conexion->error
+        ]);
+        exit();
+    }
 
     $stmt->bind_param("i", $id);
 
     if ($stmt->execute()) {
-
         echo json_encode([
             "ok" => true,
-            "mensaje" => "Registro eliminado."
+            "mensaje" => "Registro eliminado correctamente."
         ]);
-
     } else {
-
         http_response_code(500);
-
         echo json_encode([
             "ok" => false,
-            "mensaje" => $stmt->error
+            "mensaje" => "No se pudo eliminar el registro: " . $stmt->error
         ]);
     }
 
@@ -229,3 +404,4 @@ echo json_encode([
 ]);
 
 $conexion->close();
+?>
