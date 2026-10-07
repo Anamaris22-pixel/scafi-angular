@@ -23,7 +23,8 @@ $sqlResumen = "
 
         (SELECT IFNULL(SUM(total),0)
          FROM ventas
-         WHERE MONTH(fecha)=MONTH(CURDATE())
+         WHERE fecha < DATE_ADD(CURDATE(), INTERVAL 1 DAY)
+           AND MONTH(fecha)=MONTH(CURDATE())
            AND YEAR(fecha)=YEAR(CURDATE())) AS ventas_mes,
 
         (SELECT COUNT(*)
