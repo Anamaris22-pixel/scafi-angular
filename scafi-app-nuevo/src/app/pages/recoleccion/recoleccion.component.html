@@ -63,6 +63,18 @@
     class="bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden"
   >
 
+  <div
+    *ngIf="esRecolector()"
+    class="mb-4 rounded-2xl border border-amber-200 bg-amber-50
+           text-amber-900 px-5 py-4 shadow-sm"
+  >
+    <div class="font-black">🔒 Solo lectura</div>
+    <div class="text-sm mt-1">
+      Como Recolector puedes consultar los pesajes, pero no puedes registrar,
+      editar ni eliminar información. Solicita cualquier cambio al administrador.
+    </div>
+  </div>
+
 
     <!-- ================================================= -->
     <!-- BUSCADORES Y FILTROS -->
@@ -157,6 +169,7 @@
         @if (user()?.idRol != 3) {
 
           <button
+            *ngIf="!esRecolector()"
             type="button"
             (click)="mostrarFormulario.set(true)"
             class="bg-white hover:bg-gray-200 px-6 py-3 rounded-2xl shadow font-semibold transition"
