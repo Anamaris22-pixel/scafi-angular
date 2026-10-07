@@ -96,7 +96,15 @@
           <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Producción Acumulada</p>
           <h2 class="text-3xl font-black text-slate-900 mt-2">{{ totalProduccionKG | number }} KG</h2>
         </div>
-        <span class="text-5xl p-3 bg-green-50 rounded-2xl">🌱</span>
+        <span class="w-16 h-16 p-3 bg-gradient-to-br from-emerald-50 to-green-100 rounded-2xl flex items-center justify-center shadow-inner">
+          <svg viewBox="0 0 64 64" class="w-11 h-11" aria-hidden="true">
+            <path d="M32 54V31" stroke="#166534" stroke-width="4" stroke-linecap="round"/>
+            <path d="M32 35C21 34 13 28 11 17c11-1 20 4 21 18Z" fill="#22c55e"/>
+            <path d="M32 29C34 18 42 11 54 10c0 12-8 20-22 23Z" fill="#84cc16"/>
+            <path d="M27 54h10" stroke="#166534" stroke-width="4" stroke-linecap="round"/>
+            <path d="M25 54c0-5 3-8 7-8s7 3 7 8" fill="#a16207"/>
+          </svg>
+        </span>
       </div>
 
       <div class="bg-white/95 backdrop-blur-md border border-white/40 rounded-3xl p-6 shadow-2xl flex justify-between items-center hover:scale-[1.02] transition-transform">
@@ -104,7 +112,13 @@
           <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Ventas del Mes</p>
           <h2 class="text-3xl font-black text-slate-900 mt-2">$ {{ totalVentasMes | number }}</h2>
         </div>
-        <span class="text-5xl p-3 bg-amber-50 rounded-2xl">💰</span>
+        <span class="w-16 h-16 p-3 bg-gradient-to-br from-amber-50 to-yellow-100 rounded-2xl flex items-center justify-center shadow-inner">
+          <svg viewBox="0 0 64 64" class="w-11 h-11" aria-hidden="true">
+            <path d="M32 7c3 6 10 8 14 13 5 6 7 13 5 21-2 10-10 16-19 16s-17-6-19-16c-2-8 0-15 5-21 4-5 11-7 14-13Z" fill="#f59e0b"/>
+            <path d="M32 19v25M39 26c-2-3-10-4-12 1-2 6 4 7 7 8 4 1 6 3 5 6-2 6-11 5-14 1" fill="none" stroke="#92400e" stroke-width="3" stroke-linecap="round"/>
+            <path d="M27 50h10" stroke="#92400e" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        </span>
       </div>
 
       <div class="bg-white/95 backdrop-blur-md border border-white/40 rounded-3xl p-6 shadow-2xl flex justify-between items-center hover:scale-[1.02] transition-transform">
@@ -114,7 +128,15 @@
             {{ totalRecolectores }} Recolectores
          </h2>
         </div>
-        <span class="text-5xl p-3 bg-blue-50 rounded-2xl">👨‍🌾</span>
+        <span class="w-16 h-16 p-3 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl flex items-center justify-center shadow-inner">
+          <svg viewBox="0 0 64 64" class="w-11 h-11" aria-hidden="true">
+            <circle cx="32" cy="21" r="9" fill="#f4c7a1"/>
+            <path d="M22 20c1-9 19-12 21 1-4-3-14-4-21-1Z" fill="#7c3f20"/>
+            <path d="M17 55c1-13 7-20 15-20s14 7 15 20" fill="#3b82f6"/>
+            <path d="M19 55h26M17 34l-7 8M47 34l7 8" stroke="#1e40af" stroke-width="4" stroke-linecap="round"/>
+            <path d="M10 42h8M46 42h8" stroke="#f59e0b" stroke-width="4" stroke-linecap="round"/>
+          </svg>
+        </span>
       </div>
 
       <div class="bg-white/95 backdrop-blur-md border border-white/40 rounded-3xl p-6 shadow-2xl flex justify-between items-center hover:scale-[1.02] transition-transform">
@@ -122,7 +144,14 @@
           <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Lotes Registrados</p>
           <h2 class="text-3xl font-black text-slate-900 mt-2">{{ totalCultivos }} Lotes</h2>
         </div>
-        <span class="text-5xl p-3 bg-orange-50 rounded-2xl">☕</span>
+        <span class="w-16 h-16 p-3 bg-gradient-to-br from-orange-50 to-amber-100 rounded-2xl flex items-center justify-center shadow-inner">
+          <svg viewBox="0 0 64 64" class="w-11 h-11" aria-hidden="true">
+            <path d="M13 24h33v17c0 9-7 15-16 15h-2c-9 0-15-6-15-15V24Z" fill="#a16207"/>
+            <path d="M46 29h5c6 0 8 5 6 10-1 5-5 7-11 7" fill="none" stroke="#78350f" stroke-width="4"/>
+            <path d="M22 16c-3 4 3 6 0 10M32 14c-3 4 3 6 0 10M42 16c-3 4 3 6 0 10" fill="none" stroke="#92400e" stroke-width="3" stroke-linecap="round"/>
+            <path d="M13 57h37" stroke="#78350f" stroke-width="4" stroke-linecap="round"/>
+          </svg>
+        </span>
       </div>
     </div>
 
@@ -175,7 +204,13 @@
             <p class="text-sm font-bold opacity-80 uppercase tracking-wide">Insumos Bajos Stock</p>
             <h2 class="text-5xl font-black mt-2">{{ inventarioBajoCount }}</h2>
           </div>
-          <span class="text-4xl bg-white/20 p-3 rounded-2xl">⚠️</span>
+          <span class="w-14 h-14 bg-white/15 p-3 rounded-2xl flex items-center justify-center ring-1 ring-white/20">
+            <svg viewBox="0 0 64 64" class="w-9 h-9" aria-hidden="true">
+              <path d="M32 7 58 54H6L32 7Z" fill="#facc15"/>
+              <path d="M32 22v16" stroke="#7c2d12" stroke-width="5" stroke-linecap="round"/>
+              <circle cx="32" cy="45" r="3" fill="#7c2d12"/>
+            </svg>
+          </span>
         </div>
 
         <div class="bg-gradient-to-br from-green-600 to-emerald-700 text-white p-6 rounded-3xl shadow-lg flex justify-between items-center">
@@ -189,8 +224,13 @@
     </h2>
   </div>
 
-  <span class="text-4xl bg-white/20 p-3 rounded-2xl">
-    💵
+  <span class="w-14 h-14 bg-white/15 p-3 rounded-2xl flex items-center justify-center ring-1 ring-white/20">
+    <svg viewBox="0 0 64 64" class="w-9 h-9" aria-hidden="true">
+      <rect x="8" y="17" width="48" height="30" rx="5" fill="#22c55e"/>
+      <rect x="13" y="22" width="38" height="20" rx="3" fill="#86efac"/>
+      <circle cx="32" cy="32" r="7" fill="#16a34a"/>
+      <path d="M32 27v10M29 29c1-2 6-2 7 1 1 3-3 4-5 4-2 0-4 1-3 3 1 3 6 3 8 1" fill="none" stroke="#ecfdf5" stroke-width="2" stroke-linecap="round"/>
+    </svg>
   </span>
 </div>
 
@@ -199,7 +239,16 @@
             <p class="text-sm font-bold opacity-80 uppercase tracking-wide">Lotes en Producción</p>
             <h2 class="text-4xl font-black mt-2">{{ cultivosActivosCount }} Activos</h2>
           </div>
-          <span class="text-4xl bg-white/20 p-3 rounded-2xl">🚜</span>
+          <span class="w-14 h-14 bg-white/15 p-3 rounded-2xl flex items-center justify-center ring-1 ring-white/20">
+            <svg viewBox="0 0 64 64" class="w-9 h-9" aria-hidden="true">
+              <path d="M10 40h32v10H10zM38 29h9l7 11H38z" fill="#22c55e"/>
+              <circle cx="19" cy="51" r="7" fill="#334155"/>
+              <circle cx="47" cy="51" r="7" fill="#334155"/>
+              <circle cx="19" cy="51" r="3" fill="#cbd5e1"/>
+              <circle cx="47" cy="51" r="3" fill="#cbd5e1"/>
+              <path d="M13 40V28h18v12M31 29V20h9l5 9" fill="none" stroke="#a7f3d0" stroke-width="4" stroke-linejoin="round"/>
+            </svg>
+          </span>
         </div>
       </div>
     </div>
