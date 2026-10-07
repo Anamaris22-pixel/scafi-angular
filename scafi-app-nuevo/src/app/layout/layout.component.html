@@ -123,13 +123,26 @@
 
       <!-- USUARIO -->
       <div class="flex items-center gap-3">
-        <button
-         
-  *ngIf="user?.idRol == 1 || user?.idRol == 2 || user?.idRol == 3"
-          class="w-10 h-10 rounded-full bg-green-600 flex items-center justify-center font-bold"
+        <div
+          *ngIf="user?.idRol == 1 || user?.idRol == 2 || user?.idRol == 3"
+          class="w-10 h-10 rounded-full overflow-hidden bg-green-600
+                 flex items-center justify-center font-bold
+                 ring-2 ring-white/20 shadow-md"
+          [title]="user?.nombre || 'Usuario'"
         >
-          {{ user?.nombre?.charAt(0) }}
-        </button>
+          <img
+            *ngIf="user?.foto"
+            [src]="getFotoUrl(user.foto)"
+            [alt]="user?.nombre || 'Usuario'"
+            class="w-full h-full object-cover"
+            (error)="fotoError = true"
+            [class.hidden]="fotoError"
+          />
+
+          <span *ngIf="!user?.foto || fotoError">
+            {{ user?.nombre?.charAt(0)?.toUpperCase() || '?' }}
+          </span>
+        </div>
         <div>
           <div class="font-semibold text-sm">{{ user?.nombre }}</div>
           <div class="text-xs text-gray-300">{{ getRolNombre() }}</div>
