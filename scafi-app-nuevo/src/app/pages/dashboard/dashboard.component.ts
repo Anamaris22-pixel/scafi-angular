@@ -112,6 +112,7 @@ implements OnInit, AfterViewInit, OnDestroy {
   graficaInstance: any;
 
   private intervaloActualizacion: any;
+  private vistaLista = false;
 
   // ==========================================
   // CONSTRUCTOR
@@ -154,7 +155,9 @@ implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
 
+    this.vistaLista = true;
     this.inicializarGrafica();
+    this.actualizarGraficaReal();
 
   }
 
@@ -240,23 +243,24 @@ implements OnInit, AfterViewInit, OnDestroy {
 
 }
 
-        setTimeout(() => {
-
-          this.actualizarGraficaReal();
-
-        }, 300);
-
         this.cargando = false;
 
-        //this.cdr.detectChanges();//
+        // Forzar la actualización inmediata de las tarjetas.
+        // Esto evita que el usuario tenga que hacer clic para que Angular
+        // pinte los datos recibidos por HTTP.
+        this.cdr.detectChanges();
+
+        // La gráfica puede haber sido creada antes de que llegara la API.
+        this.actualizarGraficaReal();
 
       },
 
       error: (err) => {
 
-        console.log(err);
+        console.error('Error cargando dashboard:', err);
 
         this.cargando = false;
+        this.cdr.detectChanges();
 
       }
 
@@ -271,12 +275,18 @@ implements OnInit, AfterViewInit, OnDestroy {
   inicializarGrafica() {
 
     const ctx =
+      document.getElementById(
+        'graficaVentas'
+      ) as HTMLCanvasElement;
 
-    document.getElementById(
-      'graficaVentas'
-    ) as HTMLCanvasElement;
+    if (!ctx) {
+      return;
+    }
 
-    if (!ctx) return;
+    // Evita crear más de una instancia de Chart.js.
+    if (this.graficaInstance) {
+      return;
+    }
 
     this.graficaInstance = new Chart(
 
