@@ -14,9 +14,9 @@
     <div class="flex items-center gap-6">
       <!-- NOTIFICACIONES -->
       <div
-  class="relative"
-  *ngIf="user?.idRol == 1 || user?.idRol == 2"
->
+        class="relative"
+        *ngIf="user?.id"
+      >
         <button (click)="toggleNoti()" class="relative text-2xl hover:text-yellow-400 transition">
           <!-- Ícono campana -->
           <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
