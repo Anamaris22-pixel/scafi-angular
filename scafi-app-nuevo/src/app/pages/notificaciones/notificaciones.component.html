@@ -61,7 +61,7 @@
 
       <div
         *ngFor="let n of notificaciones"
-        (click)="seleccionarNotificacion(n)"
+        (click)="abrirNotificacion(n)"
         class="bg-white rounded-xl border shadow-sm hover:shadow-md cursor-pointer transition p-5"
         [ngClass]="{
           'border-l-8 border-l-blue-500': estaNoLeida(n),
