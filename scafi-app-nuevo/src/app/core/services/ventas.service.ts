@@ -28,6 +28,15 @@ export class VentasService {
 
   }
 
+  updateVenta(id: number, data: any) {
+
+    return this.http.put(
+      `${this.api}?id=${id}`,
+      data
+    );
+
+  }
+
   deleteVenta(id: number) {
 
     return this.http.delete(
