@@ -59,6 +59,8 @@ implements OnInit, OnDestroy {
 
   notificaciones: any[] = [];
 
+  totalNoLeidas = 0;
+
   permisos: any[] = [];
 
   permisosCargados = false;
@@ -195,9 +197,37 @@ implements OnInit, OnDestroy {
     .marcarLeida(id, Number(this.user?.id))
     .subscribe({
 
-      next: () => {
+      next: (res: any) => {
 
-        this.cargarNotificaciones();
+        if (res?.ok) {
+
+          const notificacion =
+            this.notificaciones.find(
+              (n: any) => Number(n.id) === Number(id)
+            );
+
+          if (notificacion) {
+            notificacion.visto_por =
+              Number(this.user?.id);
+          }
+
+          // Actualizar inmediatamente el contador.
+          this.totalNoLeidas =
+            this.notificaciones.filter(
+              (n: any) => n.visto_por == null
+            ).length;
+
+          // Confirmar el estado real con el servidor.
+          this.cargarNotificaciones();
+
+        } else {
+
+          console.log(
+            'No se pudo marcar la notificación:',
+            res
+          );
+
+        }
 
       },
 
@@ -320,6 +350,12 @@ implements OnInit, OnDestroy {
 
             this.notificaciones =
               res.notificaciones || [];
+
+            // El contador debe mostrar SOLO las no leídas.
+            this.totalNoLeidas =
+              Number(res.total ?? this.notificaciones.filter(
+                (n: any) => n.visto_por == null
+              ).length);
 
           } else {
 
