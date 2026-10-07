@@ -128,7 +128,7 @@ $sqlGrafica = "
 
     FROM ventas
 
-    WHERE fecha <= CURDATE()
+    WHERE fecha < DATE_ADD(CURDATE(), INTERVAL 1 DAY)
 
     GROUP BY
     YEAR(fecha),
