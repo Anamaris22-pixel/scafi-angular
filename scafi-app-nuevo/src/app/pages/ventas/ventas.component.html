@@ -639,46 +639,31 @@
         </div>
 
 
-        <!-- RESULTADO DEL FILTRO -->
+        <!-- RESULTADO Y SUMA DEL FILTRO -->
 
-        <div
-          class="mt-5
-                 bg-white
-                 rounded-2xl
-                 p-4
-                 font-bold
-                 text-gray-700
-                 flex flex-col md:flex-row
-                 md:items-center
-                 md:justify-between
-                 gap-4"
-        >
+        <div class="mt-5 grid grid-cols-1 md:grid-cols-2 gap-4">
 
-          <div>
-            Mostrando:
-
-            <span class="text-blue-700">
-              {{ ventasFiltradas().length }}
-            </span>
-
-            ventas
+          <!-- CANTIDAD DE VENTAS -->
+          <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+            <p class="text-xs font-black uppercase tracking-wide text-slate-500">
+              Ventas encontradas
+            </p>
+            <p class="text-2xl font-black text-blue-700 mt-1">
+              {{ ventasFiltradas().length }} ventas
+            </p>
           </div>
 
-          <!-- TOTAL DEL RANGO / FILTROS SELECCIONADOS -->
-          <div
-            class="bg-green-600
-                   text-white
-                   rounded-xl
-                   px-5 py-3
-                   shadow-md"
-          >
-            <span class="text-sm opacity-90 mr-2">
-              Total de ventas seleccionadas:
-            </span>
-
-            <span class="text-xl font-black">
+          <!-- SUMA DEL RANGO -->
+          <div class="bg-green-600 text-white rounded-2xl p-4 shadow-lg border-2 border-green-700">
+            <p class="text-xs font-black uppercase tracking-wide opacity-90">
+              💰 Total del rango seleccionado
+            </p>
+            <p class="text-3xl font-black mt-1">
               {{ totalVentasFiltradas() | currency:'USD':'symbol':'1.0-0' }}
-            </span>
+            </p>
+            <p class="text-xs mt-1 opacity-90">
+              Suma de las ventas que cumplen todos los filtros
+            </p>
           </div>
 
         </div>
