@@ -9,148 +9,60 @@ mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 
 // =============================
-// PRODUCCION ACUMULADA
+// DATOS PRINCIPALES DEL DASHBOARD
+// Una sola consulta obtiene las tarjetas y alertas.
+// Antes se ejecutaban 7 consultas independientes.
 // =============================
 
-$sqlProduccion = "
+$sqlResumen = "
 
     SELECT
-    IFNULL(SUM(kg),0) AS total
-    FROM recoleccion
+
+        (SELECT IFNULL(SUM(kg),0)
+         FROM recoleccion) AS produccion,
+
+        (SELECT IFNULL(SUM(total),0)
+         FROM ventas
+         WHERE MONTH(fecha)=MONTH(CURDATE())
+           AND YEAR(fecha)=YEAR(CURDATE())) AS ventas_mes,
+
+        (SELECT COUNT(*)
+         FROM recolectores
+         WHERE estado = 'Activo') AS recolectores,
+
+        (SELECT COUNT(*)
+         FROM lotes) AS lotes,
+
+        (SELECT COUNT(*)
+         FROM insumos
+         WHERE stock <= stockMinimo) AS bajo_stock,
+
+        (SELECT IFNULL(SUM(total),0)
+         FROM ventas
+         WHERE DATE(fecha)=CURDATE()) AS ventas_hoy,
+
+        (SELECT COUNT(*)
+         FROM lotes
+         WHERE estado = 'Activo') AS lotes_activos
 
 ";
 
-$resProduccion =
-$conexion->query($sqlProduccion);
+$resumen = $conexion->query($sqlResumen);
+$resumenData = $resumen->fetch_assoc();
 
-$produccion =
-$resProduccion->fetch_assoc()['total'];
-
-
-// =============================
-// VENTAS DEL MES
-// =============================
-
-$sqlVentas = "
-
-    SELECT
-    IFNULL(SUM(total),0) AS total
-
-    FROM ventas
-
-    WHERE MONTH(fecha)=MONTH(CURDATE())
-    AND YEAR(fecha)=YEAR(CURDATE())
-
-";
-
-$resVentas =
-$conexion->query($sqlVentas);
-
-$ventas =
-$resVentas->fetch_assoc()['total'];
-
-
-// =============================
-// RECOLECTORES ACTIVOS
-// =============================
-
-$sqlRecolectores = "
-
-    SELECT
-    COUNT(*) AS total
-    FROM recolectores
-    WHERE estado = 'Activo'
-
-";
-
-$resRecolectores =
-$conexion->query($sqlRecolectores);
-
-$recolectores =
-$resRecolectores->fetch_assoc()['total'];
-
-
-// =============================
-// LOTES REGISTRADOS
-// =============================
-
-$sqlLotes = "
-
-    SELECT
-    COUNT(*) AS total
-    FROM lotes
-
-";
-
-$resLotes =
-$conexion->query($sqlLotes);
-
-$lotes =
-$resLotes->fetch_assoc()['total'];
-
-
-// =============================
-// INSUMOS BAJO STOCK
-// =============================
-
-$sqlAlertas = "
-
-    SELECT
-    COUNT(*) AS total
-    FROM insumos
-    WHERE stock <= stockMinimo
-
-";
-
-$resAlertas =
-$conexion->query($sqlAlertas);
-
-$alertas =
-$resAlertas->fetch_assoc()['total'];
-
-
-// =============================
-// VENTAS REGISTRADAS HOY
-// =============================
-
-$sqlVentasHoy = "
-
-    SELECT
-    IFNULL(SUM(total),0) AS total
-    FROM ventas
-    WHERE DATE(fecha)=CURDATE()
-
-";
-
-$resVentasHoy =
-$conexion->query($sqlVentasHoy);
-
-$ventasHoy =
-$resVentasHoy->fetch_assoc()['total'];
-
-
-// =============================
-// LOTES ACTIVOS
-// =============================
-
-$sqlActivos = "
-
-    SELECT
-    COUNT(*) AS total
-    FROM lotes
-    WHERE estado = 'Activo'
-
-";
-
-$resActivos =
-$conexion->query($sqlActivos);
-
-$activos =
-$resActivos->fetch_assoc()['total'];
+$produccion = (float)($resumenData['produccion'] ?? 0);
+$ventas = (float)($resumenData['ventas_mes'] ?? 0);
+$recolectores = (int)($resumenData['recolectores'] ?? 0);
+$lotes = (int)($resumenData['lotes'] ?? 0);
+$alertas = (int)($resumenData['bajo_stock'] ?? 0);
+$ventasHoy = (float)($resumenData['ventas_hoy'] ?? 0);
+$activos = (int)($resumenData['lotes_activos'] ?? 0);
 
 
 // =============================
 // ULTIMOS MOVIMIENTOS
+// =============================
+
 // =============================
 
 $sqlMovimientos = "
