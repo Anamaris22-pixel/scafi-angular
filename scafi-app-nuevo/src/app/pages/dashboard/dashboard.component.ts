@@ -176,6 +176,24 @@ implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // ==========================================
+  // PERMISOS
+  // ==========================================
+
+  esRecolector(): boolean {
+    const usuario = localStorage.getItem('usuario') || localStorage.getItem('user');
+
+    if (!usuario) {
+      return false;
+    }
+
+    try {
+      return Number(JSON.parse(usuario)?.idRol) === 3;
+    } catch {
+      return false;
+    }
+  }
+
+  // ==========================================
   // OBTENER DATOS
   // ==========================================
 
