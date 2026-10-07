@@ -644,21 +644,42 @@
         <div
           class="mt-5
                  bg-white
-                 rounded-xl
+                 rounded-2xl
                  p-4
                  font-bold
-                 text-gray-700"
+                 text-gray-700
+                 flex flex-col md:flex-row
+                 md:items-center
+                 md:justify-between
+                 gap-4"
         >
 
-          Mostrando:
+          <div>
+            Mostrando:
 
-          <span class="text-blue-700">
+            <span class="text-blue-700">
+              {{ ventasFiltradas().length }}
+            </span>
 
-            {{ ventasFiltradas().length }}
+            ventas
+          </div>
 
-          </span>
+          <!-- TOTAL DEL RANGO / FILTROS SELECCIONADOS -->
+          <div
+            class="bg-green-600
+                   text-white
+                   rounded-xl
+                   px-5 py-3
+                   shadow-md"
+          >
+            <span class="text-sm opacity-90 mr-2">
+              Total de ventas seleccionadas:
+            </span>
 
-          ventas
+            <span class="text-xl font-black">
+              {{ totalVentasFiltradas() | currency:'USD':'symbol':'1.0-0' }}
+            </span>
+          </div>
 
         </div>
 
