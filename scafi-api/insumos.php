@@ -205,7 +205,7 @@ function generarNotificacionStock(
         );
 
 
-    if (!$resultadoUsuarios) {
+    if (!($resultadoUsuarios instanceof mysqli_result)) {
 
         return;
 
@@ -255,7 +255,7 @@ function generarNotificacionStock(
             );
 
 
-        if (!$stmt) {
+        if (!($stmt instanceof mysqli_stmt)) {
 
             continue;
 
@@ -303,7 +303,7 @@ if (
         );
 
 
-    if (!$resultado) {
+    if (!($resultado instanceof mysqli_result)) {
 
         responder([
             "ok" => false,
@@ -484,7 +484,7 @@ if (
         );
 
 
-    if (!$stmt) {
+    if (!($stmt instanceof mysqli_stmt)) {
 
         responder([
             "ok" => false,
@@ -624,7 +624,9 @@ if (
         $stmtAnterior->get_result();
 
 
-    $anterior =
+    
+    /** @var mysqli_result $resultadoAnterior */
+$anterior =
         $resultadoAnterior->fetch_assoc();
 
 
@@ -745,7 +747,7 @@ if (
         );
 
 
-    if (!$stmt) {
+    if (!($stmt instanceof mysqli_stmt)) {
 
         responder([
             "ok" => false,
