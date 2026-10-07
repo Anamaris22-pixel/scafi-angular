@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { RouterModule, Router } from '@angular/router';
@@ -33,10 +33,18 @@ export class NotificacionesComponent implements OnInit {
 
   api = 'http://localhost/scafi-angular/scafi-api/notificaciones.php';
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.obtenerUsuarioId();
+
+    // Cargar automáticamente al entrar a la página.
+    // El detectChanges() evita que la vista quede mostrando
+    // el spinner hasta que el usuario pulse Actualizar.
     this.cargarNotificaciones();
   }
 
@@ -153,6 +161,7 @@ export class NotificacionesComponent implements OnInit {
         }
 
         this.cargando = false;
+        this.cdr.detectChanges();
       },
 
       error: (error) => {
@@ -165,6 +174,7 @@ export class NotificacionesComponent implements OnInit {
         this.notificaciones = [];
         this.total = 0;
         this.cargando = false;
+        this.cdr.detectChanges();
       }
     });
   }
