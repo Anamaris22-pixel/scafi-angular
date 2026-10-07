@@ -11,6 +11,7 @@
       </button>
 
       <button
+        *ngIf="!esRecolector()"
         (click)="abrirEdicion()"
         class="bg-green-500 hover:bg-green-400 text-slate-950 font-black
                px-5 py-2.5 rounded-xl transition shadow-lg">
@@ -77,6 +78,22 @@
       </div>
     </div>
 
+    <!-- AVISO DE PERMISOS -->
+    <div
+      *ngIf="esRecolector()"
+      class="mb-6 rounded-2xl border border-amber-200 bg-amber-50
+             px-5 py-4 flex items-start gap-3 shadow-sm"
+    >
+      <div class="text-2xl">🔒</div>
+      <div>
+        <p class="font-black text-amber-900">Perfil de solo lectura</p>
+        <p class="text-sm text-amber-800 mt-1">
+          Los usuarios con rol Recolector no pueden modificar sus datos personales.
+          Si necesitas actualizar información, solicita el cambio al administrador.
+        </p>
+      </div>
+    </div>
+
     <!-- INFORMACIÓN -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-7">
 
@@ -94,6 +111,7 @@
           </div>
 
           <button
+            *ngIf="!esRecolector()"
             (click)="abrirEdicion()"
             class="hidden md:inline-flex items-center gap-2 bg-slate-950
                    hover:bg-slate-800 text-white px-4 py-2 rounded-xl font-bold">
