@@ -295,11 +295,16 @@ export class VentasComponent {
   // EDITAR
   // =====================================================
 
+  /**
+   * Carga la venta existente en el formulario.
+   * Importante: conservar idVenta hace que guardar() use PUT
+   * y actualice el registro, en lugar de crear una nueva venta.
+   */
   editar(v: any) {
 
     this.nueva = {
 
-      idVenta: v.idVenta,
+      idVenta: Number(v.idVenta),
 
       fecha: v.fecha,
 
