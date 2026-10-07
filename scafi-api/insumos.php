@@ -308,7 +308,7 @@ if (
         responder([
             "ok" => false,
             "error" =>
-                $conexion->error
+                mysqli_error($conexion)
         ], 500);
 
     }
@@ -489,7 +489,7 @@ if (
         responder([
             "ok" => false,
             "error" =>
-                $conexion->error
+                mysqli_error($conexion)
         ], 500);
 
     }
@@ -752,7 +752,7 @@ $anterior =
         responder([
             "ok" => false,
             "error" =>
-                $conexion->error
+                mysqli_error($conexion)
         ], 500);
 
     }
