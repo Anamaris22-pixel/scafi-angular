@@ -520,6 +520,23 @@ export class VentasComponent {
   }
 
   // =====================================================
+  // TOTAL DE VENTAS FILTRADAS
+  // Suma únicamente las ventas que cumplen los filtros actuales.
+  // Esto permite ver el total exacto del rango de fechas seleccionado.
+  // =====================================================
+
+  totalVentasFiltradas(): number {
+
+    return this.ventasFiltradas()
+      .reduce(
+        (sum: number, v: any) =>
+          sum + Number(v.total || 0),
+        0
+      );
+
+  }
+
+  // =====================================================
   // LIMPIAR FILTROS
   // =====================================================
 
