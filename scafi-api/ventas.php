@@ -611,6 +611,238 @@ if (
 }
 
 
+
+// =====================================================
+// ACTUALIZAR VENTA
+// =====================================================
+
+if (
+    $_SERVER['REQUEST_METHOD'] === 'PUT'
+) {
+
+    $id = $_GET['id'] ?? null;
+
+    if (
+        !$id ||
+        !is_numeric($id)
+    ) {
+
+        responder(
+            false,
+            "El ID de la venta es obligatorio."
+        );
+
+    }
+
+    $id = (int)$id;
+
+    $data = json_decode(
+        file_get_contents("php://input"),
+        true
+    );
+
+    if (!is_array($data)) {
+
+        responder(
+            false,
+            "Los datos enviados no son válidos."
+        );
+
+    }
+
+    $fecha = trim(
+        (string)($data['fecha'] ?? '')
+    );
+
+    $cliente = trim(
+        (string)($data['cliente'] ?? '')
+    );
+
+    $producto = trim(
+        (string)($data['producto'] ?? '')
+    );
+
+    $cantidad = (float)(
+        $data['cantidad'] ?? 0
+    );
+
+    $precio = (float)(
+        $data['precio'] ?? 0
+    );
+
+    $estado = trim(
+        (string)($data['estado'] ?? '')
+    );
+
+    if ($fecha === '') {
+
+        responder(
+            false,
+            "La fecha de la venta es obligatoria."
+        );
+
+    }
+
+    if ($cliente === '') {
+
+        responder(
+            false,
+            "Debe ingresar un cliente para actualizar la venta."
+        );
+
+    }
+
+    if ($producto === '') {
+
+        responder(
+            false,
+            "Debe seleccionar un producto."
+        );
+
+    }
+
+    if ($cantidad <= 0) {
+
+        responder(
+            false,
+            "La cantidad debe ser mayor que cero."
+        );
+
+    }
+
+    if ($precio <= 0) {
+
+        responder(
+            false,
+            "El precio debe ser mayor que cero."
+        );
+
+    }
+
+    $totalCalculado = $cantidad * $precio;
+
+    $sqlExiste = "
+        SELECT idVenta
+        FROM ventas
+        WHERE idVenta = ?
+        LIMIT 1
+    ";
+
+    $stmtExiste = mysqli_prepare(
+        $conexion,
+        $sqlExiste
+    );
+
+    if (!$stmtExiste) {
+
+        responder(
+            false,
+            "No fue posible verificar la venta."
+        );
+
+    }
+
+    mysqli_stmt_bind_param(
+        $stmtExiste,
+        "i",
+        $id
+    );
+
+    if (!mysqli_stmt_execute($stmtExiste)) {
+
+        mysqli_stmt_close($stmtExiste);
+
+        responder(
+            false,
+            "No fue posible verificar la venta."
+        );
+
+    }
+
+    $resultadoExiste = mysqli_stmt_get_result(
+        $stmtExiste
+    );
+
+    $ventaExiste = mysqli_fetch_assoc(
+        $resultadoExiste
+    );
+
+    mysqli_stmt_close($stmtExiste);
+
+    if (!$ventaExiste) {
+
+        responder(
+            false,
+            "La venta que intenta actualizar no existe."
+        );
+
+    }
+
+    $sqlActualizar = "
+        UPDATE ventas
+        SET
+            fecha = ?,
+            cliente = ?,
+            producto = ?,
+            cantidad = ?,
+            precio = ?,
+            total = ?,
+            estado = ?
+        WHERE idVenta = ?
+    ";
+
+    $stmtActualizar = mysqli_prepare(
+        $conexion,
+        $sqlActualizar
+    );
+
+    if (!$stmtActualizar) {
+
+        responder(
+            false,
+            "No fue posible preparar la actualización de la venta."
+        );
+
+    }
+
+    mysqli_stmt_bind_param(
+        $stmtActualizar,
+        "sssdddsi",
+        $fecha,
+        $cliente,
+        $producto,
+        $cantidad,
+        $precio,
+        $totalCalculado,
+        $estado,
+        $id
+    );
+
+    if (!mysqli_stmt_execute($stmtActualizar)) {
+
+        mysqli_stmt_close($stmtActualizar);
+
+        responder(
+            false,
+            "No fue posible actualizar la venta."
+        );
+
+    }
+
+    mysqli_stmt_close($stmtActualizar);
+
+    responder(
+        true,
+        "",
+        [
+            "mensaje" => "Venta actualizada correctamente.",
+            "idVenta" => $id,
+            "cliente" => $cliente
+        ]
+    );
+
+}
+
 // =====================================================
 // ELIMINAR VENTA
 // =====================================================
