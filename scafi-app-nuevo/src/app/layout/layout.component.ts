@@ -542,62 +542,60 @@ implements OnInit, OnDestroy {
 
   search() {
 
-    const term =
+    const term = this.searchTerm
+      .toLowerCase()
+      .trim();
 
-      this.searchTerm
-        .toLowerCase()
-        .trim();
-
-    const routes: any = {
-
-      dashboard:
-        '/dashboard',
-
-      recolectores:
-        '/recolectores',
-
-      cultivos:
-        '/cultivos',
-
-      recoleccion:
-        '/recoleccion',
-
-      inventario:
-        '/inventario',
-
-      ventas:
-        '/ventas',
-
-      reportes:
-        '/reportes',
-
-      mensajes:
-        '/mensajes',
-
-      configuracion:
-        '/configuracion',
-
-      produccion:
-        '/produccion'
-
-    };
-
-    for (const key in routes) {
-
-      if (
-        key.includes(term)
-      ) {
-
-        this.router.navigate([
-          routes[key]
-        ]);
-
-        return;
-
-      }
-
+    if (!term) {
+      return;
     }
 
+    // Módulos y sus alias. El buscador ahora redirige
+    // realmente al módulo correspondiente.
+    const routes: any = {
+      dashboard: '/dashboard',
+      inicio: '/dashboard',
+      recolector: '/recolectores',
+      recolectores: '/recolectores',
+      cultivo: '/cultivos',
+      cultivos: '/cultivos',
+      recoleccion: '/recoleccion',
+      inventario: '/inventario',
+      insumo: '/insumos',
+      insumos: '/insumos',
+      venta: '/ventas',
+      ventas: '/ventas',
+      reporte: '/reportes',
+      reportes: '/reportes',
+      mensaje: '/mensajes',
+      mensajes: '/mensajes',
+      configuracion: '/configuracion',
+      produccion: '/produccion',
+      proveedores: '/proveedores',
+      proveedor: '/proveedores',
+      clientes: '/clientes',
+      cliente: '/clientes',
+      movimientos: '/movimientos',
+      movimiento: '/movimientos'
+    };
+
+    // Primero intenta encontrar un módulo por nombre o alias.
+    for (const key of Object.keys(routes)) {
+      if (key === term || key.includes(term) || term.includes(key)) {
+        this.showNoti = false;
+        this.router.navigate([routes[key]]);
+        return;
+      }
+    }
+
+    // Si no es el nombre de un módulo, lo tratamos como texto
+    // de búsqueda de insumos. Así el buscador también sirve para
+    // localizar directamente un insumo y abrir el resultado filtrado.
+    this.showNoti = false;
+    this.router.navigate(
+      ['/insumos'],
+      { queryParams: { buscar: this.searchTerm.trim() } }
+    );
   }
 
   // ======================
