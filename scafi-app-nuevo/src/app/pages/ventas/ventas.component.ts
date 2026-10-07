@@ -317,6 +317,35 @@ export class VentasComponent {
 
     };
 
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+
+  }
+
+  cancelarEdicion() {
+
+    this.nueva = {
+
+      idVenta: null,
+
+      fecha: '',
+
+      cliente: '',
+
+      producto: '',
+
+      estado: 'Pagado',
+
+      cantidad: 0,
+
+      precio: 0,
+
+      total: 0
+
+    };
+
   }
 
   // =====================================================
