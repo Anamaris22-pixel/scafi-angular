@@ -192,7 +192,7 @@ implements OnInit, OnDestroy {
   marcarLeida(id: number) {
 
   this.notiService
-    .marcarLeida(id)
+    .marcarLeida(id, Number(this.user?.id))
     .subscribe({
 
       next: () => {
