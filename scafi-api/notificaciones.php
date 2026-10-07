@@ -70,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             "mensaje" =>
                 "Error preparando consulta.",
             "error" =>
-                $conexion->error
+                mysqli_error($conexion)
         ], 500);
     }
 
@@ -210,7 +210,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             "mensaje" =>
                 "Error verificando la notificación.",
             "error" =>
-                $conexion->error
+                mysqli_error($conexion)
         ], 500);
     }
 
@@ -278,7 +278,7 @@ $notificacion =
             "mensaje" =>
                 "Error preparando actualización.",
             "error" =>
-                $conexion->error
+                mysqli_error($conexion)
         ], 500);
     }
 
