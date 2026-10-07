@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { RouterModule, Router } from '@angular/router';
@@ -13,7 +13,7 @@ import { RouterModule, Router } from '@angular/router';
   ],
   templateUrl: './notificaciones.component.html'
 })
-export class NotificacionesComponent implements OnInit {
+export class NotificacionesComponent implements OnInit, OnDestroy {
 
   total = 0;
   cargando = true;
@@ -31,6 +31,9 @@ export class NotificacionesComponent implements OnInit {
   // Usuario actualmente autenticado
   usuarioId = 0;
 
+  private intervalo: any;
+  private escucharFocus = false;
+
   api = 'http://localhost/scafi-angular/scafi-api/notificaciones.php';
 
   constructor(
@@ -46,7 +49,33 @@ export class NotificacionesComponent implements OnInit {
     // El detectChanges() evita que la vista quede mostrando
     // el spinner hasta que el usuario pulse Actualizar.
     this.cargarNotificaciones();
+
+    // Actualización automática sin bloquear la interfaz.
+    this.intervalo = setInterval(() => {
+      if (!document.hidden) {
+        this.cargarNotificaciones(false);
+      }
+    }, 30000);
+
+    this.escucharFocus = true;
+    window.addEventListener('focus', this.actualizarAlVolver);
   }
+
+  ngOnDestroy(): void {
+    if (this.intervalo) {
+      clearInterval(this.intervalo);
+    }
+
+    if (this.escucharFocus) {
+      window.removeEventListener('focus', this.actualizarAlVolver);
+    }
+  }
+
+  private actualizarAlVolver = (): void => {
+    if (!document.hidden) {
+      this.cargarNotificaciones(false);
+    }
+  };
 
   // ==================================================
   // OBTENER USUARIO ACTUAL
@@ -111,9 +140,11 @@ export class NotificacionesComponent implements OnInit {
   // CARGAR NOTIFICACIONES DEL USUARIO ACTUAL
   // ==================================================
 
-  cargarNotificaciones(): void {
+  cargarNotificaciones(mostrarCarga = true): void {
 
-    this.cargando = true;
+    if (mostrarCarga) {
+      this.cargando = true;
+    }
 
     if (!this.usuarioId) {
 
