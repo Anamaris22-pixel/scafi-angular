@@ -1,332 +1,791 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpClientModule
+} from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-proveedores',
   standalone: true,
+
   imports: [
     CommonModule,
     FormsModule,
+    HttpClientModule,
     RouterModule
   ],
+
   templateUrl: './proveedores.component.html'
 })
+
 export class ProveedoresComponent implements OnInit {
 
+  // =====================================================
   // API
-  api = 'http://localhost/scafi-angular/scafi-api/proveedores.php';
+  // =====================================================
 
+  api =
+    'http://localhost/scafi-angular/scafi-api/proveedores.php';
+
+
+  // =====================================================
   // LISTA
+  // =====================================================
+
   proveedores: any[] = [];
 
+
+  // =====================================================
   // BUSCADOR
+  // =====================================================
+
   buscar = '';
 
-  // FORMULARIO
-  mostrarFormulario = false;
-  formularioEnviado = false;
 
-  // EDITAR
+  // =====================================================
+  // FORMULARIO
+  // =====================================================
+
+  mostrarFormulario = false;
+
   editando = false;
 
-  // ERRORES DE VALIDACIÓN
-  errores: any = {};
+  idEditar = 0;
 
-  // OBJETO
-  nuevo: any = this.crearProveedorVacio();
+
+  // =====================================================
+  // CONTROL DE VALIDACIÓN
+  // =====================================================
+
+  formularioEnviado = false;
+
+
+  errores: any = {
+
+    nombre: '',
+
+    empresa: '',
+
+    telefono: '',
+
+    correo: '',
+
+    direccion: '',
+
+    estado: ''
+
+  };
+
+
+  // =====================================================
+  // OBJETO NUEVO PROVEEDOR
+  // =====================================================
+
+  nuevo: any = {
+
+    idProveedor: '',
+
+    nombre: '',
+
+    empresa: '',
+
+    telefono: '',
+
+    correo: '',
+
+    direccion: '',
+
+    estado: 'Activo'
+
+  };
+
+
+  // =====================================================
+  // CONSTRUCTOR
+  // =====================================================
 
   constructor(
     private http: HttpClient
   ) {}
 
-  // ======================================
+
+  // =====================================================
   // INICIO
-  // ======================================
+  // =====================================================
+
   ngOnInit(): void {
+
     this.cargar();
+
   }
 
-  // ======================================
-  // CREAR OBJETO VACÍO
-  // ======================================
-  crearProveedorVacio(): any {
-    return {
-      idProveedor: '',
-      nombre: '',
-      empresa: '',
-      telefono: '',
-      correo: '',
-      direccion: '',
-      estado: 'Activo'
-    };
-  }
 
-  // ======================================
-  // ABRIR NUEVO PROVEEDOR
-  // ======================================
-  abrirNuevo(): void {
-    this.editando = false;
-    this.mostrarFormulario = true;
-    this.formularioEnviado = false;
-    this.errores = {};
-    this.nuevo = this.crearProveedorVacio();
-  }
+  // =====================================================
+  // CARGAR PROVEEDORES
+  // =====================================================
 
-  // ======================================
-  // CARGAR
-  // ======================================
   cargar(): void {
-    this.http.get<any[]>(this.api)
+
+    this.http
+      .get<any[]>(this.api)
       .subscribe({
+
         next: (res) => {
+
           this.proveedores = res;
+
         },
+
         error: (err) => {
-          console.log('ERROR AL CARGAR PROVEEDORES:', err);
-          alert('No se pudieron cargar los proveedores.');
+
+          console.error(
+            'Error cargando proveedores:',
+            err
+          );
+
+          alert(
+            'No fue posible cargar los proveedores.'
+          );
+
         }
+
       });
+
   }
 
-  // ======================================
+
+  // =====================================================
+  // ABRIR FORMULARIO
+  // =====================================================
+
+  abrirNuevo(): void {
+
+    this.editando = false;
+
+    this.mostrarFormulario = true;
+
+    this.formularioEnviado = false;
+
+    this.limpiarErrores();
+
+    this.nuevo = {
+
+      idProveedor: '',
+
+      nombre: '',
+
+      empresa: '',
+
+      telefono: '',
+
+      correo: '',
+
+      direccion: '',
+
+      estado: 'Activo'
+
+    };
+
+  }
+
+
+  // =====================================================
   // VALIDAR FORMULARIO
-  // ======================================
+  // =====================================================
+
   validarFormulario(): boolean {
 
     this.formularioEnviado = true;
-    this.errores = {};
 
-    const nombre = String(this.nuevo.nombre ?? '').trim();
-    const empresa = String(this.nuevo.empresa ?? '').trim();
-    const telefono = String(this.nuevo.telefono ?? '').trim();
-    const correo = String(this.nuevo.correo ?? '').trim();
-    const direccion = String(this.nuevo.direccion ?? '').trim();
-    const estado = String(this.nuevo.estado ?? '').trim();
+    this.limpiarErrores();
 
-    if (!nombre) {
-      this.errores.nombre = 'El nombre del proveedor es obligatorio.';
+    let valido = true;
+
+
+    // -----------------------------------------------------
+    // NOMBRE
+    // -----------------------------------------------------
+
+    if (
+      !this.nuevo.nombre ||
+      !this.nuevo.nombre.trim()
+    ) {
+
+      this.errores.nombre =
+        'El nombre del proveedor es obligatorio.';
+
+      valido = false;
+
     }
 
-    if (!empresa) {
-      this.errores.empresa = 'La empresa es obligatoria.';
+
+    // -----------------------------------------------------
+    // EMPRESA
+    // -----------------------------------------------------
+
+    if (
+      !this.nuevo.empresa ||
+      !this.nuevo.empresa.trim()
+    ) {
+
+      this.errores.empresa =
+        'La empresa es obligatoria.';
+
+      valido = false;
+
     }
 
-    if (!telefono) {
-      this.errores.telefono = 'El teléfono es obligatorio.';
+
+    // -----------------------------------------------------
+    // TELÉFONO
+    // -----------------------------------------------------
+
+    if (
+      !this.nuevo.telefono ||
+      !this.nuevo.telefono.toString().trim()
+    ) {
+
+      this.errores.telefono =
+        'El teléfono es obligatorio.';
+
+      valido = false;
+
     }
 
-    if (!correo) {
-      this.errores.correo = 'El correo es obligatorio.';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
-      this.errores.correo = 'Ingrese un correo electrónico válido.';
+
+    // -----------------------------------------------------
+    // CORREO
+    // -----------------------------------------------------
+
+    if (
+      !this.nuevo.correo ||
+      !this.nuevo.correo.trim()
+    ) {
+
+      this.errores.correo =
+        'El correo electrónico es obligatorio.';
+
+      valido = false;
+
+    } else {
+
+      const correoValido =
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+          .test(
+            this.nuevo.correo.trim()
+          );
+
+      if (!correoValido) {
+
+        this.errores.correo =
+          'Ingrese un correo electrónico válido.';
+
+        valido = false;
+
+      }
+
     }
 
-    if (!direccion) {
-      this.errores.direccion = 'La dirección es obligatoria.';
+
+    // -----------------------------------------------------
+    // DIRECCIÓN
+    // -----------------------------------------------------
+
+    if (
+      !this.nuevo.direccion ||
+      !this.nuevo.direccion.trim()
+    ) {
+
+      this.errores.direccion =
+        'La dirección es obligatoria.';
+
+      valido = false;
+
     }
 
-    if (!estado) {
-      this.errores.estado = 'El estado es obligatorio.';
+
+    // -----------------------------------------------------
+    // ESTADO
+    // -----------------------------------------------------
+
+    if (
+      !this.nuevo.estado
+    ) {
+
+      this.errores.estado =
+        'Debe seleccionar un estado.';
+
+      valido = false;
+
     }
 
-    return Object.keys(this.errores).length === 0;
+
+    // -----------------------------------------------------
+    // MENSAJE GENERAL
+    // -----------------------------------------------------
+
+    if (!valido) {
+
+      setTimeout(() => {
+
+        const elemento =
+          document.getElementById(
+            'mensaje-validacion-proveedor'
+          );
+
+        elemento?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+
+      }, 50);
+
+    }
+
+
+    return valido;
+
   }
 
-  // ======================================
+
+  // =====================================================
   // LIMPIAR ERRORES
-  // ======================================
+  // =====================================================
+
   limpiarErrores(): void {
-    this.errores = {};
-    this.formularioEnviado = false;
-  }
 
-  // ======================================
-  // LIMPIAR ERROR DE UN CAMPO
-  // ======================================
-  limpiarError(campo: string): void {
-    if (this.errores[campo]) {
-      delete this.errores[campo];
-    }
-  }
+    this.errores = {
 
-  // ======================================
-  // GUARDAR
-  // ======================================
-  guardar(): void {
+      nombre: '',
 
-    if (!this.validarFormulario()) {
-      return;
-    }
+      empresa: '',
 
-    const datos = {
-      nombre: String(this.nuevo.nombre).trim(),
-      empresa: String(this.nuevo.empresa).trim(),
-      telefono: String(this.nuevo.telefono).trim(),
-      correo: String(this.nuevo.correo).trim(),
-      direccion: String(this.nuevo.direccion).trim(),
-      estado: String(this.nuevo.estado).trim()
+      telefono: '',
+
+      correo: '',
+
+      direccion: '',
+
+      estado: ''
+
     };
 
-    this.http.post<any>(this.api, datos)
+  }
+
+
+  // =====================================================
+  // LIMPIAR ERROR DE UN CAMPO
+  // =====================================================
+
+  limpiarError(campo: string): void {
+
+    if (
+      this.errores[campo]
+    ) {
+
+      this.errores[campo] = '';
+
+    }
+
+  }
+
+
+  // =====================================================
+  // GUARDAR
+  // =====================================================
+
+  guardar(): void {
+
+    // PRIMERO VALIDAMOS
+    if (
+      !this.validarFormulario()
+    ) {
+
+      alert(
+        'Por favor complete correctamente todos los campos obligatorios.'
+      );
+
+      return;
+
+    }
+
+
+    const datos = {
+
+      nombre:
+        this.nuevo.nombre.trim(),
+
+      empresa:
+        this.nuevo.empresa.trim(),
+
+      telefono:
+        this.nuevo.telefono.toString().trim(),
+
+      correo:
+        this.nuevo.correo.trim(),
+
+      direccion:
+        this.nuevo.direccion.trim(),
+
+      estado:
+        this.nuevo.estado
+
+    };
+
+
+    this.http
+      .post<any>(
+        this.api,
+        datos
+      )
       .subscribe({
+
         next: (res) => {
 
-          console.log('RESPUESTA GUARDAR:', res);
+          console.log(
+            'RESPUESTA GUARDAR:',
+            res
+          );
+
 
           if (res.ok) {
-            alert('Proveedor registrado correctamente.');
-            this.cancelar();
-            this.cargar();
-          } else {
+
             alert(
-              'Error al guardar: ' +
-              (res.error || 'Error desconocido')
+              res.mensaje ||
+              'Proveedor registrado correctamente.'
             );
+
+            this.cancelar();
+
+            this.cargar();
+
+          } else {
+
+            alert(
+              res.mensaje ||
+              res.error ||
+              'No fue posible guardar el proveedor.'
+            );
+
           }
+
         },
 
         error: (err) => {
-          console.log('ERROR AL GUARDAR:', err);
 
-          const mensaje =
-            err?.error?.error ||
-            'No fue posible guardar el proveedor.';
+          console.error(
+            'ERROR AL GUARDAR:',
+            err
+          );
 
-          alert(mensaje);
+          alert(
+            err?.error?.mensaje ||
+            'No fue posible guardar el proveedor.'
+          );
+
         }
+
       });
+
   }
 
-  // ======================================
+
+  // =====================================================
   // EDITAR
-  // ======================================
+  // =====================================================
+
   editar(p: any): void {
 
     this.editando = true;
+
     this.mostrarFormulario = true;
+
     this.formularioEnviado = false;
-    this.errores = {};
+
+    this.limpiarErrores();
+
 
     this.nuevo = {
-      idProveedor: p.idProveedor,
-      nombre: p.nombre ?? '',
-      empresa: p.empresa ?? '',
-      telefono: p.telefono ?? '',
-      correo: p.correo ?? '',
-      direccion: p.direccion ?? '',
-      estado: p.estado ?? 'Activo'
+
+      idProveedor:
+        p.idProveedor,
+
+      nombre:
+        p.nombre || '',
+
+      empresa:
+        p.empresa || '',
+
+      telefono:
+        p.telefono || '',
+
+      correo:
+        p.correo || '',
+
+      direccion:
+        p.direccion || '',
+
+      estado:
+        p.estado || 'Activo'
+
     };
+
   }
 
-  // ======================================
+
+  // =====================================================
   // ACTUALIZAR
-  // ======================================
+  // =====================================================
+
   actualizar(): void {
 
-    if (!this.validarFormulario()) {
+    // VALIDAR ANTES DE ACTUALIZAR
+    if (
+      !this.validarFormulario()
+    ) {
+
+      alert(
+        'Por favor complete correctamente todos los campos obligatorios.'
+      );
+
       return;
+
     }
+
 
     const datos = {
-      idProveedor: this.nuevo.idProveedor,
-      nombre: String(this.nuevo.nombre).trim(),
-      empresa: String(this.nuevo.empresa).trim(),
-      telefono: String(this.nuevo.telefono).trim(),
-      correo: String(this.nuevo.correo).trim(),
-      direccion: String(this.nuevo.direccion).trim(),
-      estado: String(this.nuevo.estado).trim()
+
+      idProveedor:
+        this.nuevo.idProveedor,
+
+      nombre:
+        this.nuevo.nombre.trim(),
+
+      empresa:
+        this.nuevo.empresa.trim(),
+
+      telefono:
+        this.nuevo.telefono.toString().trim(),
+
+      correo:
+        this.nuevo.correo.trim(),
+
+      direccion:
+        this.nuevo.direccion.trim(),
+
+      estado:
+        this.nuevo.estado
+
     };
 
-    this.http.put<any>(this.api, datos)
+
+    this.http
+      .put<any>(
+        this.api,
+        datos
+      )
       .subscribe({
+
         next: (res) => {
 
-          console.log('RESPUESTA ACTUALIZAR:', res);
+          console.log(
+            'RESPUESTA ACTUALIZAR:',
+            res
+          );
+
 
           if (res.ok) {
-            alert('Proveedor actualizado correctamente.');
-            this.cancelar();
-            this.cargar();
-          } else {
+
             alert(
-              'Error al actualizar: ' +
-              (res.error || 'Error desconocido')
+              res.mensaje ||
+              'Proveedor actualizado correctamente.'
             );
+
+            this.cancelar();
+
+            this.cargar();
+
+          } else {
+
+            alert(
+              res.mensaje ||
+              res.error ||
+              'No fue posible actualizar el proveedor.'
+            );
+
           }
+
         },
 
         error: (err) => {
-          console.log('ERROR AL ACTUALIZAR:', err);
 
-          const mensaje =
-            err?.error?.error ||
-            'No fue posible actualizar el proveedor.';
+          console.error(
+            'ERROR AL ACTUALIZAR:',
+            err
+          );
 
-          alert(mensaje);
+          alert(
+            err?.error?.mensaje ||
+            'No fue posible actualizar el proveedor.'
+          );
+
         }
+
       });
+
   }
 
-  // ======================================
+
+  // =====================================================
   // ELIMINAR
-  // ======================================
+  // =====================================================
+
   eliminar(id: number): void {
 
-    if (!confirm('¿Eliminar proveedor?')) {
+    if (
+      !confirm(
+        '¿Está seguro de eliminar este proveedor?'
+      )
+    ) {
+
       return;
+
     }
 
-    this.http.delete<any>(`${this.api}?id=${id}`)
+
+    this.http
+      .delete<any>(
+        `${this.api}?id=${id}`
+      )
       .subscribe({
+
         next: (res) => {
 
-          console.log(res);
-
           if (res.ok) {
-            alert('Proveedor eliminado correctamente.');
-            this.cargar();
-          } else {
+
             alert(
-              'No fue posible eliminar el proveedor: ' +
-              (res.error || 'Error desconocido')
+              res.mensaje ||
+              'Proveedor eliminado correctamente.'
             );
+
+            this.cargar();
+
+          } else {
+
+            alert(
+              res.mensaje ||
+              res.error ||
+              'No fue posible eliminar el proveedor.'
+            );
+
           }
+
         },
 
         error: (err) => {
-          console.log('ERROR AL ELIMINAR:', err);
-          alert('Error al eliminar el proveedor.');
+
+          console.error(
+            'ERROR AL ELIMINAR:',
+            err
+          );
+
+          alert(
+            err?.error?.mensaje ||
+            'No fue posible eliminar el proveedor.'
+          );
+
         }
+
       });
+
   }
 
-  // ======================================
+
+  // =====================================================
   // FILTRAR
-  // ======================================
+  // =====================================================
+
   proveedoresFiltrados(): any[] {
 
-    const texto = this.buscar.toLowerCase().trim();
+    const texto =
+      this.buscar
+        .toLowerCase()
+        .trim();
 
-    return this.proveedores.filter((p: any) =>
-      String(p.nombre ?? '').toLowerCase().includes(texto) ||
-      String(p.empresa ?? '').toLowerCase().includes(texto) ||
-      String(p.telefono ?? '').toLowerCase().includes(texto) ||
-      String(p.correo ?? '').toLowerCase().includes(texto)
+
+    if (!texto) {
+
+      return this.proveedores;
+
+    }
+
+
+    return this.proveedores.filter(
+      (p: any) =>
+
+        String(p.nombre || '')
+          .toLowerCase()
+          .includes(texto)
+
+        ||
+
+        String(p.empresa || '')
+          .toLowerCase()
+          .includes(texto)
+
+        ||
+
+        String(p.telefono || '')
+          .toLowerCase()
+          .includes(texto)
+
+        ||
+
+        String(p.correo || '')
+          .toLowerCase()
+          .includes(texto)
+
     );
+
   }
 
-  // ======================================
+
+  // =====================================================
   // CANCELAR
-  // ======================================
+  // =====================================================
+
   cancelar(): void {
 
     this.editando = false;
+
     this.mostrarFormulario = false;
+
     this.formularioEnviado = false;
-    this.errores = {};
-    this.nuevo = this.crearProveedorVacio();
+
+    this.limpiarErrores();
+
+
+    this.nuevo = {
+
+      idProveedor: '',
+
+      nombre: '',
+
+      empresa: '',
+
+      telefono: '',
+
+      correo: '',
+
+      direccion: '',
+
+      estado: 'Activo'
+
+    };
+
   }
+
 }

@@ -1,30 +1,19 @@
 import { Component } from '@angular/core';
-
 import { CommonModule } from '@angular/common';
-
 import { FormsModule } from '@angular/forms';
-
 import { RouterModule } from '@angular/router';
-
-import { VentasService }
-from '../../core/services/ventas.service';
+import { VentasService } from '../../core/services/ventas.service';
 
 @Component({
-
   selector: 'app-ventas',
-
   standalone: true,
-
   imports: [
     CommonModule,
     FormsModule,
     RouterModule
   ],
-
   templateUrl: './ventas.component.html'
-
 })
-
 export class VentasComponent {
 
   buscar = '';
@@ -33,17 +22,33 @@ export class VentasComponent {
 
   productos: any[] = [];
 
-  // =========================
+  // =====================================================
+  // FILTROS DEL HISTORIAL
+  // =====================================================
+
+  mostrarFiltros = false;
+
+  filtroCliente = '';
+
+  filtroProducto = '';
+
+  filtroEstado = '';
+
+  fechaDesde = '';
+
+  fechaHasta = '';
+
+  // =====================================================
   // SELECTORES RESUMEN
-  // =========================
+  // =====================================================
 
   mesSeleccionado = 5;
 
   anioSeleccionado = 2026;
 
-  // =========================
+  // =====================================================
   // NUEVA VENTA
-  // =========================
+  // =====================================================
 
   nueva: any = {
 
@@ -65,10 +70,12 @@ export class VentasComponent {
 
   };
 
+  // =====================================================
+  // CONSTRUCTOR
+  // =====================================================
+
   constructor(
-
     private service: VentasService
-
   ) {
 
     this.cargar();
@@ -77,16 +84,14 @@ export class VentasComponent {
 
   }
 
-  // =========================
+  // =====================================================
   // CARGAR VENTAS
-  // =========================
+  // =====================================================
 
   cargar() {
 
     this.service
-
       .getVentas()
-
       .subscribe((data: any) => {
 
         console.log(data);
@@ -97,9 +102,9 @@ export class VentasComponent {
 
   }
 
-  // =========================
+  // =====================================================
   // PRODUCTOS
-  // =========================
+  // =====================================================
 
   cargarProductos() {
 
@@ -119,33 +124,114 @@ export class VentasComponent {
 
   }
 
-  // =========================
+  // =====================================================
   // CALCULAR TOTAL
-  // =========================
+  // =====================================================
 
   calcularTotal() {
 
     this.nueva.total =
-
       Number(this.nueva.cantidad) *
-
       Number(this.nueva.precio);
 
   }
 
-  // =========================
-  // GUARDAR
-  // =========================
+  // =====================================================
+  // GUARDAR VENTA
+  // =====================================================
 
   guardar() {
 
-    this.calcularTotal();
+  // ==========================================
+  // VALIDAR CANTIDAD
+  // ==========================================
 
-    this.service
+  const cantidad = Number(this.nueva.cantidad);
 
-      .addVenta(this.nueva)
+  if (
+    this.nueva.cantidad === '' ||
+    this.nueva.cantidad === null ||
+    this.nueva.cantidad === undefined ||
+    !Number.isFinite(cantidad) ||
+    cantidad <= 0
+  ) {
 
-      .subscribe(() => {
+    alert('La cantidad debe ser mayor que cero.');
+
+    return;
+  }
+
+
+  // ==========================================
+  // VALIDAR PRECIO
+  // ==========================================
+
+  const precio = Number(this.nueva.precio);
+
+  if (
+    this.nueva.precio === '' ||
+    this.nueva.precio === null ||
+    this.nueva.precio === undefined ||
+    !Number.isFinite(precio) ||
+    precio <= 0
+  ) {
+
+    alert('El precio debe ser mayor que cero.');
+
+    return;
+  }
+
+
+  // ==========================================
+  // VALIDAR CLIENTE
+  // ==========================================
+
+  if (
+    !this.nueva.cliente ||
+    this.nueva.cliente.trim() === ''
+  ) {
+
+    alert('Debe ingresar un cliente para registrar la venta.');
+
+    return;
+  }
+
+
+  // ==========================================
+  // VALIDAR PRODUCTO
+  // ==========================================
+
+  if (
+    !this.nueva.producto ||
+    this.nueva.producto.trim() === ''
+  ) {
+
+    alert('Debe seleccionar un producto.');
+
+    return;
+  }
+
+
+  // ==========================================
+  // CALCULAR TOTAL
+  // ==========================================
+
+  this.calcularTotal();
+
+
+  // ==========================================
+  // GUARDAR
+  // ==========================================
+
+  this.service
+    .addVenta(this.nueva)
+    .subscribe({
+
+      next: (respuesta: any) => {
+
+        console.log('Venta registrada:', respuesta);
+
+        alert('Venta registrada correctamente.');
 
         this.nueva = {
 
@@ -169,13 +255,27 @@ export class VentasComponent {
 
         this.cargar();
 
-      });
+      },
 
-  }
+      error: (error) => {
 
-  // =========================
+        console.error('Error al registrar venta:', error);
+
+        const mensaje =
+          error?.error?.error ||
+          error?.error?.mensaje ||
+          'No fue posible registrar la venta.';
+
+        alert(mensaje);
+
+      }
+
+    });
+
+}
+  // =====================================================
   // EDITAR
-  // =========================
+  // =====================================================
 
   editar(v: any) {
 
@@ -201,9 +301,9 @@ export class VentasComponent {
 
   }
 
-  // =========================
+  // =====================================================
   // ELIMINAR
-  // =========================
+  // =====================================================
 
   eliminar(id: number) {
 
@@ -214,9 +314,7 @@ export class VentasComponent {
     }
 
     this.service
-
       .deleteVenta(id)
-
       .subscribe(() => {
 
         this.cargar();
@@ -225,48 +323,173 @@ export class VentasComponent {
 
   }
 
-  // =========================
-  // FILTRAR
-  // =========================
+  // =====================================================
+  // MOSTRAR / OCULTAR FILTROS
+  // =====================================================
 
-  ventasFiltradas() {
+  abrirFiltros() {
 
-    return this.ventas.filter(v =>
-
-      v.cliente
-        ?.toLowerCase()
-        .includes(
-          this.buscar.toLowerCase()
-        )
-
-      ||
-
-      v.producto
-        ?.toLowerCase()
-        .includes(
-          this.buscar.toLowerCase()
-        )
-
-      ||
-
-      v.estado
-        ?.toLowerCase()
-        .includes(
-          this.buscar.toLowerCase()
-        )
-
-      ||
-
-      String(v.idVenta)
-        .includes(this.buscar)
-
-    );
+    this.mostrarFiltros = !this.mostrarFiltros;
 
   }
 
-  // =========================
+  // =====================================================
+  // FILTRAR VENTAS
+  // =====================================================
+
+  ventasFiltradas() {
+
+    const texto = this.buscar
+      .toLowerCase()
+      .trim();
+
+    const cliente = this.filtroCliente
+      .toLowerCase()
+      .trim();
+
+    const producto = this.filtroProducto
+      .toLowerCase()
+      .trim();
+
+    const estado = this.filtroEstado
+      .toLowerCase()
+      .trim();
+
+    return this.ventas.filter((v: any) => {
+
+      // -----------------------------------------
+      // BUSQUEDA GENERAL
+      // -----------------------------------------
+
+      const coincideBusqueda =
+
+        !texto ||
+
+        String(v.idVenta)
+          .toLowerCase()
+          .includes(texto) ||
+
+        String(v.cliente || '')
+          .toLowerCase()
+          .includes(texto) ||
+
+        String(v.producto || '')
+          .toLowerCase()
+          .includes(texto) ||
+
+        String(v.estado || '')
+          .toLowerCase()
+          .includes(texto);
+
+      // -----------------------------------------
+      // FILTRO CLIENTE
+      // -----------------------------------------
+
+      const coincideCliente =
+
+        !cliente ||
+
+        String(v.cliente || '')
+          .toLowerCase()
+          .includes(cliente);
+
+      // -----------------------------------------
+      // FILTRO PRODUCTO
+      // -----------------------------------------
+
+      const coincideProducto =
+
+        !producto ||
+
+        String(v.producto || '')
+          .toLowerCase()
+          .includes(producto);
+
+      // -----------------------------------------
+      // FILTRO ESTADO
+      // -----------------------------------------
+
+      const coincideEstado =
+
+        !estado ||
+
+        String(v.estado || '')
+          .toLowerCase() === estado;
+
+      // -----------------------------------------
+      // FECHA DE LA VENTA
+      // -----------------------------------------
+
+      const fechaVenta = String(v.fecha || '')
+        .substring(0, 10);
+
+      // -----------------------------------------
+      // FECHA DESDE
+      // -----------------------------------------
+
+      const coincideFechaDesde =
+
+        !this.fechaDesde ||
+
+        fechaVenta >= this.fechaDesde;
+
+      // -----------------------------------------
+      // FECHA HASTA
+      // -----------------------------------------
+
+      const coincideFechaHasta =
+
+        !this.fechaHasta ||
+
+        fechaVenta <= this.fechaHasta;
+
+      // -----------------------------------------
+      // RESULTADO FINAL
+      // -----------------------------------------
+
+      return (
+
+        coincideBusqueda &&
+
+        coincideCliente &&
+
+        coincideProducto &&
+
+        coincideEstado &&
+
+        coincideFechaDesde &&
+
+        coincideFechaHasta
+
+      );
+
+    });
+
+  }
+
+  // =====================================================
+  // LIMPIAR FILTROS
+  // =====================================================
+
+  limpiarFiltros() {
+
+    this.buscar = '';
+
+    this.filtroCliente = '';
+
+    this.filtroProducto = '';
+
+    this.filtroEstado = '';
+
+    this.fechaDesde = '';
+
+    this.fechaHasta = '';
+
+  }
+
+  // =====================================================
   // VENTAS HOY
-  // =========================
+  // =====================================================
 
   totalHoy() {
 
@@ -305,70 +528,117 @@ export class VentasComponent {
 
   }
 
-  // =========================
-  // VENTAS MES ACTUAL
-  // =========================
+  // =====================================================
+  // VENTAS DEL MES ACTUAL
+  // =====================================================
 
   ventasDelMesActual() {
-  const hoy = new Date();
 
-  const mesActual = hoy.getMonth() + 1;
-  const anioActual = hoy.getFullYear();
+    const hoy = new Date();
 
-  return this.ventas
-    .filter(v => {
-      if (!v.fecha) {
-        return false;
-      }
+    const mesActual = hoy.getMonth() + 1;
 
-      const fecha = String(v.fecha).substring(0, 10);
-      const partes = fecha.split('-');
+    const anioActual = hoy.getFullYear();
 
-      const anio = Number(partes[0]);
-      const mes = Number(partes[1]);
+    return this.ventas
 
-      return mes === mesActual && anio === anioActual;
-    })
-    .reduce(
-      (sum, v) => sum + Number(v.total),
-      0
-    );
-}
-  // =========================
+      .filter(v => {
+
+        if (!v.fecha) {
+
+          return false;
+
+        }
+
+        const fecha =
+          String(v.fecha).substring(0, 10);
+
+        const partes =
+          fecha.split('-');
+
+        const anio =
+          Number(partes[0]);
+
+        const mes =
+          Number(partes[1]);
+
+        return (
+
+          mes === mesActual &&
+
+          anio === anioActual
+
+        );
+
+      })
+
+      .reduce(
+
+        (sum, v) =>
+          sum + Number(v.total),
+
+        0
+
+      );
+
+  }
+
+  // =====================================================
   // TOTAL POR MES
-  // =========================
+  // =====================================================
 
   totalPorMes(
-  mes: number,
-  anio: number
-) {
-  return this.ventas
-    .filter((v: any) => {
-      if (!v.fecha) {
-        return false;
-      }
+    mes: number,
+    anio: number
+  ) {
 
-      const fecha = String(v.fecha).substring(0, 10);
-      const partes = fecha.split('-');
+    return this.ventas
 
-      const anioVenta = Number(partes[0]);
-      const mesVenta = Number(partes[1]);
+      .filter((v: any) => {
 
-      return (
-        mesVenta === Number(mes) &&
-        anioVenta === Number(anio)
+        if (!v.fecha) {
+
+          return false;
+
+        }
+
+        const fecha =
+          String(v.fecha).substring(0, 10);
+
+        const partes =
+          fecha.split('-');
+
+        const anioVenta =
+          Number(partes[0]);
+
+        const mesVenta =
+          Number(partes[1]);
+
+        return (
+
+          mesVenta === Number(mes) &&
+
+          anioVenta === Number(anio)
+
+        );
+
+      })
+
+      .reduce(
+
+        (sum: number, v: any) =>
+
+          sum + Number(v.total),
+
+        0
+
       );
-    })
-    .reduce(
-      (sum: number, v: any) =>
-        sum + Number(v.total),
-      0
-    );
-}
 
-  // =========================
+  }
+
+  // =====================================================
   // RESUMEN MES SELECCIONADO
-  // =========================
+  // =====================================================
 
   resumenMesSeleccionado() {
 

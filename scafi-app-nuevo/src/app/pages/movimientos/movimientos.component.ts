@@ -1,14 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-
 import { CommonModule } from '@angular/common';
-
 import { FormsModule } from '@angular/forms';
-
 import {
   HttpClient,
   HttpClientModule
 } from '@angular/common/http';
-
 import { RouterModule } from '@angular/router';
 
 @Component({
@@ -25,13 +21,23 @@ import { RouterModule } from '@angular/router';
   templateUrl: './movimientos.component.html'
 })
 
-export class MovimientosComponent implements OnInit {
+export class MovimientosComponent
+  implements OnInit {
+
+  // =====================================================
+  // API
+  // =====================================================
 
   API =
     'http://localhost/scafi-angular/scafi-api/movimientos.php';
 
   API_INSUMOS =
     'http://localhost/scafi-angular/scafi-api/insumos.php';
+
+
+  // =====================================================
+  // VARIABLES
+  // =====================================================
 
   movimientos: any[] = [];
 
@@ -45,33 +51,67 @@ export class MovimientosComponent implements OnInit {
 
   idEditar = 0;
 
+
+  // =====================================================
+  // NUEVO MOVIMIENTO
+  // =====================================================
+
   nuevo: any = {
+
     idInsumo: '',
+
     tipo: 'Entrada',
+
     cantidad: '',
+
     observacion: ''
+
   };
+
+
+  // =====================================================
+  // CONSTRUCTOR
+  // =====================================================
 
   constructor(
     private http: HttpClient
   ) {}
 
+
+  // =====================================================
+  // INIT
+  // =====================================================
+
   ngOnInit(): void {
+
     this.cargar();
+
     this.cargarInsumos();
+
   }
+
+
+  // =====================================================
+  // CARGAR MOVIMIENTOS
+  // =====================================================
 
   cargar(): void {
 
     this.http
-      .get<any[]>(this.API)
+      .get<any[]>(
+        this.API
+      )
+
       .subscribe({
 
         next: (res) => {
+
           this.movimientos = res;
+
         },
 
         error: (err) => {
+
           console.error(
             'Error cargando movimientos:',
             err
@@ -80,23 +120,35 @@ export class MovimientosComponent implements OnInit {
           alert(
             'No fue posible cargar los movimientos.'
           );
+
         }
 
       });
 
   }
 
+
+  // =====================================================
+  // CARGAR INSUMOS
+  // =====================================================
+
   cargarInsumos(): void {
 
     this.http
-      .get<any[]>(this.API_INSUMOS)
+      .get<any[]>(
+        this.API_INSUMOS
+      )
+
       .subscribe({
 
         next: (res) => {
+
           this.insumos = res;
+
         },
 
         error: (err) => {
+
           console.error(
             'Error cargando insumos:',
             err
@@ -105,11 +157,17 @@ export class MovimientosComponent implements OnInit {
           alert(
             'No fue posible cargar los insumos.'
           );
+
         }
 
       });
 
   }
+
+
+  // =====================================================
+  // GUARDAR
+  // =====================================================
 
   guardar(): void {
 
@@ -125,17 +183,16 @@ export class MovimientosComponent implements OnInit {
       );
 
       return;
+
     }
 
-    const datos = {
-      idInsumo: Number(this.nuevo.idInsumo),
-      tipo: this.nuevo.tipo,
-      cantidad: Number(this.nuevo.cantidad),
-      observacion: this.nuevo.observacion || ''
-    };
 
     this.http
-      .post<any>(this.API, datos)
+      .post<any>(
+        this.API,
+        this.nuevo
+      )
+
       .subscribe({
 
         next: (res) => {
@@ -147,11 +204,15 @@ export class MovimientosComponent implements OnInit {
               'Movimiento guardado correctamente.'
             );
 
+
             this.reset();
+
             this.cargar();
+
             this.cargarInsumos();
 
-            this.mostrarFormulario = false;
+            this.mostrarFormulario =
+              false;
 
           } else {
 
@@ -171,9 +232,13 @@ export class MovimientosComponent implements OnInit {
             err
           );
 
+
           alert(
+
             err?.error?.mensaje ||
+
             'No fue posible registrar el movimiento.'
+
           );
 
         }
@@ -182,26 +247,48 @@ export class MovimientosComponent implements OnInit {
 
   }
 
+
+  // =====================================================
+  // EDITAR
+  // =====================================================
+
   editar(mov: any): void {
 
     this.editando = true;
+
     this.mostrarFormulario = true;
 
-    this.idEditar = Number(mov.id);
+
+    // IMPORTANTE:
+    // Guardamos correctamente el ID
+    // del movimiento.
+
+    this.idEditar =
+      Number(mov.id);
+
 
     this.nuevo = {
 
-      idInsumo: Number(mov.idInsumo),
+      idInsumo:
+        Number(mov.idInsumo),
 
-      tipo: mov.tipo,
+      tipo:
+        mov.tipo,
 
-      cantidad: Number(mov.cantidad),
+      cantidad:
+        Number(mov.cantidad),
 
-      observacion: mov.observacion || ''
+      observacion:
+        mov.observacion || ''
 
     };
 
   }
+
+
+  // =====================================================
+  // ACTUALIZAR
+  // =====================================================
 
   actualizar(): void {
 
@@ -218,11 +305,14 @@ export class MovimientosComponent implements OnInit {
       );
 
       return;
+
     }
+
 
     const datos = {
 
-      id: this.idEditar,
+      id:
+        this.idEditar,
 
       idInsumo:
         Number(this.nuevo.idInsumo),
@@ -238,8 +328,13 @@ export class MovimientosComponent implements OnInit {
 
     };
 
+
     this.http
-      .put<any>(this.API, datos)
+      .put<any>(
+        this.API,
+        datos
+      )
+
       .subscribe({
 
         next: (res) => {
@@ -251,13 +346,17 @@ export class MovimientosComponent implements OnInit {
               'Movimiento actualizado correctamente.'
             );
 
+
             this.editando = false;
+
             this.reset();
 
             this.cargar();
+
             this.cargarInsumos();
 
-            this.mostrarFormulario = false;
+            this.mostrarFormulario =
+              false;
 
           } else {
 
@@ -277,9 +376,13 @@ export class MovimientosComponent implements OnInit {
             err
           );
 
+
           alert(
+
             err?.error?.mensaje ||
+
             'No fue posible actualizar el movimiento.'
+
           );
 
         }
@@ -288,20 +391,31 @@ export class MovimientosComponent implements OnInit {
 
   }
 
+
+  // =====================================================
+  // ELIMINAR
+  // =====================================================
+
   eliminar(id: number): void {
 
-    if (
-      !confirm(
+    const confirmar =
+      confirm(
         '¿Está seguro de eliminar este movimiento? El stock será ajustado automáticamente.'
-      )
-    ) {
+      );
+
+
+    if (!confirmar) {
+
       return;
+
     }
+
 
     this.http
       .delete<any>(
         `${this.API}?id=${id}`
       )
+
       .subscribe({
 
         next: (res) => {
@@ -313,7 +427,9 @@ export class MovimientosComponent implements OnInit {
               'Movimiento eliminado correctamente.'
             );
 
+
             this.cargar();
+
             this.cargarInsumos();
 
           } else {
@@ -334,9 +450,13 @@ export class MovimientosComponent implements OnInit {
             err
           );
 
+
           alert(
+
             err?.error?.mensaje ||
+
             'No fue posible eliminar el movimiento.'
+
           );
 
         }
@@ -345,6 +465,11 @@ export class MovimientosComponent implements OnInit {
 
   }
 
+
+  // =====================================================
+  // FILTRAR
+  // =====================================================
+
   movimientosFiltrados(): any[] {
 
     const texto =
@@ -352,26 +477,41 @@ export class MovimientosComponent implements OnInit {
         .toLowerCase()
         .trim();
 
+
     if (!texto) {
+
       return this.movimientos;
+
     }
+
 
     return this.movimientos.filter(
       m =>
+
         String(m.insumo || '')
           .toLowerCase()
           .includes(texto)
+
         ||
+
         String(m.tipo || '')
           .toLowerCase()
           .includes(texto)
+
         ||
+
         String(m.observacion || '')
           .toLowerCase()
           .includes(texto)
+
     );
 
   }
+
+
+  // =====================================================
+  // RESET
+  // =====================================================
 
   reset(): void {
 
@@ -387,49 +527,83 @@ export class MovimientosComponent implements OnInit {
 
     };
 
+
     this.idEditar = 0;
 
   }
 
+
+  // =====================================================
+  // CANCELAR
+  // =====================================================
+
   cancelarEditar(): void {
 
     this.editando = false;
+
     this.mostrarFormulario = false;
 
     this.reset();
 
   }
 
+
+  // =====================================================
+  // TOTAL ENTRADAS
+  // =====================================================
+
   totalEntradas(): number {
 
     return this.movimientos
+
       .filter(
         m => m.tipo === 'Entrada'
       )
+
       .reduce(
+
         (total, m) =>
           total + Number(m.cantidad),
+
         0
+
       );
 
   }
+
+
+  // =====================================================
+  // TOTAL SALIDAS
+  // =====================================================
 
   totalSalidas(): number {
 
     return this.movimientos
+
       .filter(
         m => m.tipo === 'Salida'
       )
+
       .reduce(
+
         (total, m) =>
           total + Number(m.cantidad),
+
         0
+
       );
 
   }
 
+
+  // =====================================================
+  // CANCELAR
+  // =====================================================
+
   cancelar(): void {
+
     this.cancelarEditar();
+
   }
 
 }

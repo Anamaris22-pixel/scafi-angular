@@ -1,92 +1,72 @@
 <?php
 
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: Content-Type");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
 header("Content-Type: application/json; charset=UTF-8");
 
-include 'conexion.php';
 
-// ==========================================
-// RESPUESTA JSON
-// ==========================================
-function responder($ok, $mensaje = '', $extra = []) {
+// =====================================================
+// CORS OPTIONS
+// =====================================================
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+
+    http_response_code(200);
+
+    exit();
+
+}
+
+
+require_once 'conexion.php';
+
+
+// =====================================================
+// FUNCIÓN RESPUESTA
+// =====================================================
+
+function responder(
+    $ok,
+    $mensaje = '',
+    $extra = []
+) {
+
     echo json_encode(
+
         array_merge(
+
             [
                 "ok" => $ok,
-                "error" => $mensaje
+                "mensaje" => $mensaje
             ],
+
             $extra
+
         ),
+
         JSON_UNESCAPED_UNICODE
+
     );
-    exit;
+
+    exit();
+
 }
 
-// ==========================================
-// PRE-FLIGHT CORS
-// ==========================================
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit;
-}
 
-// ==========================================
-// OBTENER Y VALIDAR JSON
-// ==========================================
-function obtenerInput() {
+// =====================================================
+// GET - LISTAR PROVEEDORES
+// =====================================================
 
-    $contenido = file_get_contents("php://input");
-    $input = json_decode($contenido, true);
-
-    if (!is_array($input)) {
-        responder(false, "Los datos enviados no tienen un formato válido.");
-    }
-
-    return $input;
-}
-
-// ==========================================
-// VALIDAR CAMPOS DEL PROVEEDOR
-// ==========================================
-function validarProveedor($input) {
-
-    $campos = [
-        'nombre',
-        'empresa',
-        'telefono',
-        'correo',
-        'direccion',
-        'estado'
-    ];
-
-    foreach ($campos as $campo) {
-
-        if (
-            !isset($input[$campo]) ||
-            trim((string)$input[$campo]) === ''
-        ) {
-            responder(
-                false,
-                "El campo '" . $campo . "' es obligatorio."
-            );
-        }
-    }
-
-    $correo = trim((string)$input['correo']);
-
-    if (!filter_var($correo, FILTER_VALIDATE_EMAIL)) {
-        responder(false, "Ingrese un correo electrónico válido.");
-    }
-}
-
-// ==========================================
-// LISTAR
-// ==========================================
-if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+if (
+    $_SERVER['REQUEST_METHOD'] === 'GET'
+) {
 
     $sql = "
+
         SELECT
             idProveedor,
             nombre,
@@ -95,139 +75,558 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             correo,
             direccion,
             estado
+
         FROM proveedores
+
         ORDER BY idProveedor DESC
+
     ";
 
-    $resultado = $conexion->query($sql);
+
+    $resultado =
+        $conexion->query($sql);
+
 
     if (!$resultado) {
-        responder(false, "No fue posible consultar los proveedores.");
+
+        http_response_code(500);
+
+        responder(
+            false,
+            "Error al consultar proveedores: "
+            . $conexion->error
+        );
+
     }
+
 
     $datos = [];
 
-    while ($fila = $resultado->fetch_assoc()) {
+
+    while (
+        $fila =
+        $resultado->fetch_assoc()
+    ) {
+
         $datos[] = $fila;
+
     }
+
 
     echo json_encode(
         $datos,
         JSON_UNESCAPED_UNICODE
     );
 
-    exit;
+    exit();
+
 }
 
-// ==========================================
-// INSERTAR
-// ==========================================
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    $input = obtenerInput();
+// =====================================================
+// POST - REGISTRAR PROVEEDOR
+// =====================================================
 
-    validarProveedor($input);
+if (
+    $_SERVER['REQUEST_METHOD'] === 'POST'
+) {
 
-    $nombre = trim((string)$input['nombre']);
-    $empresa = trim((string)$input['empresa']);
-    $telefono = trim((string)$input['telefono']);
-    $correo = trim((string)$input['correo']);
-    $direccion = trim((string)$input['direccion']);
-    $estado = trim((string)$input['estado']);
 
-    $sql = "
-        INSERT INTO proveedores
-        (
-            nombre,
-            empresa,
-            telefono,
-            correo,
-            direccion,
-            estado
-        )
-        VALUES (?, ?, ?, ?, ?, ?)
-    ";
+    $input = json_decode(
 
-    $stmt = $conexion->prepare($sql);
+        file_get_contents(
+            "php://input"
+        ),
 
-    if (!$stmt) {
-        responder(false, "No fue posible preparar el registro del proveedor.");
+        true
+
+    );
+
+
+    // -------------------------------------------------
+    // VALIDAR JSON
+    // -------------------------------------------------
+
+    if (!is_array($input)) {
+
+        http_response_code(400);
+
+        responder(
+            false,
+            "Los datos enviados no son válidos."
+        );
+
     }
 
+
+    // -------------------------------------------------
+    // RECIBIR DATOS
+    // -------------------------------------------------
+
+    $nombre =
+        trim(
+            $input['nombre'] ?? ''
+        );
+
+    $empresa =
+        trim(
+            $input['empresa'] ?? ''
+        );
+
+    $telefono =
+        trim(
+            $input['telefono'] ?? ''
+        );
+
+    $correo =
+        trim(
+            $input['correo'] ?? ''
+        );
+
+    $direccion =
+        trim(
+            $input['direccion'] ?? ''
+        );
+
+    $estado =
+        trim(
+            $input['estado'] ?? ''
+        );
+
+
+    // -------------------------------------------------
+    // VALIDAR CAMPOS OBLIGATORIOS
+    // -------------------------------------------------
+
+    $faltantes = [];
+
+
+    if ($nombre === '') {
+
+        $faltantes[] =
+            'nombre';
+
+    }
+
+
+    if ($empresa === '') {
+
+        $faltantes[] =
+            'empresa';
+
+    }
+
+
+    if ($telefono === '') {
+
+        $faltantes[] =
+            'teléfono';
+
+    }
+
+
+    if ($correo === '') {
+
+        $faltantes[] =
+            'correo';
+
+    }
+
+
+    if ($direccion === '') {
+
+        $faltantes[] =
+            'dirección';
+
+    }
+
+
+    if ($estado === '') {
+
+        $faltantes[] =
+            'estado';
+
+    }
+
+
+    // -------------------------------------------------
+    // SI FALTAN CAMPOS NO GUARDA
+    // -------------------------------------------------
+
+    if (
+        count($faltantes) > 0
+    ) {
+
+        http_response_code(400);
+
+        responder(
+
+            false,
+
+            "Complete los campos obligatorios.",
+
+            [
+                "camposFaltantes" =>
+                    $faltantes
+            ]
+
+        );
+
+    }
+
+
+    // -------------------------------------------------
+    // VALIDAR CORREO
+    // -------------------------------------------------
+
+    if (
+        !filter_var(
+            $correo,
+            FILTER_VALIDATE_EMAIL
+        )
+    ) {
+
+        http_response_code(400);
+
+        responder(
+            false,
+            "Ingrese un correo electrónico válido."
+        );
+
+    }
+
+
+    // -------------------------------------------------
+    // INSERTAR
+    // -------------------------------------------------
+
+    $stmt =
+        $conexion->prepare("
+
+            INSERT INTO proveedores
+
+            (
+                nombre,
+                empresa,
+                telefono,
+                correo,
+                direccion,
+                estado
+            )
+
+            VALUES
+            (
+                ?,
+                ?,
+                ?,
+                ?,
+                ?,
+                ?
+            )
+
+        ");
+
+
+    if (!$stmt) {
+
+        http_response_code(500);
+
+        responder(
+            false,
+            "Error preparando el registro: "
+            . $conexion->error
+        );
+
+    }
+
+
     $stmt->bind_param(
+
         "ssssss",
+
         $nombre,
         $empresa,
         $telefono,
         $correo,
         $direccion,
         $estado
+
     );
 
-    if ($stmt->execute()) {
+
+    if (
+        $stmt->execute()
+    ) {
+
+        $idNuevo =
+            $conexion->insert_id;
+
+        $stmt->close();
+
 
         responder(
+
             true,
-            "",
+
+            "Proveedor registrado correctamente.",
+
             [
-                "mensaje" => "Proveedor registrado correctamente.",
-                "idProveedor" => $stmt->insert_id
+                "idProveedor" =>
+                    $idNuevo
             ]
+
         );
 
-    } else {
+    }
+
+
+    $error =
+        $stmt->error;
+
+    $stmt->close();
+
+
+    http_response_code(500);
+
+
+    responder(
+        false,
+        "No fue posible registrar el proveedor: "
+        . $error
+    );
+
+}
+
+
+// =====================================================
+// PUT - ACTUALIZAR PROVEEDOR
+// =====================================================
+
+if (
+    $_SERVER['REQUEST_METHOD'] === 'PUT'
+) {
+
+
+    $input = json_decode(
+
+        file_get_contents(
+            "php://input"
+        ),
+
+        true
+
+    );
+
+
+    if (!is_array($input)) {
+
+        http_response_code(400);
 
         responder(
             false,
-            "No fue posible registrar el proveedor."
+            "Los datos enviados no son válidos."
         );
+
     }
-}
 
-// ==========================================
-// ACTUALIZAR
-// ==========================================
-if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
 
-    $input = obtenerInput();
+    // -------------------------------------------------
+    // DATOS
+    // -------------------------------------------------
+
+    $id =
+        intval(
+            $input['idProveedor'] ?? 0
+        );
+
+    $nombre =
+        trim(
+            $input['nombre'] ?? ''
+        );
+
+    $empresa =
+        trim(
+            $input['empresa'] ?? ''
+        );
+
+    $telefono =
+        trim(
+            $input['telefono'] ?? ''
+        );
+
+    $correo =
+        trim(
+            $input['correo'] ?? ''
+        );
+
+    $direccion =
+        trim(
+            $input['direccion'] ?? ''
+        );
+
+    $estado =
+        trim(
+            $input['estado'] ?? ''
+        );
+
+
+    // -------------------------------------------------
+    // VALIDAR ID
+    // -------------------------------------------------
 
     if (
-        !isset($input['idProveedor']) ||
-        !is_numeric($input['idProveedor'])
+        $id <= 0
     ) {
-        responder(false, "El identificador del proveedor es obligatorio.");
+
+        http_response_code(400);
+
+        responder(
+            false,
+            "ID del proveedor requerido."
+        );
+
     }
 
-    validarProveedor($input);
 
-    $id = (int)$input['idProveedor'];
-    $nombre = trim((string)$input['nombre']);
-    $empresa = trim((string)$input['empresa']);
-    $telefono = trim((string)$input['telefono']);
-    $correo = trim((string)$input['correo']);
-    $direccion = trim((string)$input['direccion']);
-    $estado = trim((string)$input['estado']);
+    // -------------------------------------------------
+    // VALIDAR CAMPOS
+    // -------------------------------------------------
 
-    $sql = "
-        UPDATE proveedores
-        SET
-            nombre = ?,
-            empresa = ?,
-            telefono = ?,
-            correo = ?,
-            direccion = ?,
-            estado = ?
-        WHERE idProveedor = ?
-    ";
+    $faltantes = [];
 
-    $stmt = $conexion->prepare($sql);
+
+    if ($nombre === '') {
+
+        $faltantes[] =
+            'nombre';
+
+    }
+
+
+    if ($empresa === '') {
+
+        $faltantes[] =
+            'empresa';
+
+    }
+
+
+    if ($telefono === '') {
+
+        $faltantes[] =
+            'teléfono';
+
+    }
+
+
+    if ($correo === '') {
+
+        $faltantes[] =
+            'correo';
+
+    }
+
+
+    if ($direccion === '') {
+
+        $faltantes[] =
+            'dirección';
+
+    }
+
+
+    if ($estado === '') {
+
+        $faltantes[] =
+            'estado';
+
+    }
+
+
+    if (
+        count($faltantes) > 0
+    ) {
+
+        http_response_code(400);
+
+        responder(
+
+            false,
+
+            "Complete los campos obligatorios.",
+
+            [
+                "camposFaltantes" =>
+                    $faltantes
+            ]
+
+        );
+
+    }
+
+
+    // -------------------------------------------------
+    // VALIDAR CORREO
+    // -------------------------------------------------
+
+    if (
+        !filter_var(
+            $correo,
+            FILTER_VALIDATE_EMAIL
+        )
+    ) {
+
+        http_response_code(400);
+
+        responder(
+            false,
+            "Ingrese un correo electrónico válido."
+        );
+
+    }
+
+
+    // -------------------------------------------------
+    // ACTUALIZAR
+    // -------------------------------------------------
+
+    $stmt =
+        $conexion->prepare("
+
+            UPDATE proveedores
+
+            SET
+
+                nombre = ?,
+                empresa = ?,
+                telefono = ?,
+                correo = ?,
+                direccion = ?,
+                estado = ?
+
+            WHERE
+                idProveedor = ?
+
+        ");
+
 
     if (!$stmt) {
-        responder(false, "No fue posible preparar la actualización.");
+
+        http_response_code(500);
+
+        responder(
+            false,
+            "Error preparando la actualización: "
+            . $conexion->error
+        );
+
     }
 
+
     $stmt->bind_param(
+
         "ssssssi",
+
         $nombre,
         $empresa,
         $telefono,
@@ -235,70 +634,165 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
         $direccion,
         $estado,
         $id
+
     );
 
-    if ($stmt->execute()) {
 
-        if ($stmt->affected_rows >= 0) {
-            responder(
-                true,
-                "",
-                [
-                    "mensaje" => "Proveedor actualizado correctamente."
-                ]
-            );
-        }
+    if (
+        $stmt->execute()
+    ) {
 
-    } else {
+        $stmt->close();
 
-        responder(
-            false,
-            "No fue posible actualizar el proveedor."
-        );
-    }
-}
-
-// ==========================================
-// ELIMINAR
-// ==========================================
-if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
-
-    if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
-        responder(false, "El identificador del proveedor es obligatorio.");
-    }
-
-    $id = (int)$_GET['id'];
-
-    $stmt = $conexion->prepare(
-        "DELETE FROM proveedores WHERE idProveedor = ?"
-    );
-
-    if (!$stmt) {
-        responder(false, "No fue posible preparar la eliminación.");
-    }
-
-    $stmt->bind_param("i", $id);
-
-    if ($stmt->execute()) {
 
         responder(
             true,
-            "",
-            [
-                "mensaje" => "Proveedor eliminado correctamente."
-            ]
+            "Proveedor actualizado correctamente."
         );
 
-    } else {
-
-        responder(false, "No fue posible eliminar el proveedor.");
     }
+
+
+    $error =
+        $stmt->error;
+
+    $stmt->close();
+
+
+    http_response_code(500);
+
+
+    responder(
+
+        false,
+
+        "No fue posible actualizar el proveedor: "
+        . $error
+
+    );
+
 }
 
-// ==========================================
+
+// =====================================================
+// DELETE - ELIMINAR
+// =====================================================
+
+if (
+    $_SERVER['REQUEST_METHOD'] === 'DELETE'
+) {
+
+
+    $id =
+        intval(
+            $_GET['id'] ?? 0
+        );
+
+
+    if (
+        $id <= 0
+    ) {
+
+        responder(
+            false,
+            "ID de proveedor requerido."
+        );
+
+    }
+
+
+    // -------------------------------------------------
+    // ELIMINAR
+    // -------------------------------------------------
+
+    $stmt =
+        $conexion->prepare("
+
+            DELETE FROM proveedores
+
+            WHERE idProveedor = ?
+
+        ");
+
+
+    if (!$stmt) {
+
+        http_response_code(500);
+
+        responder(
+            false,
+            "Error preparando eliminación: "
+            . $conexion->error
+        );
+
+    }
+
+
+    $stmt->bind_param(
+        "i",
+        $id
+    );
+
+
+    if (
+        $stmt->execute()
+    ) {
+
+        if (
+            $stmt->affected_rows > 0
+        ) {
+
+            $stmt->close();
+
+            responder(
+                true,
+                "Proveedor eliminado correctamente."
+            );
+
+        }
+
+
+        $stmt->close();
+
+
+        responder(
+            false,
+            "El proveedor no existe."
+        );
+
+    }
+
+
+    $error =
+        $stmt->error;
+
+    $stmt->close();
+
+
+    http_response_code(500);
+
+
+    responder(
+        false,
+        "No fue posible eliminar el proveedor: "
+        . $error
+    );
+
+}
+
+
+// =====================================================
 // MÉTODO NO PERMITIDO
-// ==========================================
+// =====================================================
+
 http_response_code(405);
 
-responder(false, "Método no permitido.");
+responder(
+    false,
+    "Método no permitido."
+);
+
+
+$conexion->close();
+
 ?>

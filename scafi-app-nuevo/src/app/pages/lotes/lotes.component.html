@@ -6,7 +6,9 @@
     <div class="bg-white text-black p-6 rounded-3xl shadow-xl">
 
       <h2 class="text-3xl font-bold text-green-700 mb-6">
+
         🗺️ Registrar Lote
+
       </h2>
 
       <input
@@ -27,35 +29,77 @@
         type="number"
         [(ngModel)]="hectareas"
         placeholder="Hectáreas"
-        class="w-full mb-6 p-4 border rounded-xl"
+        class="w-full mb-4 p-4 border rounded-xl"
       />
 
-      <!-- ESTADO INICIAL -->
-      <div class="w-full mb-6 p-4 rounded-xl bg-green-50 border border-green-200">
+      <!-- FORMULARIO -->
+<div class="bg-white text-black p-6 rounded-3xl shadow-xl">
 
-        <div class="flex items-center gap-3">
+  <h2 class="text-3xl font-bold text-green-700 mb-6">
+    🗺️ Registrar Lote
+  </h2>
 
-          <span class="w-3 h-3 rounded-full bg-green-500"></span>
+  <!-- NOMBRE DEL LOTE -->
+  <input
+    type="text"
+    [(ngModel)]="nombreLote"
+    placeholder="Nombre del lote"
+    class="w-full mb-4 p-4 border rounded-xl"
+  />
 
-          <div>
-            <p class="font-bold text-green-700">
-              Estado inicial: Activo
-            </p>
+  <!-- UBICACIÓN -->
+  <input
+    type="text"
+    [(ngModel)]="ubicacion"
+    placeholder="Ubicación"
+    class="w-full mb-4 p-4 border rounded-xl"
+  />
 
-            <p class="text-sm text-gray-600">
-              Todo lote nuevo se registra automáticamente como activo.
-            </p>
-          </div>
+  <!-- HECTÁREAS -->
+  <input
+    type="number"
+    [(ngModel)]="hectareas"
+    placeholder="Hectáreas"
+    class="w-full mb-6 p-4 border rounded-xl"
+  />
 
-        </div>
+  <!-- INFORMACIÓN DEL ESTADO -->
+  <div class="w-full mb-6 p-4 rounded-xl bg-green-50 border border-green-200">
 
+    <div class="flex items-center gap-3">
+
+      <span class="w-3 h-3 rounded-full bg-green-500"></span>
+
+      <div>
+        <p class="font-bold text-green-700">
+          Estado inicial: Activo
+        </p>
+
+        <p class="text-sm text-gray-600">
+          Todo lote nuevo se registra automáticamente como activo.
+        </p>
       </div>
 
+    </div>
+
+  </div>
+
+  <!-- GUARDAR -->
+  <button
+    (click)="guardar()"
+    class="w-full bg-green-700 hover:bg-green-800 text-white p-4 rounded-xl text-lg font-bold"
+  >
+    Guardar Lote
+  </button>
+
+</div>
       <button
         (click)="guardar()"
         class="w-full bg-green-700 hover:bg-green-800 text-white p-4 rounded-xl text-lg font-bold"
       >
+
         Guardar Lote
+
       </button>
 
     </div>
@@ -64,7 +108,9 @@
     <div class="bg-white text-black p-6 rounded-3xl shadow-xl">
 
       <h2 class="text-3xl font-bold mb-6">
+
         📋 Inventario de Lotes
+
       </h2>
 
       <!-- BUSCAR -->
@@ -80,14 +126,23 @@
         <table class="w-full text-sm">
 
           <thead class="bg-slate-800 text-white sticky top-0">
+
             <tr>
+
               <th class="p-3">ID</th>
+
               <th class="p-3">Lote</th>
+
               <th class="p-3">Ubicación</th>
+
               <th class="p-3">Hectáreas</th>
+
               <th class="p-3">Estado</th>
+
               <th class="p-3">Acción</th>
+
             </tr>
+
           </thead>
 
           <tbody>
@@ -98,43 +153,32 @@
             >
 
               <td class="p-3 text-center">
+
                 {{ l.idLote }}
+
               </td>
 
               <td class="p-3 text-center">
+
                 {{ l.nombreLote }}
+
               </td>
 
               <td class="p-3 text-center">
+
                 {{ l.ubicacion }}
+
               </td>
 
               <td class="p-3 text-center">
+
                 {{ l.hectareas }}
-              </td>
-
-              <td class="p-3 text-center">
-
-                <span
-                  class="inline-flex items-center justify-center min-w-[90px] px-3 py-1 rounded-xl text-white font-bold"
-                  [ngClass]="l.estado === 'Activo' ? 'bg-green-600' : 'bg-red-600'"
-                >
-                  {{ l.estado }}
-                </span>
 
               </td>
 
               <td class="p-3 text-center">
 
-                <button
-                  (click)="cambiarEstado(l)"
-                  [ngClass]="l.estado === 'Activo'
-                    ? 'bg-red-600 hover:bg-red-700'
-                    : 'bg-green-600 hover:bg-green-700'"
-                  class="text-white px-4 py-2 rounded-lg font-bold transition"
-                >
-                  {{ l.estado === 'Activo' ? 'Inactivar' : 'Activar' }}
-                </button>
+                {{ l.estado }}
 
               </td>
 

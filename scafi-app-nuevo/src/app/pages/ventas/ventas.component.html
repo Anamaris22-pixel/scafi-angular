@@ -1,11 +1,13 @@
 <div class="p-4 md:p-6">
- <!-- BOTON -->
+
+  <!-- =====================================================
+       BOTÓN DASHBOARD
+  ====================================================== -->
+
   <div class="mb-6">
 
     <a
-
       routerLink="/dashboard"
-
       class="bg-[#020b3d]
              hover:bg-blue-900
              text-white
@@ -14,7 +16,6 @@
              font-bold
              shadow-lg
              transition"
-
     >
 
       ← Dashboard
@@ -23,10 +24,15 @@
 
   </div>
 
-  <!-- TARJETAS -->
+
+  <!-- =====================================================
+       TARJETAS
+  ====================================================== -->
+
   <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
 
     <!-- HOY -->
+
     <div class="bg-green-600 text-white rounded-3xl p-6 shadow-xl">
 
       <h2 class="text-2xl font-bold mb-2">
@@ -44,7 +50,9 @@
 
     </div>
 
+
     <!-- MES -->
+
     <div class="bg-blue-700 text-white rounded-3xl p-6 shadow-xl">
 
       <h2 class="text-2xl font-bold mb-2">
@@ -62,7 +70,9 @@
 
     </div>
 
+
     <!-- TOTAL -->
+
     <div class="bg-[#020b3d] text-white rounded-3xl p-6 shadow-xl">
 
       <h2 class="text-2xl font-bold mb-2">
@@ -80,16 +90,20 @@
   </div>
 
 
-  <!-- RESUMEN -->
+  <!-- =====================================================
+       RESUMEN MENSUAL
+  ====================================================== -->
+
   <div class="bg-white rounded-3xl p-8 shadow-xl mb-6">
 
     <h2 class="text-4xl font-bold mb-8">
-      Resumen Mensual 
+      Resumen Mensual
     </h2>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 
       <!-- MES -->
+
       <div>
 
         <label class="font-bold block mb-3">
@@ -97,12 +111,9 @@
         </label>
 
         <select
-
           [(ngModel)]="mesSeleccionado"
-
           class="w-full border rounded-xl
                  px-4 py-4 text-lg"
-
         >
 
           <option [ngValue]="1">Enero</option>
@@ -122,7 +133,9 @@
 
       </div>
 
+
       <!-- AÑO -->
+
       <div>
 
         <label class="font-bold block mb-3">
@@ -130,12 +143,9 @@
         </label>
 
         <select
-
           [(ngModel)]="anioSeleccionado"
-
           class="w-full border rounded-xl
                  px-4 py-4 text-lg"
-
         >
 
           <option [ngValue]="2024">2024</option>
@@ -147,7 +157,9 @@
 
       </div>
 
+
       <!-- TOTAL -->
+
       <div>
 
         <label class="font-bold block mb-3">
@@ -174,57 +186,53 @@
   </div>
 
 
-  
 
-  <!-- CONTENIDO -->
+  <!-- =====================================================
+       CONTENIDO PRINCIPAL
+  ====================================================== -->
+
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-    <!-- FORMULARIO -->
+
+    <!-- ===================================================
+         DATOS DE LA VENTA
+         ESTA PARTE NO TIENE FILTROS
+    ==================================================== -->
+
     <div class="bg-white rounded-3xl p-6 shadow-xl">
 
       <h2 class="text-3xl font-bold mb-6">
-
         Datos de la Venta
-
       </h2>
 
 
       <!-- FECHA -->
+
       <input
-
         type="date"
-
         [(ngModel)]="nueva.fecha"
-
         class="w-full border rounded-xl
                p-4 mb-4"
-
       >
 
 
       <!-- CLIENTE -->
+
       <input
-
         type="text"
-
         placeholder="Cliente"
-
         [(ngModel)]="nueva.cliente"
-
         class="w-full border rounded-xl
                p-4 mb-4"
-
       >
 
 
       <!-- PRODUCTO -->
+
       <select
-
         [(ngModel)]="nueva.producto"
-
         class="w-full border rounded-xl
                p-4 mb-4"
-
       >
 
         <option value="">
@@ -232,13 +240,8 @@
         </option>
 
         <option
-
-          *ngFor="
-            let p of productos
-          "
-
+          *ngFor="let p of productos"
           [value]="p.tipoCafe"
-
         >
 
           {{ p.tipoCafe }}
@@ -249,13 +252,11 @@
 
 
       <!-- ESTADO -->
+
       <select
-
         [(ngModel)]="nueva.estado"
-
         class="w-full border rounded-xl
                p-4 mb-4"
-
       >
 
         <option value="Pagado">
@@ -270,40 +271,30 @@
 
 
       <!-- CANTIDAD Y PRECIO -->
+
       <div class="grid grid-cols-2 gap-4 mb-4">
 
         <input
-
           type="number"
-
           placeholder="Cantidad"
-
           [(ngModel)]="nueva.cantidad"
-
           (input)="calcularTotal()"
-
           class="border rounded-xl p-4"
-
         >
 
         <input
-
           type="number"
-
           placeholder="Precio"
-
           [(ngModel)]="nueva.precio"
-
           (input)="calcularTotal()"
-
           class="border rounded-xl p-4"
-
         >
 
       </div>
 
 
       <!-- TOTAL -->
+
       <div
         class="bg-[#020b3d]
                text-white
@@ -316,45 +307,48 @@
         Total:
 
         {{
-
           nueva.total
-
           | currency:'USD':'symbol':'1.0-0'
-
         }}
 
       </div>
 
 
-      <!-- BOTON -->
+      <!-- GUARDAR -->
+
       <button
-
         (click)="guardar()"
-
         class="w-full bg-green-600
                hover:bg-green-700
                text-white
                font-bold
                py-4 rounded-2xl
                shadow-lg transition"
-
       >
 
-        Guardar Venta
+        💾 Guardar Venta
 
       </button>
 
     </div>
 
 
-    <!-- TABLA -->
+
+    <!-- ===================================================
+         HISTORIAL
+    ==================================================== -->
+
     <div
       class="lg:col-span-2
              bg-white rounded-3xl
              p-6 shadow-xl"
     >
 
-      <!-- TITULO -->
+
+      <!-- =================================================
+           ENCABEZADO DEL HISTORIAL
+      ================================================== -->
+
       <div
         class="flex flex-col md:flex-row
                justify-between
@@ -362,28 +356,286 @@
       >
 
         <h2 class="text-4xl font-bold">
-
           Historial de Ventas
-
         </h2>
 
-        <input
 
-          type="text"
+        <!-- BOTONES -->
 
-          placeholder="Buscar..."
+        <div class="flex gap-3 mt-4 md:mt-0">
 
-          [(ngModel)]="buscar"
+          <!-- BUSCAR -->
 
-          class="border rounded-xl
-                 p-3 w-full md:w-72 mt-4 md:mt-0"
+          <input
+            type="text"
+            placeholder="Buscar..."
+            [(ngModel)]="buscar"
+            class="border rounded-xl
+                   p-3 w-52"
+          >
 
-        >
+
+          <!-- BOTÓN FILTROS -->
+
+          <button
+            type="button"
+            (click)="abrirFiltros()"
+            class="bg-[#020b3d]
+                   hover:bg-blue-900
+                   text-white
+                   px-5 py-3
+                   rounded-xl
+                   font-bold
+                   shadow-lg
+                   transition"
+          >
+
+            🔎 Filtros
+
+          </button>
+
+        </div>
 
       </div>
 
 
-      <!-- TABLA -->
+
+      <!-- =================================================
+           PANEL DE FILTROS
+           APARECE SOLO AL PRESIONAR FILTROS
+      ================================================== -->
+
+      <div
+        *ngIf="mostrarFiltros"
+        class="bg-gray-100
+               border-2 border-gray-200
+               rounded-2xl
+               p-6
+               mb-6
+               shadow-inner"
+      >
+
+        <div
+          class="flex justify-between
+                 items-center mb-5"
+        >
+
+          <h3 class="text-2xl font-bold">
+
+            🔎 Filtrar ventas
+
+          </h3>
+
+
+          <button
+            type="button"
+            (click)="limpiarFiltros()"
+            class="bg-red-500
+                   hover:bg-red-600
+                   text-white
+                   px-4 py-2
+                   rounded-xl
+                   font-bold"
+          >
+
+            🗑 Limpiar filtros
+
+          </button>
+
+        </div>
+
+
+        <!-- FILA 1 -->
+
+        <div
+          class="grid grid-cols-1
+                 md:grid-cols-3
+                 gap-4"
+        >
+
+          <!-- CLIENTE -->
+
+          <div>
+
+            <label class="block font-bold mb-2">
+              Cliente
+            </label>
+
+            <input
+              type="text"
+              [(ngModel)]="filtroCliente"
+              placeholder="Ej: Juan Pérez"
+              class="w-full
+                     border
+                     rounded-xl
+                     p-3"
+            >
+
+          </div>
+
+
+          <!-- PRODUCTO -->
+
+          <div>
+
+            <label class="block font-bold mb-2">
+              Producto
+            </label>
+
+            <select
+              [(ngModel)]="filtroProducto"
+              class="w-full
+                     border
+                     rounded-xl
+                     p-3"
+            >
+
+              <option value="">
+                Todos los productos
+              </option>
+
+              <option value="Arábico">
+                Arábico
+              </option>
+
+              <option value="Robusta">
+                Robusta
+              </option>
+
+              <option value="Geisha">
+                Geisha
+              </option>
+
+              <option value="Castillo">
+                Castillo
+              </option>
+
+              <option value="Caturra">
+                Caturra
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <!-- ESTADO -->
+
+          <div>
+
+            <label class="block font-bold mb-2">
+              Estado
+            </label>
+
+            <select
+              [(ngModel)]="filtroEstado"
+              class="w-full
+                     border
+                     rounded-xl
+                     p-3"
+            >
+
+              <option value="">
+                Todos
+              </option>
+
+              <option value="Pagado">
+                Pagado
+              </option>
+
+              <option value="Pendiente">
+                Pendiente
+              </option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+
+        <!-- FILA 2 FECHAS -->
+
+        <div
+          class="grid grid-cols-1
+                 md:grid-cols-2
+                 gap-4
+                 mt-4"
+        >
+
+          <!-- DESDE -->
+
+          <div>
+
+            <label class="block font-bold mb-2">
+              Fecha desde
+            </label>
+
+            <input
+              type="date"
+              [(ngModel)]="fechaDesde"
+              class="w-full
+                     border
+                     rounded-xl
+                     p-3"
+            >
+
+          </div>
+
+
+          <!-- HASTA -->
+
+          <div>
+
+            <label class="block font-bold mb-2">
+              Fecha hasta
+            </label>
+
+            <input
+              type="date"
+              [(ngModel)]="fechaHasta"
+              class="w-full
+                     border
+                     rounded-xl
+                     p-3"
+            >
+
+          </div>
+
+        </div>
+
+
+        <!-- RESULTADO DEL FILTRO -->
+
+        <div
+          class="mt-5
+                 bg-white
+                 rounded-xl
+                 p-4
+                 font-bold
+                 text-gray-700"
+        >
+
+          Mostrando:
+
+          <span class="text-blue-700">
+
+            {{ ventasFiltradas().length }}
+
+          </span>
+
+          ventas
+
+        </div>
+
+      </div>
+
+
+
+      <!-- =================================================
+           TABLA
+      ================================================== -->
+
       <div class="overflow-auto">
 
         <table class="w-full">
@@ -431,21 +683,21 @@
           <tbody>
 
             <tr
-
-              *ngFor="
-                let v of ventasFiltradas()
-              "
-
+              *ngFor="let v of ventasFiltradas()"
               class="border-b
                      hover:bg-gray-100"
-
             >
 
-              <td class="p-4 font-bold text-blue-700">
+              <td
+                class="p-4
+                       font-bold
+                       text-blue-700"
+              >
 
                 #{{ v.idVenta }}
 
               </td>
+
 
               <td class="p-4">
 
@@ -453,17 +705,20 @@
 
               </td>
 
+
               <td class="p-4">
 
                 {{ v.cliente }}
 
               </td>
 
+
               <td class="p-4">
 
                 {{ v.producto }}
 
               </td>
+
 
               <td
                 class="p-4
@@ -472,19 +727,16 @@
               >
 
                 {{
-
                   v.total
-
                   | currency:'USD':'symbol':'1.0-0'
-
                 }}
 
               </td>
 
+
               <td class="p-4">
 
                 <span
-
                   [ngClass]="{
 
                     'bg-green-600':
@@ -494,12 +746,11 @@
                     v.estado === 'Pendiente'
 
                   }"
-
                   class="text-white
                          px-4 py-2
                          rounded-full
-                         text-sm font-bold"
-
+                         text-sm
+                         font-bold"
                 >
 
                   {{ v.estado }}
@@ -508,34 +759,31 @@
 
               </td>
 
+
               <td class="p-4">
 
                 <button
-
                   (click)="editar(v)"
-
                   class="bg-blue-600
                          hover:bg-blue-700
                          text-white
                          px-4 py-2
-                         rounded-lg mr-2"
-
+                         rounded-lg
+                         mr-2"
                 >
 
                   Editar
 
                 </button>
 
+
                 <button
-
                   (click)="eliminar(v.idVenta)"
-
                   class="bg-red-600
                          hover:bg-red-700
                          text-white
                          px-4 py-2
                          rounded-lg"
-
                 >
 
                   Eliminar
@@ -547,24 +795,21 @@
             </tr>
 
 
-            <!-- VACIO -->
+            <!-- SIN RESULTADOS -->
+
             <tr
-              *ngIf="
-                ventasFiltradas().length === 0
-              "
+              *ngIf="ventasFiltradas().length === 0"
             >
 
               <td
-
                 colspan="7"
-
                 class="text-center
                        p-10
                        text-gray-500"
-
               >
 
-                No hay ventas registradas
+                No hay ventas que coincidan
+                con los filtros.
 
               </td>
 

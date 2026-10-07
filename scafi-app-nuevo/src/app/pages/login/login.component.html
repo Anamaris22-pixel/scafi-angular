@@ -161,15 +161,13 @@
 
       </button>
 
-      <!-- ERROR -->
-      <div
-        *ngIf="error"
-        class="bg-red-100 text-red-700 mt-6 p-4 rounded-xl text-center text-xl"
-      >
-
-        {{ error }}
-
-      </div>
+      <!-- MENSAJE DE ERROR -->
+<div
+  *ngIf="error"
+  class="mt-5 bg-red-100 border-2 border-red-300 text-red-700 p-4 rounded-2xl text-center text-lg font-semibold"
+>
+  {{ error }}
+</div>
 
     </div>
 

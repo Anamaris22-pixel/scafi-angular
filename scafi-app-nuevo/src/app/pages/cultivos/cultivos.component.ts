@@ -77,30 +77,49 @@ export class CultivosComponent implements OnInit {
   // GUARDAR
   // ======================
   guardar(): void {
-    const formData = new FormData();
-    formData.append('idLote', this.idLote);
-    formData.append('tipoCafe', this.tipoCafe);
-    formData.append('fechaSiembra', this.fechaSiembra);
-    formData.append('estado', this.estado);
 
-    this.http.post<any>(this.api, formData).subscribe({
-      next: (res) => {
-        console.log(res);
-        if (res.ok) {
-          alert('Cultivo guardado');
-          this.cargar();
-          this.limpiar();
-          this.mostrarFormulario = false;
-        }
-      },
-      error: (err) => {
-        console.error('Error al guardar cultivo:', err);
-      },
-      complete: () => {
-        console.log('Guardado de cultivo finalizado');
-      }
-    });
+  // VALIDAR CAMPOS OBLIGATORIOS
+  if (
+    !this.idLote ||
+    !this.tipoCafe ||
+    !this.fechaSiembra ||
+    !this.estado
+  ) {
+    alert('Por favor, complete todos los campos obligatorios.');
+    return;
   }
+
+  const formData = new FormData();
+
+  formData.append('idLote', this.idLote);
+  formData.append('tipoCafe', this.tipoCafe);
+  formData.append('fechaSiembra', this.fechaSiembra);
+  formData.append('estado', this.estado);
+
+  this.http.post<any>(this.api, formData).subscribe({
+    next: (res) => {
+
+      console.log(res);
+
+      if (res.ok) {
+        alert('Cultivo guardado');
+        this.cargar();
+        this.limpiar();
+        this.mostrarFormulario = false;
+      }
+
+    },
+
+    error: (err) => {
+      console.error('Error al guardar cultivo:', err);
+    },
+
+    complete: () => {
+      console.log('Guardado de cultivo finalizado');
+    }
+
+  });
+}
 
   // ======================
   // EDITAR

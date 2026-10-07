@@ -40,7 +40,7 @@ export class LotesComponent implements OnInit {
         },
 
         error: (err) => {
-          console.error('Error al cargar lotes:', err);
+          console.log('Error al cargar lotes:', err);
         }
 
       });
@@ -51,6 +51,7 @@ export class LotesComponent implements OnInit {
   // =========================
   guardar(): void {
 
+    // VALIDAR DATOS OBLIGATORIOS
     if (
       !this.nombreLote.trim() ||
       !this.ubicacion.trim() ||
@@ -62,12 +63,11 @@ export class LotesComponent implements OnInit {
 
     const formData = new FormData();
 
-    formData.append('accion', 'guardar');
     formData.append('nombreLote', this.nombreLote);
     formData.append('ubicacion', this.ubicacion);
     formData.append('hectareas', this.hectareas);
 
-    // Todo lote nuevo se registra automáticamente como Activo.
+    // El lote nuevo siempre se registra como ACTIVO
     formData.append('estado', 'Activo');
 
     this.http.post<any>(this.api, formData)
@@ -76,23 +76,31 @@ export class LotesComponent implements OnInit {
         next: (res) => {
 
           if (res.ok) {
+
             alert('Lote registrado correctamente como Activo.');
+
             this.limpiar();
+
+            // Recargar tabla inmediatamente
             this.cargar();
+
           } else {
-            alert(res.error || 'No fue posible registrar el lote.');
+
+            alert('No fue posible registrar el lote.');
+
             console.error(res);
           }
         },
 
         error: (err) => {
+
           console.error('Error al guardar lote:', err);
+
           alert('Error de conexión con el servidor.');
         }
 
       });
   }
-
   // =========================
   // ACTIVAR / INACTIVAR LOTE
   // =========================
@@ -114,7 +122,7 @@ export class LotesComponent implements OnInit {
     const formData = new FormData();
 
     formData.append('accion', 'actualizar_estado');
-    formData.append('idLote', String(lote.idLote));
+    formData.append('idLote', lote.idLote);
     formData.append('estado', nuevoEstado);
 
     this.http.post<any>(this.api, formData)
@@ -123,31 +131,39 @@ export class LotesComponent implements OnInit {
         next: (res) => {
 
           if (res.ok) {
+
             alert(`Lote actualizado a ${nuevoEstado}.`);
+
             this.cargar();
+
           } else {
-            alert(res.error || 'No fue posible actualizar el estado.');
+
+            alert('No fue posible actualizar el estado.');
+
             console.error(res);
           }
         },
 
         error: (err) => {
+
           console.error('Error al actualizar estado:', err);
+
           alert('Error de conexión con el servidor.');
         }
 
       });
   }
-
   // =========================
   // FILTRAR
   // =========================
   lotesFiltrados() {
 
     return this.lotes.filter(l =>
-      String(l.nombreLote || '')
+
+      l.nombreLote
         .toLowerCase()
         .includes(this.buscar.toLowerCase())
+
     );
   }
 
@@ -155,6 +171,7 @@ export class LotesComponent implements OnInit {
   // LIMPIAR
   // =========================
   limpiar(): void {
+
     this.nombreLote = '';
     this.ubicacion = '';
     this.hectareas = '';

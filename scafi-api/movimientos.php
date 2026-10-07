@@ -1,43 +1,260 @@
 <?php
 
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+// ======================================================
+// CORS
+// ======================================================
 
 header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: Content-Type");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
 header("Content-Type: application/json; charset=UTF-8");
+
+
+// ======================================================
+// PREFLIGHT
+// ======================================================
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit();
 }
 
-require_once 'conexion.php';
 
-function responder($ok, $mensaje = '', $extra = [])
+// ======================================================
+// CONEXIÓN
+// ======================================================
+
+include 'conexion.php';
+
+
+// ======================================================
+// FUNCIÓN RESPUESTA
+// ======================================================
+
+function responder($datos, $codigo = 200)
 {
+    http_response_code($codigo);
+
     echo json_encode(
-        array_merge(
-            [
-                "ok" => $ok,
-                "mensaje" => $mensaje
-            ],
-            $extra
-        ),
+        $datos,
         JSON_UNESCAPED_UNICODE
     );
+
     exit();
 }
 
-// =====================================================
-// GET - CONSULTAR MOVIMIENTOS
-// =====================================================
+
+// ======================================================
+// FUNCIÓN ESTADO DEL STOCK
+// ======================================================
+
+function estadoStock($stock, $stockMinimo)
+{
+    $stock = floatval($stock);
+    $stockMinimo = floatval($stockMinimo);
+
+    // Stock crítico
+    if ($stock <= 0) {
+        return 'critico';
+    }
+
+    // Stock bajo
+    if ($stock <= $stockMinimo) {
+        return 'bajo';
+    }
+
+    // Stock normal
+    return 'normal';
+}
+
+
+// ======================================================
+// CREAR NOTIFICACIÓN DE STOCK
+// ======================================================
+
+function generarNotificacionStock(
+    $conexion,
+    $idInsumo,
+    $nombre,
+    $stockAnterior,
+    $stockNuevo,
+    $stockMinimo
+) {
+
+    $estadoAnterior =
+        estadoStock(
+            $stockAnterior,
+            $stockMinimo
+        );
+
+    $estadoNuevo =
+        estadoStock(
+            $stockNuevo,
+            $stockMinimo
+        );
+
+
+    // ==================================================
+    // SI EL ESTADO NO CAMBIÓ, NO REPETIR NOTIFICACIÓN
+    // ==================================================
+
+    if ($estadoAnterior === $estadoNuevo) {
+        return;
+    }
+
+
+    // ==================================================
+    // MENSAJE
+    // ==================================================
+
+    $titulo = '';
+    $mensaje = '';
+
+
+    if ($estadoNuevo === 'critico') {
+
+        $titulo =
+            'Stock crítico';
+
+        $mensaje =
+            "El insumo {$nombre} tiene stock crítico. " .
+            "Stock actual: {$stockNuevo}. " .
+            "Stock mínimo: {$stockMinimo}.";
+
+    }
+
+
+    elseif ($estadoNuevo === 'bajo') {
+
+        $titulo =
+            'Stock bajo';
+
+        $mensaje =
+            "El insumo {$nombre} tiene stock bajo. " .
+            "Stock actual: {$stockNuevo}. " .
+            "Stock mínimo: {$stockMinimo}.";
+
+    }
+
+
+    elseif ($estadoNuevo === 'normal') {
+
+        // Solo avisamos cuando venía de bajo o crítico
+
+        if (
+            $estadoAnterior === 'bajo' ||
+            $estadoAnterior === 'critico'
+        ) {
+
+            $titulo =
+                'Stock normalizado';
+
+            $mensaje =
+                "El stock del insumo {$nombre} " .
+                "ha vuelto a un nivel normal. " .
+                "Stock actual: {$stockNuevo}.";
+
+        } else {
+
+            return;
+
+        }
+
+    }
+
+
+    // ==================================================
+    // OBTENER USUARIOS
+    // ==================================================
+
+    $sqlUsuarios =
+        "SELECT id FROM usuario";
+
+    $resultadoUsuarios =
+        $conexion->query(
+            $sqlUsuarios
+        );
+
+
+    if (!$resultadoUsuarios) {
+        return;
+    }
+
+
+    // ==================================================
+    // CREAR NOTIFICACIÓN PARA CADA USUARIO
+    // ==================================================
+
+    while (
+        $usuario =
+        $resultadoUsuarios->fetch_assoc()
+    ) {
+
+        $idUsuario =
+            intval($usuario['id']);
+
+
+        $sqlInsert = "
+            INSERT INTO notificaciones
+            (
+                usuario_id,
+                titulo,
+                mensaje,
+                fecha,
+                visto_por,
+                enviado_por
+            )
+            VALUES
+            (
+                ?,
+                ?,
+                ?,
+                NOW(),
+                NULL,
+                NULL
+            )
+        ";
+
+
+        $stmt =
+            $conexion->prepare(
+                $sqlInsert
+            );
+
+
+        if (!$stmt) {
+            continue;
+        }
+
+
+        $stmt->bind_param(
+            "iss",
+            $idUsuario,
+            $titulo,
+            $mensaje
+        );
+
+
+        $stmt->execute();
+
+        $stmt->close();
+
+    }
+
+}
+
+
+// ======================================================
+// GET
+// LISTAR MOVIMIENTOS
+// ======================================================
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
     $sql = "
+
         SELECT
+
             m.id,
             m.idInsumo,
             i.nombre AS insumo,
@@ -45,111 +262,252 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             m.cantidad,
             m.observacion,
             m.fecha
+
         FROM movimientos m
+
         INNER JOIN insumos i
             ON m.idInsumo = i.idInsumo
+
         ORDER BY m.id DESC
+
     ";
 
-    $resultado = $conexion->query($sql);
+
+    $resultado =
+        $conexion->query($sql);
+
 
     if (!$resultado) {
-        http_response_code(500);
-        responder(
-            false,
-            "Error al consultar movimientos: " . $conexion->error
-        );
+
+        responder([
+            "ok" => false,
+            "error" => $conexion->error
+        ], 500);
+
     }
+
 
     $datos = [];
 
-    while ($fila = $resultado->fetch_assoc()) {
-        $datos[] = $fila;
+
+    while (
+        $fila =
+        $resultado->fetch_assoc()
+    ) {
+
+        $datos[] =
+            $fila;
+
     }
 
-    echo json_encode($datos, JSON_UNESCAPED_UNICODE);
-    exit();
+
+    responder($datos);
+
 }
 
-// =====================================================
-// POST - REGISTRAR MOVIMIENTO
-// =====================================================
+
+// ======================================================
+// POST
+// CREAR MOVIMIENTO
+// ======================================================
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    $input = json_decode(
-        file_get_contents("php://input"),
-        true
-    );
 
-    if (!is_array($input)) {
-        http_response_code(400);
-        responder(false, "Los datos enviados no son válidos.");
+    $input =
+        json_decode(
+            file_get_contents("php://input"),
+            true
+        );
+
+
+    if (!$input) {
+
+        responder([
+            "ok" => false,
+            "mensaje" =>
+                "Datos inválidos."
+        ], 400);
+
     }
 
-    $idInsumo = intval($input['idInsumo'] ?? 0);
-    $tipo = trim($input['tipo'] ?? '');
-    $cantidad = floatval($input['cantidad'] ?? 0);
-    $observacion = trim($input['observacion'] ?? '');
+
+    $idInsumo =
+        intval(
+            $input['idInsumo'] ?? 0
+        );
+
+    $tipo =
+        trim(
+            $input['tipo'] ?? ''
+        );
+
+    $cantidad =
+        floatval(
+            $input['cantidad'] ?? 0
+        );
+
+    $observacion =
+        trim(
+            $input['observacion'] ?? ''
+        );
+
+
+    // ==================================================
+    // VALIDACIONES
+    // ==================================================
 
     if ($idInsumo <= 0) {
-        responder(false, "Debe seleccionar un insumo.");
+
+        responder([
+            "ok" => false,
+            "mensaje" =>
+                "Debe seleccionar un insumo."
+        ], 400);
+
     }
 
-    if ($tipo !== 'Entrada' && $tipo !== 'Salida') {
-        responder(false, "El tipo de movimiento no es válido.");
+
+    if (
+        $tipo !== 'Entrada' &&
+        $tipo !== 'Salida'
+    ) {
+
+        responder([
+            "ok" => false,
+            "mensaje" =>
+                "El tipo de movimiento no es válido."
+        ], 400);
+
     }
+
 
     if ($cantidad <= 0) {
-        responder(false, "La cantidad debe ser mayor que cero.");
+
+        responder([
+            "ok" => false,
+            "mensaje" =>
+                "La cantidad debe ser mayor que cero."
+        ], 400);
+
     }
+
+
+    // ==================================================
+    // BUSCAR INSUMO
+    // ==================================================
+
+    $sqlInsumo = "
+        SELECT
+            idInsumo,
+            nombre,
+            stock,
+            stockMinimo
+        FROM insumos
+        WHERE idInsumo = ?
+        LIMIT 1
+    ";
+
+
+    $stmtInsumo =
+        $conexion->prepare(
+            $sqlInsumo
+        );
+
+
+    $stmtInsumo->bind_param(
+        "i",
+        $idInsumo
+    );
+
+
+    $stmtInsumo->execute();
+
+
+    $resultadoInsumo =
+        $stmtInsumo->get_result();
+
+
+    $insumo =
+        $resultadoInsumo->fetch_assoc();
+
+
+    $stmtInsumo->close();
+
+
+    if (!$insumo) {
+
+        responder([
+            "ok" => false,
+            "mensaje" =>
+                "El insumo no existe."
+        ], 404);
+
+    }
+
+
+    $stockAnterior =
+        floatval(
+            $insumo['stock']
+        );
+
+    $stockMinimo =
+        floatval(
+            $insumo['stockMinimo']
+        );
+
+
+    // ==================================================
+    // CALCULAR NUEVO STOCK
+    // ==================================================
+
+    if ($tipo === 'Entrada') {
+
+        $stockNuevo =
+            $stockAnterior +
+            $cantidad;
+
+    } else {
+
+        $stockNuevo =
+            $stockAnterior -
+            $cantidad;
+
+    }
+
+
+    // ==================================================
+    // NO PERMITIR STOCK NEGATIVO
+    // ==================================================
+
+    if ($stockNuevo < 0) {
+
+        responder([
+            "ok" => false,
+            "mensaje" =>
+                "No hay suficiente stock disponible. " .
+                "Stock actual: {$stockAnterior}. " .
+                "Cantidad solicitada: {$cantidad}."
+        ], 400);
+
+    }
+
+
+    // ==================================================
+    // TRANSACCIÓN
+    // ==================================================
 
     $conexion->begin_transaction();
 
+
     try {
 
-        $stmtInsumo = $conexion->prepare("
-            SELECT idInsumo, nombre, stock
-            FROM insumos
-            WHERE idInsumo = ?
-            FOR UPDATE
-        ");
 
-        if (!$stmtInsumo) {
-            throw new Exception($conexion->error);
-        }
+        // ==================================================
+        // INSERTAR MOVIMIENTO
+        // ==================================================
 
-        $stmtInsumo->bind_param("i", $idInsumo);
-        $stmtInsumo->execute();
-
-        $resultadoInsumo = $stmtInsumo->get_result();
-
-        if ($resultadoInsumo->num_rows === 0) {
-            $stmtInsumo->close();
-            throw new Exception("El insumo seleccionado no existe.");
-        }
-
-        $insumo = $resultadoInsumo->fetch_assoc();
-        $stockActual = floatval($insumo['stock']);
-
-        $stmtInsumo->close();
-
-        if ($tipo === 'Salida' && $cantidad > $stockActual) {
-            throw new Exception(
-                "Stock insuficiente. Stock disponible: "
-                . $stockActual
-                . " | Cantidad solicitada: "
-                . $cantidad
-            );
-        }
-
-        if ($tipo === 'Entrada') {
-            $nuevoStock = $stockActual + $cantidad;
-        } else {
-            $nuevoStock = $stockActual - $cantidad;
-        }
-
-        $stmtMovimiento = $conexion->prepare("
+        $sqlMovimiento = "
             INSERT INTO movimientos
             (
                 idInsumo,
@@ -157,12 +515,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 cantidad,
                 observacion
             )
-            VALUES (?, ?, ?, ?)
-        ");
+            VALUES
+            (
+                ?,
+                ?,
+                ?,
+                ?
+            )
+        ";
+
+
+        $stmtMovimiento =
+            $conexion->prepare(
+                $sqlMovimiento
+            );
+
 
         if (!$stmtMovimiento) {
-            throw new Exception($conexion->error);
+
+            throw new Exception(
+                $conexion->error
+            );
+
         }
+
 
         $stmtMovimiento->bind_param(
             "isds",
@@ -172,271 +548,462 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $observacion
         );
 
-        if (!$stmtMovimiento->execute()) {
-            $error = $stmtMovimiento->error;
-            $stmtMovimiento->close();
-            throw new Exception($error);
+
+        if (
+            !$stmtMovimiento->execute()
+        ) {
+
+            throw new Exception(
+                $stmtMovimiento->error
+            );
+
         }
+
+
+        $idMovimiento =
+            $stmtMovimiento->insert_id;
+
 
         $stmtMovimiento->close();
 
-        $stmtStock = $conexion->prepare("
+
+        // ==================================================
+        // ACTUALIZAR STOCK
+        // ==================================================
+
+        $sqlStock = "
             UPDATE insumos
             SET stock = ?
             WHERE idInsumo = ?
-        ");
+        ";
+
+
+        $stmtStock =
+            $conexion->prepare(
+                $sqlStock
+            );
+
 
         if (!$stmtStock) {
-            throw new Exception($conexion->error);
+
+            throw new Exception(
+                $conexion->error
+            );
+
         }
+
 
         $stmtStock->bind_param(
             "di",
-            $nuevoStock,
+            $stockNuevo,
             $idInsumo
         );
 
-        if (!$stmtStock->execute()) {
-            $error = $stmtStock->error;
-            $stmtStock->close();
-            throw new Exception($error);
+
+        if (
+            !$stmtStock->execute()
+        ) {
+
+            throw new Exception(
+                $stmtStock->error
+            );
+
         }
+
 
         $stmtStock->close();
 
-        $conexion->commit();
 
-        responder(
-            true,
-            "Movimiento registrado correctamente.",
-            [
-                "stockAnterior" => $stockActual,
-                "stockNuevo" => $nuevoStock
-            ]
+        // ==================================================
+        // NOTIFICACIÓN
+        // ==================================================
+
+        generarNotificacionStock(
+            $conexion,
+            $idInsumo,
+            $insumo['nombre'],
+            $stockAnterior,
+            $stockNuevo,
+            $stockMinimo
         );
 
-    } catch (Exception $e) {
+
+        // ==================================================
+        // CONFIRMAR
+        // ==================================================
+
+        $conexion->commit();
+
+
+        responder([
+            "ok" => true,
+            "mensaje" =>
+                "Movimiento guardado correctamente.",
+            "idMovimiento" =>
+                $idMovimiento,
+            "stockAnterior" =>
+                $stockAnterior,
+            "stockNuevo" =>
+                $stockNuevo
+        ]);
+
+    }
+
+
+    catch (Exception $e) {
 
         $conexion->rollback();
-        http_response_code(400);
 
-        responder(false, $e->getMessage());
+
+        responder([
+            "ok" => false,
+            "mensaje" =>
+                "No se pudo guardar el movimiento.",
+            "error" =>
+                $e->getMessage()
+        ], 500);
+
     }
+
 }
 
-// =====================================================
-// PUT - EDITAR MOVIMIENTO
-// =====================================================
+
+// ======================================================
+// PUT
+// EDITAR MOVIMIENTO
+// ======================================================
 
 if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
 
-    $input = json_decode(
-        file_get_contents("php://input"),
-        true
-    );
 
-    if (!is_array($input)) {
-        http_response_code(400);
-        responder(false, "Los datos enviados no son válidos.");
-    }
+    $input =
+        json_decode(
+            file_get_contents("php://input"),
+            true
+        );
 
-    $id = intval($input['id'] ?? 0);
-    $nuevoIdInsumo = intval($input['idInsumo'] ?? 0);
-    $nuevoTipo = trim($input['tipo'] ?? '');
-    $nuevaCantidad = floatval($input['cantidad'] ?? 0);
-    $nuevaObservacion = trim($input['observacion'] ?? '');
+
+    $id =
+        intval(
+            $input['id'] ?? 0
+        );
+
+    $nuevoIdInsumo =
+        intval(
+            $input['idInsumo'] ?? 0
+        );
+
+    $nuevoTipo =
+        trim(
+            $input['tipo'] ?? ''
+        );
+
+    $nuevaCantidad =
+        floatval(
+            $input['cantidad'] ?? 0
+        );
+
+    $observacion =
+        trim(
+            $input['observacion'] ?? ''
+        );
+
 
     if ($id <= 0) {
-        responder(false, "ID del movimiento requerido.");
+
+        responder([
+            "ok" => false,
+            "mensaje" =>
+                "Movimiento inválido."
+        ], 400);
+
     }
 
-    if ($nuevoIdInsumo <= 0) {
-        responder(false, "Debe seleccionar un insumo.");
-    }
-
-    if ($nuevoTipo !== 'Entrada' && $nuevoTipo !== 'Salida') {
-        responder(false, "El tipo de movimiento no es válido.");
-    }
 
     if ($nuevaCantidad <= 0) {
-        responder(false, "La cantidad debe ser mayor que cero.");
+
+        responder([
+            "ok" => false,
+            "mensaje" =>
+                "La cantidad debe ser mayor que cero."
+        ], 400);
+
     }
+
+
+    if (
+        $nuevoTipo !== 'Entrada' &&
+        $nuevoTipo !== 'Salida'
+    ) {
+
+        responder([
+            "ok" => false,
+            "mensaje" =>
+                "Tipo de movimiento inválido."
+        ], 400);
+
+    }
+
+
+    // ==================================================
+    // BUSCAR MOVIMIENTO ORIGINAL
+    // ==================================================
+
+    $sqlAnterior = "
+        SELECT
+            m.id,
+            m.idInsumo,
+            m.tipo,
+            m.cantidad
+        FROM movimientos m
+        WHERE m.id = ?
+        LIMIT 1
+    ";
+
+
+    $stmtAnterior =
+        $conexion->prepare(
+            $sqlAnterior
+        );
+
+
+    $stmtAnterior->bind_param(
+        "i",
+        $id
+    );
+
+
+    $stmtAnterior->execute();
+
+
+    $resultadoAnterior =
+        $stmtAnterior->get_result();
+
+
+    $movAnterior =
+        $resultadoAnterior->fetch_assoc();
+
+
+    $stmtAnterior->close();
+
+
+    if (!$movAnterior) {
+
+        responder([
+            "ok" => false,
+            "mensaje" =>
+                "El movimiento no existe."
+        ], 404);
+
+    }
+
+
+    // ==================================================
+    // TRANSACCIÓN
+    // ==================================================
 
     $conexion->begin_transaction();
 
+
     try {
 
-        $stmtAnterior = $conexion->prepare("
-            SELECT id, idInsumo, tipo, cantidad
-            FROM movimientos
-            WHERE id = ?
-            FOR UPDATE
-        ");
 
-        if (!$stmtAnterior) {
-            throw new Exception($conexion->error);
+        // ==================================================
+        // DEVOLVER EFECTO DEL MOVIMIENTO ANTERIOR
+        // ==================================================
+
+        $idInsumoAnterior =
+            intval(
+                $movAnterior['idInsumo']
+            );
+
+        $cantidadAnterior =
+            floatval(
+                $movAnterior['cantidad']
+            );
+
+
+        if (
+            $movAnterior['tipo'] === 'Entrada'
+        ) {
+
+            $sqlRevertir = "
+                UPDATE insumos
+                SET stock = stock - ?
+                WHERE idInsumo = ?
+            ";
+
+        } else {
+
+            $sqlRevertir = "
+                UPDATE insumos
+                SET stock = stock + ?
+                WHERE idInsumo = ?
+            ";
+
         }
 
-        $stmtAnterior->bind_param("i", $id);
-        $stmtAnterior->execute();
 
-        $resultadoAnterior = $stmtAnterior->get_result();
+        $stmtRevertir =
+            $conexion->prepare(
+                $sqlRevertir
+            );
 
-        if ($resultadoAnterior->num_rows === 0) {
-            $stmtAnterior->close();
-            throw new Exception("El movimiento no existe.");
-        }
 
-        $anterior = $resultadoAnterior->fetch_assoc();
-        $stmtAnterior->close();
-
-        $idInsumoAnterior = intval($anterior['idInsumo']);
-        $tipoAnterior = $anterior['tipo'];
-        $cantidadAnterior = floatval($anterior['cantidad']);
-
-        $stmtStockAnterior = $conexion->prepare("
-            SELECT stock
-            FROM insumos
-            WHERE idInsumo = ?
-            FOR UPDATE
-        ");
-
-        if (!$stmtStockAnterior) {
-            throw new Exception($conexion->error);
-        }
-
-        $stmtStockAnterior->bind_param(
-            "i",
+        $stmtRevertir->bind_param(
+            "di",
+            $cantidadAnterior,
             $idInsumoAnterior
         );
 
-        $stmtStockAnterior->execute();
-
-        $resultadoStockAnterior =
-            $stmtStockAnterior->get_result();
-
-        if ($resultadoStockAnterior->num_rows === 0) {
-            $stmtStockAnterior->close();
-            throw new Exception(
-                "El insumo del movimiento anterior no existe."
-            );
-        }
-
-        $filaStockAnterior =
-            $resultadoStockAnterior->fetch_assoc();
-
-        $stockAnteriorActual =
-            floatval($filaStockAnterior['stock']);
-
-        $stmtStockAnterior->close();
-
-        if ($tipoAnterior === 'Entrada') {
-            $stockRevertido =
-                $stockAnteriorActual - $cantidadAnterior;
-        } else {
-            $stockRevertido =
-                $stockAnteriorActual + $cantidadAnterior;
-        }
-
-        if ($stockRevertido < 0) {
-            throw new Exception(
-                "No es posible modificar el movimiento porque el stock actual no permite revertir el movimiento anterior."
-            );
-        }
-
-        if ($idInsumoAnterior !== $nuevoIdInsumo) {
-
-            $stmtRevertir = $conexion->prepare("
-                UPDATE insumos
-                SET stock = ?
-                WHERE idInsumo = ?
-            ");
-
-            if (!$stmtRevertir) {
-                throw new Exception($conexion->error);
-            }
-
-            $stmtRevertir->bind_param(
-                "di",
-                $stockRevertido,
-                $idInsumoAnterior
-            );
-
-            if (!$stmtRevertir->execute()) {
-                $error = $stmtRevertir->error;
-                $stmtRevertir->close();
-                throw new Exception($error);
-            }
-
-            $stmtRevertir->close();
-
-            $stmtNuevo = $conexion->prepare("
-                SELECT stock
-                FROM insumos
-                WHERE idInsumo = ?
-                FOR UPDATE
-            ");
-
-            if (!$stmtNuevo) {
-                throw new Exception($conexion->error);
-            }
-
-            $stmtNuevo->bind_param(
-                "i",
-                $nuevoIdInsumo
-            );
-
-            $stmtNuevo->execute();
-
-            $resultadoNuevo = $stmtNuevo->get_result();
-
-            if ($resultadoNuevo->num_rows === 0) {
-                $stmtNuevo->close();
-                throw new Exception(
-                    "El nuevo insumo seleccionado no existe."
-                );
-            }
-
-            $filaNuevo = $resultadoNuevo->fetch_assoc();
-
-            $stockNuevoActual =
-                floatval($filaNuevo['stock']);
-
-            $stmtNuevo->close();
-
-        } else {
-
-            $stockNuevoActual = $stockRevertido;
-        }
 
         if (
-            $nuevoTipo === 'Salida' &&
-            $nuevaCantidad > $stockNuevoActual
+            !$stmtRevertir->execute()
         ) {
+
             throw new Exception(
-                "Stock insuficiente para el nuevo movimiento. "
-                . "Stock disponible: "
-                . $stockNuevoActual
-                . " | Cantidad solicitada: "
-                . $nuevaCantidad
+                $stmtRevertir->error
             );
+
         }
+
+
+        $stmtRevertir->close();
+
+
+        // ==================================================
+        // OBTENER STOCK DEL NUEVO INSUMO
+        // ==================================================
+
+        $sqlNuevoInsumo = "
+            SELECT
+                idInsumo,
+                nombre,
+                stock,
+                stockMinimo
+            FROM insumos
+            WHERE idInsumo = ?
+            LIMIT 1
+        ";
+
+
+        $stmtNuevoInsumo =
+            $conexion->prepare(
+                $sqlNuevoInsumo
+            );
+
+
+        $stmtNuevoInsumo->bind_param(
+            "i",
+            $nuevoIdInsumo
+        );
+
+
+        $stmtNuevoInsumo->execute();
+
+
+        $resultadoNuevoInsumo =
+            $stmtNuevoInsumo->get_result();
+
+
+        $nuevoInsumo =
+            $resultadoNuevoInsumo->fetch_assoc();
+
+
+        $stmtNuevoInsumo->close();
+
+
+        if (!$nuevoInsumo) {
+
+            throw new Exception(
+                "El nuevo insumo no existe."
+            );
+
+        }
+
+
+        $stockAntesNuevo =
+            floatval(
+                $nuevoInsumo['stock']
+            );
+
+        $stockMinimoNuevo =
+            floatval(
+                $nuevoInsumo['stockMinimo']
+            );
+
+
+        // ==================================================
+        // APLICAR NUEVO MOVIMIENTO
+        // ==================================================
 
         if ($nuevoTipo === 'Entrada') {
-            $stockFinal =
-                $stockNuevoActual + $nuevaCantidad;
+
+            $stockDespuesNuevo =
+                $stockAntesNuevo +
+                $nuevaCantidad;
+
         } else {
-            $stockFinal =
-                $stockNuevoActual - $nuevaCantidad;
+
+            $stockDespuesNuevo =
+                $stockAntesNuevo -
+                $nuevaCantidad;
+
         }
 
-        if ($stockFinal < 0) {
+
+        if ($stockDespuesNuevo < 0) {
+
             throw new Exception(
-                "El movimiento dejaría el stock en un valor negativo."
+                "El movimiento dejaría el stock en negativo."
             );
+
         }
 
-        $stmtActualizar = $conexion->prepare("
+
+        // ==================================================
+        // ACTUALIZAR STOCK
+        // ==================================================
+
+        $sqlActualizarStock = "
+            UPDATE insumos
+            SET stock = ?
+            WHERE idInsumo = ?
+        ";
+
+
+        $stmtActualizarStock =
+            $conexion->prepare(
+                $sqlActualizarStock
+            );
+
+
+        $stmtActualizarStock->bind_param(
+            "di",
+            $stockDespuesNuevo,
+            $nuevoIdInsumo
+        );
+
+
+        if (
+            !$stmtActualizarStock->execute()
+        ) {
+
+            throw new Exception(
+                $stmtActualizarStock->error
+            );
+
+        }
+
+
+        $stmtActualizarStock->close();
+
+
+        // ==================================================
+        // ACTUALIZAR MOVIMIENTO
+        // ==================================================
+
+        $sqlActualizarMovimiento = "
             UPDATE movimientos
             SET
                 idInsumo = ?,
@@ -444,237 +1011,407 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
                 cantidad = ?,
                 observacion = ?
             WHERE id = ?
-        ");
+        ";
 
-        if (!$stmtActualizar) {
-            throw new Exception($conexion->error);
-        }
 
-        $stmtActualizar->bind_param(
+        $stmtActualizarMovimiento =
+            $conexion->prepare(
+                $sqlActualizarMovimiento
+            );
+
+
+        $stmtActualizarMovimiento->bind_param(
             "isdsi",
             $nuevoIdInsumo,
             $nuevoTipo,
             $nuevaCantidad,
-            $nuevaObservacion,
+            $observacion,
             $id
         );
 
-        if (!$stmtActualizar->execute()) {
-            $error = $stmtActualizar->error;
-            $stmtActualizar->close();
-            throw new Exception($error);
+
+        if (
+            !$stmtActualizarMovimiento->execute()
+        ) {
+
+            throw new Exception(
+                $stmtActualizarMovimiento->error
+            );
+
         }
 
-        $stmtActualizar->close();
 
-        $stmtStockFinal = $conexion->prepare("
-            UPDATE insumos
-            SET stock = ?
-            WHERE idInsumo = ?
-        ");
+        $stmtActualizarMovimiento->close();
 
-        if (!$stmtStockFinal) {
-            throw new Exception($conexion->error);
-        }
 
-        $stmtStockFinal->bind_param(
-            "di",
-            $stockFinal,
-            $nuevoIdInsumo
+        // ==================================================
+        // GENERAR NOTIFICACIÓN
+        // ==================================================
+
+        generarNotificacionStock(
+            $conexion,
+            $nuevoIdInsumo,
+            $nuevoInsumo['nombre'],
+            $stockAntesNuevo,
+            $stockDespuesNuevo,
+            $stockMinimoNuevo
         );
 
-        if (!$stmtStockFinal->execute()) {
-            $error = $stmtStockFinal->error;
-            $stmtStockFinal->close();
-            throw new Exception($error);
-        }
 
-        $stmtStockFinal->close();
+        // ==================================================
+        // COMMIT
+        // ==================================================
 
         $conexion->commit();
 
-        responder(
-            true,
-            "Movimiento actualizado correctamente.",
-            [
-                "stockNuevo" => $stockFinal
-            ]
-        );
 
-    } catch (Exception $e) {
+        responder([
+            "ok" => true,
+            "mensaje" =>
+                "Movimiento actualizado correctamente.",
+            "stockNuevo" =>
+                $stockDespuesNuevo
+        ]);
+
+    }
+
+
+    catch (Exception $e) {
 
         $conexion->rollback();
-        http_response_code(400);
 
-        responder(false, $e->getMessage());
+
+        responder([
+            "ok" => false,
+            "mensaje" =>
+                "No se pudo actualizar el movimiento.",
+            "error" =>
+                $e->getMessage()
+        ], 500);
+
     }
+
 }
 
-// =====================================================
-// DELETE - ELIMINAR MOVIMIENTO
-// =====================================================
+
+// ======================================================
+// DELETE
+// ELIMINAR MOVIMIENTO
+// ======================================================
 
 if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
 
-    $id = intval($_GET['id'] ?? 0);
+
+    $id =
+        intval(
+            $_GET['id'] ?? 0
+        );
+
 
     if ($id <= 0) {
-        responder(false, "ID de movimiento requerido.");
+
+        responder([
+            "ok" => false,
+            "mensaje" =>
+                "ID de movimiento inválido."
+        ], 400);
+
     }
+
+
+    // ==================================================
+    // BUSCAR MOVIMIENTO
+    // ==================================================
+
+    $sqlMovimiento = "
+        SELECT
+            id,
+            idInsumo,
+            tipo,
+            cantidad
+        FROM movimientos
+        WHERE id = ?
+        LIMIT 1
+    ";
+
+
+    $stmtMovimiento =
+        $conexion->prepare(
+            $sqlMovimiento
+        );
+
+
+    $stmtMovimiento->bind_param(
+        "i",
+        $id
+    );
+
+
+    $stmtMovimiento->execute();
+
+
+    $resultado =
+        $stmtMovimiento->get_result();
+
+
+    $movimiento =
+        $resultado->fetch_assoc();
+
+
+    $stmtMovimiento->close();
+
+
+    if (!$movimiento) {
+
+        responder([
+            "ok" => false,
+            "mensaje" =>
+                "El movimiento no existe."
+        ], 404);
+
+    }
+
+
+    $idInsumo =
+        intval(
+            $movimiento['idInsumo']
+        );
+
+    $cantidad =
+        floatval(
+            $movimiento['cantidad']
+        );
+
+
+    // ==================================================
+    // OBTENER INSUMO
+    // ==================================================
+
+    $sqlInsumo = "
+        SELECT
+            nombre,
+            stock,
+            stockMinimo
+        FROM insumos
+        WHERE idInsumo = ?
+        LIMIT 1
+    ";
+
+
+    $stmtInsumo =
+        $conexion->prepare(
+            $sqlInsumo
+        );
+
+
+    $stmtInsumo->bind_param(
+        "i",
+        $idInsumo
+    );
+
+
+    $stmtInsumo->execute();
+
+
+    $resultadoInsumo =
+        $stmtInsumo->get_result();
+
+
+    $insumo =
+        $resultadoInsumo->fetch_assoc();
+
+
+    $stmtInsumo->close();
+
+
+    if (!$insumo) {
+
+        responder([
+            "ok" => false,
+            "mensaje" =>
+                "El insumo no existe."
+        ], 404);
+
+    }
+
+
+    $stockAnterior =
+        floatval(
+            $insumo['stock']
+        );
+
+    $stockMinimo =
+        floatval(
+            $insumo['stockMinimo']
+        );
+
+
+    // ==================================================
+    // CALCULAR STOCK RESTAURADO
+    // ==================================================
+
+    if (
+        $movimiento['tipo'] === 'Entrada'
+    ) {
+
+        $stockNuevo =
+            $stockAnterior -
+            $cantidad;
+
+    } else {
+
+        $stockNuevo =
+            $stockAnterior +
+            $cantidad;
+
+    }
+
+
+    if ($stockNuevo < 0) {
+
+        responder([
+            "ok" => false,
+            "mensaje" =>
+                "No se puede eliminar porque el stock resultante sería negativo."
+        ], 400);
+
+    }
+
 
     $conexion->begin_transaction();
 
+
     try {
 
-        $stmt = $conexion->prepare("
-            SELECT idInsumo, tipo, cantidad
-            FROM movimientos
-            WHERE id = ?
-            FOR UPDATE
-        ");
 
-        if (!$stmt) {
-            throw new Exception($conexion->error);
-        }
+        // ==================================================
+        // ACTUALIZAR STOCK
+        // ==================================================
 
-        $stmt->bind_param("i", $id);
-        $stmt->execute();
-
-        $resultado = $stmt->get_result();
-
-        if ($resultado->num_rows === 0) {
-            $stmt->close();
-            throw new Exception("El movimiento no existe.");
-        }
-
-        $movimiento = $resultado->fetch_assoc();
-        $stmt->close();
-
-        $idInsumo =
-            intval($movimiento['idInsumo']);
-
-        $tipo =
-            $movimiento['tipo'];
-
-        $cantidad =
-            floatval($movimiento['cantidad']);
-
-        $stmtStock = $conexion->prepare("
-            SELECT stock
-            FROM insumos
-            WHERE idInsumo = ?
-            FOR UPDATE
-        ");
-
-        if (!$stmtStock) {
-            throw new Exception($conexion->error);
-        }
-
-        $stmtStock->bind_param(
-            "i",
-            $idInsumo
-        );
-
-        $stmtStock->execute();
-
-        $resultadoStock =
-            $stmtStock->get_result();
-
-        if ($resultadoStock->num_rows === 0) {
-            $stmtStock->close();
-            throw new Exception(
-                "El insumo asociado no existe."
-            );
-        }
-
-        $filaStock =
-            $resultadoStock->fetch_assoc();
-
-        $stockActual =
-            floatval($filaStock['stock']);
-
-        $stmtStock->close();
-
-        if ($tipo === 'Entrada') {
-            $nuevoStock =
-                $stockActual - $cantidad;
-        } else {
-            $nuevoStock =
-                $stockActual + $cantidad;
-        }
-
-        if ($nuevoStock < 0) {
-            throw new Exception(
-                "No es posible eliminar el movimiento porque el stock resultante sería negativo."
-            );
-        }
-
-        $stmtEliminar = $conexion->prepare("
-            DELETE FROM movimientos
-            WHERE id = ?
-        ");
-
-        if (!$stmtEliminar) {
-            throw new Exception($conexion->error);
-        }
-
-        $stmtEliminar->bind_param("i", $id);
-
-        if (!$stmtEliminar->execute()) {
-            $error = $stmtEliminar->error;
-            $stmtEliminar->close();
-            throw new Exception($error);
-        }
-
-        $stmtEliminar->close();
-
-        $stmtActualizarStock = $conexion->prepare("
+        $sqlStock = "
             UPDATE insumos
             SET stock = ?
             WHERE idInsumo = ?
-        ");
+        ";
 
-        if (!$stmtActualizarStock) {
-            throw new Exception($conexion->error);
-        }
 
-        $stmtActualizarStock->bind_param(
+        $stmtStock =
+            $conexion->prepare(
+                $sqlStock
+            );
+
+
+        $stmtStock->bind_param(
             "di",
-            $nuevoStock,
+            $stockNuevo,
             $idInsumo
         );
 
-        if (!$stmtActualizarStock->execute()) {
-            $error = $stmtActualizarStock->error;
-            $stmtActualizarStock->close();
-            throw new Exception($error);
+
+        if (
+            !$stmtStock->execute()
+        ) {
+
+            throw new Exception(
+                $stmtStock->error
+            );
+
         }
 
-        $stmtActualizarStock->close();
+
+        $stmtStock->close();
+
+
+        // ==================================================
+        // ELIMINAR MOVIMIENTO
+        // ==================================================
+
+        $sqlDelete = "
+            DELETE FROM movimientos
+            WHERE id = ?
+        ";
+
+
+        $stmtDelete =
+            $conexion->prepare(
+                $sqlDelete
+            );
+
+
+        $stmtDelete->bind_param(
+            "i",
+            $id
+        );
+
+
+        if (
+            !$stmtDelete->execute()
+        ) {
+
+            throw new Exception(
+                $stmtDelete->error
+            );
+
+        }
+
+
+        $stmtDelete->close();
+
+
+        // ==================================================
+        // NOTIFICACIÓN
+        // ==================================================
+
+        generarNotificacionStock(
+            $conexion,
+            $idInsumo,
+            $insumo['nombre'],
+            $stockAnterior,
+            $stockNuevo,
+            $stockMinimo
+        );
+
+
+        // ==================================================
+        // CONFIRMAR
+        // ==================================================
 
         $conexion->commit();
 
-        responder(
-            true,
-            "Movimiento eliminado correctamente.",
-            [
-                "stockNuevo" => $nuevoStock
-            ]
-        );
 
-    } catch (Exception $e) {
+        responder([
+            "ok" => true,
+            "mensaje" =>
+                "Movimiento eliminado correctamente.",
+            "stockNuevo" =>
+                $stockNuevo
+        ]);
+
+    }
+
+
+    catch (Exception $e) {
 
         $conexion->rollback();
-        http_response_code(400);
 
-        responder(false, $e->getMessage());
+
+        responder([
+            "ok" => false,
+            "mensaje" =>
+                "No se pudo eliminar el movimiento.",
+            "error" =>
+                $e->getMessage()
+        ], 500);
+
     }
+
 }
 
-http_response_code(405);
 
-responder(false, "Método no permitido.");
-
-$conexion->close();
+responder([
+    "ok" => false,
+    "mensaje" =>
+        "Método no permitido."
+], 405);
 
 ?>

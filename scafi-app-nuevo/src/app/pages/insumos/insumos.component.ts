@@ -20,29 +20,50 @@ import {
   RouterModule
 } from '@angular/router';
 
+
 @Component({
+
   selector: 'app-insumos',
+
   standalone: true,
 
   imports: [
+
     CommonModule,
+
     FormsModule,
+
     HttpClientModule,
+
     RouterModule
+
   ],
 
   templateUrl:
     './insumos.component.html'
+
 })
 
+
 export class InsumosComponent
-implements OnInit {
+  implements OnInit {
+
+
+  // =====================================================
+  // API
+  // =====================================================
 
   API =
     'http://localhost/scafi-angular/scafi-api/insumos.php';
 
+
   API_PROVEEDORES =
     'http://localhost/scafi-angular/scafi-api/proveedores.php';
+
+
+  // =====================================================
+  // VARIABLES
+  // =====================================================
 
   insumos: any[] = [];
 
@@ -55,6 +76,11 @@ implements OnInit {
   editando = false;
 
   idEditar = 0;
+
+
+  // =====================================================
+  // NUEVO INSUMO
+  // =====================================================
 
   nuevo: any = {
 
@@ -76,9 +102,19 @@ implements OnInit {
 
   };
 
+
+  // =====================================================
+  // CONSTRUCTOR
+  // =====================================================
+
   constructor(
     private http: HttpClient
   ) {}
+
+
+  // =====================================================
+  // INIT
+  // =====================================================
 
   ngOnInit(): void {
 
@@ -88,14 +124,24 @@ implements OnInit {
 
   }
 
+
+  // =====================================================
+  // CARGAR INSUMOS
+  // =====================================================
+
   cargar(): void {
 
     this.http
-      .get<any[]>(this.API)
+      .get<any[]>(
+        this.API
+      )
+
       .subscribe({
 
         next: (res) => {
+
           this.insumos = res;
+
         },
 
         error: (err) => {
@@ -104,6 +150,7 @@ implements OnInit {
             'Error cargando insumos:',
             err
           );
+
 
           alert(
             'No fue posible cargar los insumos.'
@@ -115,14 +162,24 @@ implements OnInit {
 
   }
 
+
+  // =====================================================
+  // CARGAR PROVEEDORES
+  // =====================================================
+
   cargarProveedores(): void {
 
     this.http
-      .get<any[]>(this.API_PROVEEDORES)
+      .get<any[]>(
+        this.API_PROVEEDORES
+      )
+
       .subscribe({
 
         next: (res) => {
+
           this.proveedores = res;
+
         },
 
         error: (err) => {
@@ -131,6 +188,7 @@ implements OnInit {
             'Error cargando proveedores:',
             err
           );
+
 
           alert(
             'No fue posible cargar los proveedores.'
@@ -142,15 +200,27 @@ implements OnInit {
 
   }
 
+
+  // =====================================================
+  // GUARDAR INSUMO
+  // =====================================================
+
   guardar(): void {
 
     if (
+
       !this.nuevo.nombre ||
+
       !this.nuevo.idProveedor ||
+
       !this.nuevo.tipo ||
+
       !this.nuevo.unidad ||
+
       this.nuevo.precio === '' ||
+
       this.nuevo.stockMinimo === ''
+
     ) {
 
       alert(
@@ -158,7 +228,9 @@ implements OnInit {
       );
 
       return;
+
     }
+
 
     const datos = {
 
@@ -180,17 +252,24 @@ implements OnInit {
       precio:
         Number(this.nuevo.precio),
 
-      // El stock inicial se controla
-      // exclusivamente desde Movimientos.
-      stock: 0,
+      // El stock inicial siempre será 0.
+      // El inventario se controla desde Movimientos.
+
+      stock:
+        0,
 
       stockMinimo:
         Number(this.nuevo.stockMinimo)
 
     };
 
+
     this.http
-      .post<any>(this.API, datos)
+      .post<any>(
+        this.API,
+        datos
+      )
+
       .subscribe({
 
         next: (res) => {
@@ -201,10 +280,13 @@ implements OnInit {
               'Insumo registrado correctamente.'
             );
 
+
             this.reset();
+
             this.cargar();
 
-            this.mostrarFormulario = false;
+            this.mostrarFormulario =
+              false;
 
           } else {
 
@@ -225,6 +307,7 @@ implements OnInit {
             err
           );
 
+
           alert(
             err?.error?.mensaje ||
             'No fue posible registrar el insumo.'
@@ -236,13 +319,21 @@ implements OnInit {
 
   }
 
+
+  // =====================================================
+  // EDITAR
+  // =====================================================
+
   editar(insumo: any): void {
 
     this.editando = true;
+
     this.mostrarFormulario = true;
+
 
     this.idEditar =
       Number(insumo.idInsumo);
+
 
     this.nuevo = {
 
@@ -267,15 +358,25 @@ implements OnInit {
       precio:
         Number(insumo.precio) || 0,
 
+      // Solo se muestra.
+      // No se modifica desde aquí.
+
       stock:
         Number(insumo.stock) || 0,
 
       stockMinimo:
-        Number(insumo.stockMinimo) || 0
+        Number(
+          insumo.stockMinimo
+        ) || 0
 
     };
 
   }
+
+
+  // =====================================================
+  // ACTUALIZAR INSUMO
+  // =====================================================
 
   actualizar(): void {
 
@@ -286,15 +387,24 @@ implements OnInit {
       );
 
       return;
+
     }
 
+
     if (
+
       !this.nuevo.nombre ||
+
       !this.nuevo.idProveedor ||
+
       !this.nuevo.tipo ||
+
       !this.nuevo.unidad ||
+
       this.nuevo.precio === '' ||
+
       this.nuevo.stockMinimo === ''
+
     ) {
 
       alert(
@@ -302,7 +412,9 @@ implements OnInit {
       );
 
       return;
+
     }
+
 
     const datos = {
 
@@ -327,13 +439,21 @@ implements OnInit {
       precio:
         Number(this.nuevo.precio),
 
+      // IMPORTANTE:
+      // No enviamos el stock para modificarlo.
+
       stockMinimo:
         Number(this.nuevo.stockMinimo)
 
     };
 
+
     this.http
-      .put<any>(this.API, datos)
+      .put<any>(
+        this.API,
+        datos
+      )
+
       .subscribe({
 
         next: (res) => {
@@ -344,12 +464,15 @@ implements OnInit {
               'Insumo actualizado correctamente.'
             );
 
+
             this.editando = false;
 
             this.reset();
+
             this.cargar();
 
-            this.mostrarFormulario = false;
+            this.mostrarFormulario =
+              false;
 
           } else {
 
@@ -370,6 +493,7 @@ implements OnInit {
             err
           );
 
+
           alert(
             err?.error?.mensaje ||
             'No fue posible actualizar el insumo.'
@@ -381,20 +505,31 @@ implements OnInit {
 
   }
 
+
+  // =====================================================
+  // ELIMINAR
+  // =====================================================
+
   eliminar(id: number): void {
 
     if (
+
       !confirm(
         '¿Está seguro de eliminar este insumo?'
       )
+
     ) {
+
       return;
+
     }
+
 
     this.http
       .delete<any>(
         `${this.API}?id=${id}`
       )
+
       .subscribe({
 
         next: (res) => {
@@ -425,6 +560,7 @@ implements OnInit {
             err
           );
 
+
           alert(
             err?.error?.mensaje ||
             'No fue posible eliminar el insumo.'
@@ -436,6 +572,11 @@ implements OnInit {
 
   }
 
+
+  // =====================================================
+  // FILTRAR
+  // =====================================================
+
   insumosFiltrados(): any[] {
 
     const texto =
@@ -443,26 +584,42 @@ implements OnInit {
         .toLowerCase()
         .trim();
 
+
     if (!texto) {
+
       return this.insumos;
+
     }
 
+
     return this.insumos.filter(
+
       i =>
+
         String(i.nombre || '')
           .toLowerCase()
           .includes(texto)
+
         ||
+
         String(i.tipo || '')
           .toLowerCase()
           .includes(texto)
+
         ||
+
         String(i.descripcion || '')
           .toLowerCase()
           .includes(texto)
+
     );
 
   }
+
+
+  // =====================================================
+  // RESET
+  // =====================================================
 
   reset(): void {
 
@@ -486,9 +643,15 @@ implements OnInit {
 
     };
 
+
     this.idEditar = 0;
 
   }
+
+
+  // =====================================================
+  // CANCELAR
+  // =====================================================
 
   cancelarEditar(): void {
 

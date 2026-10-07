@@ -1,30 +1,61 @@
 <?php
 
 header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: *");
+header("Access-Control-Allow-Headers: Content-Type");
 header("Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS");
-header("Content-Type: application/json");
+header("Content-Type: application/json; charset=UTF-8");
 
 include 'conexion.php';
 
 
-// ==========================
-// PREVENIR ERROR CORS
-// ==========================
+// =====================================================
+// RESPUESTA JSON
+// =====================================================
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+function responder(
+    bool $ok,
+    string $mensaje = '',
+    array $extra = []
+) {
 
-    http_response_code(200);
+    echo json_encode(
+        array_merge(
+            [
+                "ok" => $ok,
+                "error" => $mensaje
+            ],
+            $extra
+        ),
+        JSON_UNESCAPED_UNICODE
+    );
+
     exit();
 
 }
 
 
-// ==========================
-// OBTENER VENTAS
-// ==========================
+// =====================================================
+// CORS
+// =====================================================
 
-if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+if (
+    $_SERVER['REQUEST_METHOD'] === 'OPTIONS'
+) {
+
+    http_response_code(200);
+
+    exit();
+
+}
+
+
+// =====================================================
+// OBTENER VENTAS
+// =====================================================
+
+if (
+    $_SERVER['REQUEST_METHOD'] === 'GET'
+) {
 
     $sql = "
 
@@ -44,106 +75,646 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
     ";
 
-    $resultado = mysqli_query($conexion, $sql);
+
+    $resultado = mysqli_query(
+        $conexion,
+        $sql
+    );
+
+
+    if (!$resultado) {
+
+        responder(
+            false,
+            "No fue posible consultar las ventas."
+        );
+
+    }
+
 
     $ventas = [];
 
-    while ($fila = mysqli_fetch_assoc($resultado)) {
+
+    while (
+        $fila = mysqli_fetch_assoc(
+            $resultado
+        )
+    ) {
 
         $ventas[] = $fila;
 
     }
 
-    echo json_encode([
-        "ventas" => $ventas
-    ]);
+
+    echo json_encode(
+        [
+            "ventas" => $ventas
+        ],
+        JSON_UNESCAPED_UNICODE
+    );
 
     exit();
 
 }
 
 
-// ==========================
-// GUARDAR
-// ==========================
+// =====================================================
+// GUARDAR VENTA
+// =====================================================
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if (
+    $_SERVER['REQUEST_METHOD'] === 'POST'
+) {
+
+
+    // =================================================
+    // LEER DATOS JSON
+    // =================================================
 
     $data = json_decode(
-        file_get_contents("php://input"),
+        file_get_contents(
+            "php://input"
+        ),
         true
     );
 
-    $fecha = $data['fecha'];
-    $cliente = $data['cliente'];
-    $producto = $data['producto'];
-    $cantidad = $data['cantidad'];
-    $precio = $data['precio'];
-    $total = $data['total'];
-    $estado = $data['estado'];
 
-    $sql = "
+    if (!is_array($data)) {
 
-        INSERT INTO ventas(
+        responder(
+            false,
+            "Los datos enviados no son válidos."
+        );
 
-            fecha,
-            cliente,
-            producto,
-            cantidad,
-            precio,
-            total,
-            estado
+    }
 
+
+    // =================================================
+    // OBTENER DATOS
+    // =================================================
+
+    $fecha = trim(
+        (string)(
+            $data['fecha'] ?? ''
         )
+    );
 
-        VALUES (
 
-            '$fecha',
-            '$cliente',
-            '$producto',
-            '$cantidad',
-            '$precio',
-            '$total',
-            '$estado'
-
+    $cliente = trim(
+        (string)(
+            $data['cliente'] ?? ''
         )
+    );
 
-    ";
 
-    mysqli_query($conexion, $sql);
+    $producto = trim(
+        (string)(
+            $data['producto'] ?? ''
+        )
+    );
 
-    echo json_encode([
-        "ok" => true
-    ]);
 
-    exit();
+    $cantidad = (float)(
+        $data['cantidad'] ?? 0
+    );
+
+
+    $precio = (float)(
+        $data['precio'] ?? 0
+    );
+
+
+    $estado = trim(
+        (string)(
+            $data['estado'] ?? ''
+        )
+    );
+
+
+    // =================================================
+    // VALIDAR FECHA
+    // =================================================
+
+    if ($fecha === '') {
+
+        responder(
+            false,
+            "La fecha de la venta es obligatoria."
+        );
+
+    }
+
+
+    // =================================================
+    // VALIDAR CLIENTE
+    // =================================================
+
+    if ($cliente === '') {
+
+        responder(
+            false,
+            "Debe ingresar un cliente para registrar la venta."
+        );
+
+    }
+
+
+    // =================================================
+    // VALIDAR PRODUCTO
+    // =================================================
+
+    if ($producto === '') {
+
+        responder(
+            false,
+            "Debe seleccionar un producto."
+        );
+
+    }
+
+
+    // =================================================
+    // VALIDAR CANTIDAD
+    // =================================================
+
+    if ($cantidad <= 0) {
+
+        responder(
+            false,
+            "La cantidad debe ser mayor que cero."
+        );
+
+    }
+
+
+    // =================================================
+    // VALIDAR PRECIO
+    // =================================================
+
+    if ($precio <= 0) {
+
+        responder(
+            false,
+            "El precio debe ser mayor que cero."
+        );
+
+    }
+
+
+    // =================================================
+    // CALCULAR TOTAL
+    // =================================================
+
+    $totalCalculado =
+        $cantidad * $precio;
+
+
+    // =================================================
+    // INICIAR TRANSACCIÓN
+    // =================================================
+
+    mysqli_begin_transaction(
+        $conexion
+    );
+
+
+    try {
+
+
+        // =================================================
+        // 1. BUSCAR CLIENTE
+        // =================================================
+
+        $sqlBuscarCliente = "
+
+            SELECT
+                id
+
+            FROM clientes
+
+            WHERE LOWER(
+                TRIM(nombre)
+            )
+            =
+            LOWER(
+                TRIM(?)
+            )
+
+            LIMIT 1
+
+        ";
+
+
+        $stmtBuscarCliente =
+            mysqli_prepare(
+                $conexion,
+                $sqlBuscarCliente
+            );
+
+
+        if (!$stmtBuscarCliente) {
+
+            throw new Exception(
+                "No fue posible consultar el cliente."
+            );
+
+        }
+
+
+        mysqli_stmt_bind_param(
+            $stmtBuscarCliente,
+            "s",
+            $cliente
+        );
+
+
+        if (
+            !mysqli_stmt_execute(
+                $stmtBuscarCliente
+            )
+        ) {
+
+            throw new Exception(
+                "No fue posible verificar el cliente."
+            );
+
+        }
+
+
+        $resultadoCliente =
+            mysqli_stmt_get_result(
+                $stmtBuscarCliente
+            );
+
+
+        $clienteExiste =
+            mysqli_fetch_assoc(
+                $resultadoCliente
+            );
+
+
+        mysqli_stmt_close(
+            $stmtBuscarCliente
+        );
+
+
+        // =================================================
+        // 2. CREAR CLIENTE SI NO EXISTE
+        // =================================================
+
+        $clienteCreado = false;
+
+
+        if (!$clienteExiste) {
+
+
+            /*
+             * Como el cliente se está creando desde una venta,
+             * todavía no tenemos sus datos completos.
+             *
+             * Por eso dejamos los campos pendientes.
+             */
+
+            $nit = '';
+
+            $telefono = '';
+
+            $correo = '';
+
+            $ciudad = '';
+
+            $direccion = '';
+
+            $tipo = 'Empresa';
+
+
+            $sqlCrearCliente = "
+
+                INSERT INTO clientes
+                (
+                    nit,
+                    nombre,
+                    telefono,
+                    correo,
+                    ciudad,
+                    direccion,
+                    tipo
+                )
+
+                VALUES
+                (
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?,
+                    ?
+                )
+
+            ";
+
+
+            $stmtCrearCliente =
+                mysqli_prepare(
+                    $conexion,
+                    $sqlCrearCliente
+                );
+
+
+            if (!$stmtCrearCliente) {
+
+                throw new Exception(
+                    "No fue posible preparar el registro automático del cliente."
+                );
+
+            }
+
+
+            mysqli_stmt_bind_param(
+                $stmtCrearCliente,
+                "sssssss",
+                $nit,
+                $cliente,
+                $telefono,
+                $correo,
+                $ciudad,
+                $direccion,
+                $tipo
+            );
+
+
+            if (
+                !mysqli_stmt_execute(
+                    $stmtCrearCliente
+                )
+            ) {
+
+                throw new Exception(
+                    "No fue posible registrar automáticamente el cliente."
+                );
+
+            }
+
+
+            $clienteCreado = true;
+
+
+            mysqli_stmt_close(
+                $stmtCrearCliente
+            );
+
+        }
+
+
+        // =================================================
+        // 3. GUARDAR VENTA
+        // =================================================
+
+        $sqlVenta = "
+
+            INSERT INTO ventas
+            (
+                fecha,
+                cliente,
+                producto,
+                cantidad,
+                precio,
+                total,
+                estado
+            )
+
+            VALUES
+            (
+                ?,
+                ?,
+                ?,
+                ?,
+                ?,
+                ?,
+                ?
+            )
+
+        ";
+
+
+        $stmtVenta =
+            mysqli_prepare(
+                $conexion,
+                $sqlVenta
+            );
+
+
+        if (!$stmtVenta) {
+
+            throw new Exception(
+                "No fue posible preparar el registro de la venta."
+            );
+
+        }
+
+
+        mysqli_stmt_bind_param(
+            $stmtVenta,
+            "sssddds",
+            $fecha,
+            $cliente,
+            $producto,
+            $cantidad,
+            $precio,
+            $totalCalculado,
+            $estado
+        );
+
+
+        if (
+            !mysqli_stmt_execute(
+                $stmtVenta
+            )
+        ) {
+
+            throw new Exception(
+                "No fue posible registrar la venta."
+            );
+
+        }
+
+
+        // =================================================
+        // ID DE LA VENTA
+        // =================================================
+
+        $idVenta =
+            mysqli_insert_id(
+                $conexion
+            );
+
+
+        mysqli_stmt_close(
+            $stmtVenta
+        );
+
+
+        // =================================================
+        // CONFIRMAR TRANSACCIÓN
+        // =================================================
+
+        mysqli_commit(
+            $conexion
+        );
+
+
+        // =================================================
+        // RESPUESTA
+        // =================================================
+
+        responder(
+            true,
+            "",
+            [
+                "mensaje" =>
+                    "Venta registrada correctamente.",
+
+                "idVenta" =>
+                    $idVenta,
+
+                "cliente" =>
+                    $cliente,
+
+                "clienteCreado" =>
+                    $clienteCreado
+            ]
+        );
+
+    }
+
+
+    catch (Exception $e) {
+
+
+        // =================================================
+        // DESHACER TODO SI FALLA
+        // =================================================
+
+        mysqli_rollback(
+            $conexion
+        );
+
+
+        responder(
+            false,
+            $e->getMessage()
+        );
+
+    }
 
 }
 
 
-// ==========================
-// ELIMINAR
-// ==========================
+// =====================================================
+// ELIMINAR VENTA
+// =====================================================
 
-if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
+if (
+    $_SERVER['REQUEST_METHOD'] === 'DELETE'
+) {
 
-    $id = $_GET['id'];
 
-    $sql = "
+    // =================================================
+    // OBTENER ID
+    // =================================================
 
-        DELETE FROM ventas
-        WHERE idVenta = '$id'
+    $id =
+        $_GET['id'] ?? null;
 
-    ";
 
-    mysqli_query($conexion, $sql);
+    if (
+        !$id ||
+        !is_numeric($id)
+    ) {
 
-    echo json_encode([
-        "ok" => true
-    ]);
+        responder(
+            false,
+            "El ID de la venta es obligatorio."
+        );
 
-    exit();
+    }
+
+
+    $id =
+        (int)$id;
+
+
+    // =================================================
+    // PREPARAR ELIMINACIÓN
+    // =================================================
+
+    $stmt =
+        mysqli_prepare(
+            $conexion,
+            "
+                DELETE FROM ventas
+                WHERE idVenta = ?
+            "
+        );
+
+
+    if (!$stmt) {
+
+        responder(
+            false,
+            "No fue posible preparar la eliminación."
+        );
+
+    }
+
+
+    mysqli_stmt_bind_param(
+        $stmt,
+        "i",
+        $id
+    );
+
+
+    // =================================================
+    // EJECUTAR
+    // =================================================
+
+    if (
+        mysqli_stmt_execute(
+            $stmt
+        )
+    ) {
+
+        responder(
+            true,
+            "",
+            [
+                "mensaje" =>
+                    "Venta eliminada correctamente."
+            ]
+        );
+
+    }
+
+
+    responder(
+        false,
+        "No fue posible eliminar la venta."
+    );
 
 }
+
+
+// =====================================================
+// MÉTODO NO PERMITIDO
+// =====================================================
+
+http_response_code(405);
+
+responder(
+    false,
+    "Método no permitido."
+);
 
 ?>

@@ -1,216 +1,767 @@
-<div class="min-h-screen bg-cover bg-center p-6" style="background-image: url('assets/cafe.jpg');">
+<div
+  class="min-h-screen bg-cover bg-center p-6"
+  style="background-image: url('assets/cafe.jpg');"
+>
 
-  <button routerLink="/dashboard" class="bg-[#0f172a] hover:bg-[#1e293b] text-white px-6 py-4 rounded-2xl font-bold shadow-xl mb-6 transition">
+  <!-- ================================================= -->
+  <!-- BOTÓN DASHBOARD -->
+  <!-- ================================================= -->
+
+  <button
+    routerLink="/dashboard"
+    class="bg-[#0f172a] hover:bg-[#1e293b] text-white px-6 py-4 rounded-2xl font-bold shadow-xl mb-6 transition"
+  >
     ← Dashboard
   </button>
 
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-    <div class="bg-green-500 text-white rounded-3xl p-6 shadow-2xl">
-      <div class="text-3xl font-bold">{{ totalKg() | number:'1.1-1' }} KG</div>
-      <div class="opacity-90 mt-2">Total Recolectado</div>
-    </div>
 
-    <div class="bg-slate-800 text-white rounded-3xl p-6 shadow-2xl">
-      <div class="text-3xl font-bold">{{ recolecciones().length }}</div>
-      <div class="opacity-90 mt-2">Registros</div>
-    </div>
-  </div>
+  <!-- ================================================= -->
+  <!-- TARJETAS -->
+  <!-- ================================================= -->
 
-  <div class="bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden">
+  <div
+    class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6"
+  >
 
-    <div class="flex items-center justify-between gap-4 p-4 bg-gray-100">
-      <div class="flex w-full max-w-md">
-        <input
-          type="text"
-          [ngModel]="buscar()"
-          (ngModelChange)="buscar.set($event)"
-          placeholder="Buscar lote, variedad o recolector..."
-          class="w-full px-4 py-3 rounded-l-2xl border outline-none focus:ring-2 focus:ring-green-500"
-          aria-label="Buscar pesajes"
-        />
-        <button class="bg-white border border-l-0 px-4 rounded-r-2xl hover:bg-gray-50" aria-label="Botón de búsqueda">
-          🔎
-        </button>
+    <div
+      class="bg-green-500 text-white rounded-3xl p-6 shadow-2xl"
+    >
+
+      <div class="text-3xl font-bold">
+        {{ totalKg() | number:'1.1-1' }} KG
       </div>
 
-      @if (user()?.idRol != 3) {
-        <button
-          (click)="mostrarFormulario.set(true)"
-          class="bg-white hover:bg-gray-200 px-6 py-3 rounded-2xl shadow font-semibold transition"
-        >
-          🌿 Nuevo Pesaje
-        </button>
-      }
+      <div class="opacity-90 mt-2">
+        Total Recolectado
+      </div>
+
     </div>
 
+
+    <div
+      class="bg-slate-800 text-white rounded-3xl p-6 shadow-2xl"
+    >
+
+      <div class="text-3xl font-bold">
+        {{ recolecciones().length }}
+      </div>
+
+      <div class="opacity-90 mt-2">
+        Registros
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ================================================= -->
+  <!-- CONTENEDOR PRINCIPAL -->
+  <!-- ================================================= -->
+
+  <div
+    class="bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden"
+  >
+
+
+    <!-- ================================================= -->
+    <!-- BUSCADORES Y FILTROS -->
+    <!-- ================================================= -->
+
+    <div
+      class="p-4 bg-gray-100 border-b"
+    >
+
+      <div
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3 items-center"
+      >
+
+
+        <!-- BUSCAR -->
+
+        <div class="flex">
+
+          <input
+            type="text"
+            [ngModel]="buscar()"
+            (ngModelChange)="buscar.set($event)"
+            placeholder="Buscar variedad o recolector..."
+            class="w-full px-4 py-3 rounded-l-2xl border outline-none focus:ring-2 focus:ring-green-500"
+            aria-label="Buscar pesajes"
+          />
+
+          <button
+            type="button"
+            class="bg-white border border-l-0 px-4 rounded-r-2xl hover:bg-gray-50"
+            aria-label="Botón de búsqueda"
+          >
+            🔎
+          </button>
+
+        </div>
+
+
+        <!-- FILTRO FECHA -->
+
+        <input
+          type="date"
+          [ngModel]="filtroFecha()"
+          (ngModelChange)="filtroFecha.set($event)"
+          class="px-4 py-3 rounded-2xl border outline-none focus:ring-2 focus:ring-green-500"
+          aria-label="Filtrar por fecha"
+        />
+
+
+        <!-- FILTRO LOTE -->
+
+        <select
+          [ngModel]="filtroLote()"
+          (ngModelChange)="filtroLote.set($event)"
+          class="px-4 py-3 rounded-2xl border outline-none focus:ring-2 focus:ring-green-500"
+          aria-label="Filtrar por lote"
+        >
+
+          <option value="">
+            Todos los lotes
+          </option>
+
+          @for (
+            lote of lotes();
+            track lote.idLote
+          ) {
+
+            <option
+              [value]="lote.idLote"
+            >
+              {{ lote.nombreLote || 'Lote ' + lote.idLote }}
+            </option>
+
+          }
+
+        </select>
+
+
+        <!-- LIMPIAR FILTROS -->
+
+        <button
+          type="button"
+          (click)="limpiarFiltros()"
+          class="bg-gray-500 hover:bg-gray-600 text-white px-5 py-3 rounded-2xl font-semibold transition"
+        >
+          Limpiar filtros
+        </button>
+
+
+        <!-- NUEVO PESAJE -->
+
+        @if (user()?.idRol != 3) {
+
+          <button
+            type="button"
+            (click)="mostrarFormulario.set(true)"
+            class="bg-white hover:bg-gray-200 px-6 py-3 rounded-2xl shadow font-semibold transition"
+          >
+            🌿 Nuevo Pesaje
+          </button>
+
+        }
+
+      </div>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- FORMULARIO -->
+    <!-- ================================================= -->
+
     @if (mostrarFormulario()) {
-      <div class="p-6 border-b bg-white">
-        <h2 class="text-2xl font-bold text-green-700 mb-6">
-          {{ editando() ? 'Editar Pesaje' : 'Nuevo Pesaje' }}
+
+      <div
+        class="p-6 border-b bg-white"
+      >
+
+        <h2
+          class="text-2xl font-bold text-green-700 mb-6"
+        >
+          {{
+            editando()
+              ? 'Editar Pesaje'
+              : 'Nuevo Pesaje'
+          }}
         </h2>
 
-        <form (ngSubmit)="editando() ? actualizar() : guardarPesaje()">
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+
+        <form
+          (ngSubmit)="editando() ? actualizar() : guardarPesaje()"
+        >
+
+
+          <div
+            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4"
+          >
+
+
+            <!-- RECOLECTOR -->
 
             <select
               [ngModel]="formulario().idRecolector"
-              (ngModelChange)="formulario.update(f => ({...f, idRecolector: $event}))"
+              (ngModelChange)="
+                formulario.update(
+                  f => ({
+                    ...f,
+                    idRecolector: $event
+                  })
+                )
+              "
               name="idRecolector"
               class="p-4 border rounded-xl outline-none focus:ring-2 focus:ring-green-500"
               aria-label="Seleccione recolector"
               required
             >
-              <option value="">Seleccione recolector</option>
-              @for (r of recolectores(); track r.idRecolector) {
-                <option [value]="r.idRecolector">{{ r.nombre }}</option>
+
+              <option value="">
+                Seleccione recolector
+              </option>
+
+              @for (
+                r of recolectores();
+                track r.idRecolector
+              ) {
+
+                <option
+                  [value]="r.idRecolector"
+                >
+                  {{ r.nombre }}
+                </option>
+
               }
+
             </select>
+
+
+            <!-- LOTE -->
 
             <select
               [ngModel]="formulario().idLote"
-              (ngModelChange)="formulario.update(f => ({...f, idLote: $event}))"
+              (ngModelChange)="
+                formulario.update(
+                  f => ({
+                    ...f,
+                    idLote: $event
+                  })
+                )
+              "
               name="idLote"
               class="p-4 border rounded-xl outline-none focus:ring-2 focus:ring-green-500"
               aria-label="Seleccione lote"
               required
             >
-              <option value="">Seleccione lote</option>
-              @for (lote of lotes(); track lote.idLote) {
-                <option [value]="lote.idLote">
-                  {{ lote.nombreLote }} - {{ lote.ubicacion }}
+
+              <option value="">
+                Seleccione lote
+              </option>
+
+              @for (
+                lote of lotes();
+                track lote.idLote
+              ) {
+
+                <option
+                  [value]="lote.idLote"
+                >
+                  {{ lote.nombreLote || 'Lote ' + lote.idLote }}
                 </option>
+
               }
+
             </select>
+
+
+            <!-- VARIEDAD -->
 
             <select
               [ngModel]="formulario().variedad"
-              (ngModelChange)="formulario.update(f => ({...f, variedad: $event}))"
+              (ngModelChange)="
+                formulario.update(
+                  f => ({
+                    ...f,
+                    variedad: $event
+                  })
+                )
+              "
               name="variedad"
               class="p-4 border rounded-xl outline-none focus:ring-2 focus:ring-green-500"
               aria-label="Variedad"
               required
             >
-              <option value="">Variedad</option>
-              <option value="Arábico">Arábico</option>
-              <option value="Robusta">Robusta</option>
+
+              <option value="">
+                Variedad
+              </option>
+
+              <option value="Arábico">
+                Arábico
+              </option>
+
+              <option value="Robusta">
+                Robusta
+              </option>
+
             </select>
+
+
+            <!-- ESTADO -->
 
             <select
               [ngModel]="formulario().estado"
-              (ngModelChange)="formulario.update(f => ({...f, estado: $event}))"
+              (ngModelChange)="
+                formulario.update(
+                  f => ({
+                    ...f,
+                    estado: $event
+                  })
+                )
+              "
               name="estado"
               class="p-4 border rounded-xl outline-none focus:ring-2 focus:ring-green-500"
               aria-label="Estado"
               required
             >
-              <option value="">Estado</option>
-              <option value="Maduro">Maduro</option>
-              <option value="Pintón">Pintón</option>
+
+              <option value="">
+                Estado
+              </option>
+
+              <option value="Maduro">
+                Maduro
+              </option>
+
+              <option value="Pintón">
+                Pintón
+              </option>
+
             </select>
+
+
+            <!-- FECHA -->
 
             <input
               type="date"
               [ngModel]="formulario().fecha"
-              (ngModelChange)="formulario.update(f => ({...f, fecha: $event}))"
+              (ngModelChange)="
+                formulario.update(
+                  f => ({
+                    ...f,
+                    fecha: $event
+                  })
+                )
+              "
               name="fecha"
               class="p-4 border rounded-xl outline-none focus:ring-2 focus:ring-green-500"
               aria-label="Fecha"
               required
             />
 
+
+            <!-- KG -->
+
             <input
               type="number"
+              min="0"
+              step="0.01"
               [ngModel]="formulario().kg"
-              (ngModelChange)="formulario.update(f => ({...f, kg: $event}))"
+              (ngModelChange)="
+                formulario.update(
+                  f => ({
+                    ...f,
+                    kg: $event
+                  })
+                )
+              "
               name="kg"
               placeholder="Kilogramos"
               class="p-4 border rounded-xl outline-none focus:ring-2 focus:ring-green-500"
               aria-label="Kilogramos"
               required
             />
+
           </div>
 
+
+          <!-- BOTONES -->
+
           <div class="flex gap-3 mt-6">
+
             <button
               type="submit"
               class="text-white px-6 py-3 rounded-xl font-semibold transition"
-              [class.bg-blue-600]="editando()" [class.hover:bg-blue-700]="editando()"
-              [class.bg-green-600]="!editando()" [class.hover:bg-green-700]="!editando()"
+              [class.bg-blue-600]="editando()"
+              [class.hover:bg-blue-700]="editando()"
+              [class.bg-green-600]="!editando()"
+              [class.hover:bg-green-700]="!editando()"
             >
-              {{ editando() ? 'Actualizar' : 'Guardar' }}
+
+              {{
+                editando()
+                  ? 'Actualizar'
+                  : 'Guardar'
+              }}
+
             </button>
+
 
             <button
               type="button"
               (click)="cancelarEditar()"
-              class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-xl font-semibold transition"
+              class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-xl font-semibold"
             >
               Cancelar
             </button>
+
           </div>
+
         </form>
+
       </div>
+
     }
 
+
+    <!-- ================================================= -->
+    <!-- TABLA -->
+    <!-- ================================================= -->
+
     <div class="overflow-auto">
+
       <table class="w-full">
-        <thead class="bg-slate-800 text-white">
+
+        <thead
+          class="bg-slate-800 text-white"
+        >
+
           <tr>
-            <th class="p-4 text-center">Fecha</th>
-            <th class="p-4 text-center">Recolector</th>
-            <th class="p-4 text-center">Lote</th>
-            <th class="p-4 text-center">Producto</th>
-            <th class="p-4 text-center">Estado</th>
-            <th class="p-4 text-center">KG</th>
-            <th class="p-4 text-center">Acciones</th>
+
+            <th class="p-4 text-center">
+              Fecha
+            </th>
+
+            <th class="p-4 text-center">
+              Recolector
+            </th>
+
+            <th class="p-4 text-center">
+              Lote
+            </th>
+
+            <th class="p-4 text-center">
+              Producto
+            </th>
+
+            <th class="p-4 text-center">
+              Estado
+            </th>
+
+            <th class="p-4 text-center">
+              KG
+            </th>
+
+            <th class="p-4 text-center">
+              Acciones
+            </th>
+
           </tr>
+
         </thead>
+
+
         <tbody>
-          @for (r of recoleccionesFiltradas(); track r.idRecoleccion) {
-            <tr class="border-b hover:bg-gray-50 transition">
-              <td class="p-4 text-center">{{ r.fecha }}</td>
-              <td class="p-4 text-center font-semibold">{{ r.recolector }}</td>
+
+
+          @for (
+            r of recoleccionesFiltradas();
+            track r.idRecoleccion
+          ) {
+
+            <tr
+              class="border-b hover:bg-gray-50 transition"
+            >
+
               <td class="p-4 text-center">
-                <div class="font-semibold">{{ r.nombreLote || 'Lote ' + r.idLote }}</div>
-                <div class="text-xs text-gray-500">{{ r.ubicacion || '' }}</div>
+                {{ r.fecha }}
               </td>
-              <td class="p-4 text-center">{{ r.variedad }}</td>
+
+
+              <td
+                class="p-4 text-center font-semibold"
+              >
+                {{ r.recolector }}
+              </td>
+
+
               <td class="p-4 text-center">
+                Lote {{ r.idLote }}
+              </td>
+
+
+              <td class="p-4 text-center">
+                {{ r.variedad }}
+              </td>
+
+
+              <td class="p-4 text-center">
+
                 <span
                   class="px-4 py-1 rounded-full text-white font-bold text-sm"
                   [ngClass]="{
-                    'bg-green-500': r.estado === 'Maduro',
-                    'bg-yellow-500': r.estado === 'Pintón'
+                    'bg-green-500':
+                      r.estado === 'Maduro',
+
+                    'bg-yellow-500':
+                      r.estado === 'Pintón'
                   }"
                 >
                   {{ r.estado }}
                 </span>
+
               </td>
-              <td class="p-4 text-center font-bold text-slate-700">{{ r.kg }} KG</td>
+
+
+              <td
+                class="p-4 text-center font-bold text-slate-700"
+              >
+                {{ r.kg }} KG
+              </td>
+
+
+              <!-- ACCIONES -->
+
               <td class="p-4">
-                <div class="flex justify-center gap-2">
+
+                <div
+                  class="flex justify-center gap-2 flex-wrap"
+                >
+
                   @if (user()?.idRol != 3) {
-                    <button (click)="editar(r)" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-xl transition">
+
+                    <button
+                      type="button"
+                      (click)="verDetalle(r)"
+                      class="bg-slate-700 hover:bg-slate-800 text-white px-4 py-2 rounded-xl transition"
+                    >
+                      Ver
+                    </button>
+
+
+                    <button
+                      type="button"
+                      (click)="editar(r)"
+                      class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-xl transition"
+                    >
                       Editar
                     </button>
-                    <button (click)="eliminar(r.idRecoleccion)" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl transition">
+
+
+                    <button
+                      type="button"
+                      (click)="eliminar(r.idRecoleccion)"
+                      class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl transition"
+                    >
                       Eliminar
                     </button>
+
                   } @else {
-                    <span class="text-gray-500 text-sm font-semibold">Sin permisos</span>
+
+                    <button
+                      type="button"
+                      (click)="verDetalle(r)"
+                      class="bg-slate-700 hover:bg-slate-800 text-white px-4 py-2 rounded-xl transition"
+                    >
+                      Ver
+                    </button>
+
                   }
+
                 </div>
+
               </td>
+
             </tr>
+
+
           } @empty {
+
             <tr>
-              <td colspan="7" class="text-center p-10 text-gray-500 font-medium">
+
+              <td
+                colspan="7"
+                class="text-center p-10 text-gray-500 font-medium"
+              >
                 No hay pesajes registrados.
               </td>
+
             </tr>
+
           }
+
         </tbody>
+
       </table>
+
     </div>
+
   </div>
+
+
+  <!-- ================================================= -->
+  <!-- MODAL DETALLE -->
+  <!-- ================================================= -->
+
+  @if (registroSeleccionado()) {
+
+    <div
+      class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
+    >
+
+      <div
+        class="bg-white rounded-3xl shadow-2xl w-full max-w-xl overflow-hidden"
+      >
+
+        <!-- ENCABEZADO -->
+
+        <div
+          class="bg-slate-800 text-white px-6 py-5 flex items-center justify-between"
+        >
+
+          <h2 class="text-2xl font-bold">
+            Detalle de Recolección
+          </h2>
+
+          <button
+            type="button"
+            (click)="cerrarDetalle()"
+            class="text-white text-2xl hover:text-red-300"
+          >
+            ✕
+          </button>
+
+        </div>
+
+
+        <!-- INFORMACIÓN -->
+
+        <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+
+          <div
+            class="bg-gray-100 rounded-2xl p-4"
+          >
+
+            <p class="text-sm text-gray-500">
+              Fecha
+            </p>
+
+            <p class="font-bold text-slate-800">
+              {{ registroSeleccionado()?.fecha }}
+            </p>
+
+          </div>
+
+
+          <div
+            class="bg-gray-100 rounded-2xl p-4"
+          >
+
+            <p class="text-sm text-gray-500">
+              Recolector
+            </p>
+
+            <p class="font-bold text-slate-800">
+              {{ registroSeleccionado()?.recolector }}
+            </p>
+
+          </div>
+
+
+          <div
+            class="bg-gray-100 rounded-2xl p-4"
+          >
+
+            <p class="text-sm text-gray-500">
+              Lote
+            </p>
+
+            <p class="font-bold text-slate-800">
+              Lote {{ registroSeleccionado()?.idLote }}
+            </p>
+
+          </div>
+
+
+          <div
+            class="bg-gray-100 rounded-2xl p-4"
+          >
+
+            <p class="text-sm text-gray-500">
+              Variedad
+            </p>
+
+            <p class="font-bold text-slate-800">
+              {{ registroSeleccionado()?.variedad }}
+            </p>
+
+          </div>
+
+
+          <div
+            class="bg-gray-100 rounded-2xl p-4"
+          >
+
+            <p class="text-sm text-gray-500">
+              Estado
+            </p>
+
+            <p class="font-bold text-slate-800">
+              {{ registroSeleccionado()?.estado }}
+            </p>
+
+          </div>
+
+
+          <div
+            class="bg-green-100 rounded-2xl p-4"
+          >
+
+            <p class="text-sm text-gray-500">
+              Kilogramos
+            </p>
+
+            <p class="font-bold text-green-700 text-xl">
+              {{ registroSeleccionado()?.kg }} KG
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <!-- BOTÓN -->
+
+        <div class="px-6 pb-6">
+
+          <button
+            type="button"
+            (click)="cerrarDetalle()"
+            class="w-full bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-xl font-semibold"
+          >
+            Cerrar
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  }
+
 </div>
