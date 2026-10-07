@@ -270,25 +270,41 @@
       </select>
 
 
-      <!-- CANTIDAD Y PRECIO -->
+      <!-- KILOGRAMOS Y VALOR POR KILOGRAMO -->
 
       <div class="grid grid-cols-2 gap-4 mb-4">
 
-        <input
-          type="number"
-          placeholder="Cantidad"
-          [(ngModel)]="nueva.cantidad"
-          (input)="calcularTotal()"
-          class="border rounded-xl p-4"
-        >
+        <div>
+          <label class="block font-semibold text-gray-700 mb-2">
+            Kilogramos
+          </label>
 
-        <input
-          type="number"
-          placeholder="Precio"
-          [(ngModel)]="nueva.precio"
-          (input)="calcularTotal()"
-          class="border rounded-xl p-4"
-        >
+          <input
+            type="number"
+            min="0.01"
+            step="0.01"
+            placeholder="Ej: 10.5 kg"
+            [(ngModel)]="nueva.cantidad"
+            (input)="calcularTotal()"
+            class="w-full border rounded-xl p-4"
+          >
+        </div>
+
+        <div>
+          <label class="block font-semibold text-gray-700 mb-2">
+            Valor por kilogramo
+          </label>
+
+          <input
+            type="number"
+            min="0"
+            step="1"
+            placeholder="Ej: $12.000"
+            [(ngModel)]="nueva.precio"
+            (input)="calcularTotal()"
+            class="w-full border rounded-xl p-4"
+          >
+        </div>
 
       </div>
 
