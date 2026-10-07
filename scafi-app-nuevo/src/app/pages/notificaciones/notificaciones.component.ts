@@ -263,6 +263,93 @@ export class NotificacionesComponent implements OnInit {
   }
 
   // ==================================================
+  // DESTINO DE LA NOTIFICACIÓN
+  // ==================================================
+
+  obtenerDestinoNotificacion(n: any): {
+    ruta: string;
+    queryParams?: any;
+  } {
+
+    const titulo =
+      String(n?.titulo || '').toLowerCase();
+
+    const mensaje =
+      String(n?.mensaje || '');
+
+    if (
+      titulo.includes('stock') ||
+      mensaje.toLowerCase().includes('insumo ')
+    ) {
+
+      const coincidencia =
+        mensaje.match(
+          /insumo\s+(.+?)\s+(?:tiene|ha vuelto|presenta)/i
+        );
+
+      const nombreInsumo =
+        coincidencia?.[1]?.trim() || '';
+
+      return {
+        ruta: '/insumos',
+        queryParams: nombreInsumo
+          ? { buscar: nombreInsumo }
+          : undefined
+      };
+
+    }
+
+    if (
+      titulo.includes('mensaje') ||
+      mensaje.toLowerCase().includes('mensaje nuevo')
+    ) {
+      return { ruta: '/mensajes' };
+    }
+
+    if (titulo.includes('venta')) {
+      return { ruta: '/ventas' };
+    }
+
+    if (titulo.includes('cliente')) {
+      return { ruta: '/clientes' };
+    }
+
+    if (titulo.includes('proveedor')) {
+      return { ruta: '/proveedores' };
+    }
+
+    if (
+      titulo.includes('movimiento') ||
+      mensaje.toLowerCase().includes('movimiento')
+    ) {
+      return { ruta: '/movimientos' };
+    }
+
+    return { ruta: '/notificaciones' };
+  }
+
+  abrirNotificacion(notificacion: any): void {
+
+    if (!notificacion) {
+      return;
+    }
+
+    if (notificacion.visto_por == null) {
+      this.marcarComoLeida(notificacion);
+    }
+
+    const destino =
+      this.obtenerDestinoNotificacion(notificacion);
+
+    this.router.navigate(
+      [destino.ruta],
+      destino.queryParams
+        ? { queryParams: destino.queryParams }
+        : undefined
+    );
+  }
+
+  // ==================================================
   // ESTADO
   // ==================================================
 
