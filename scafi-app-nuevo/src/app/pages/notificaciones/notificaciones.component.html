@@ -1,424 +1,151 @@
-<div class="relative">
+<div class="min-h-screen bg-gray-100 flex flex-col">
 
-  <!-- ================================================== -->
-  <!-- CAMPANA -->
-  <!-- ================================================== -->
+  <!-- ENCABEZADO -->
+  <header class="bg-[#101827] text-white px-5 md:px-8 py-4 shadow-lg">
+    <div class="flex items-center gap-4">
 
-  <button
-    type="button"
-    (click)="abrirNotificaciones()"
-    class="relative text-2xl hover:scale-110 transition"
-    title="Notificaciones"
-  >
-    🔔
+      <button
+        type="button"
+        (click)="volverDashboard()"
+        class="shrink-0 inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 px-4 py-2.5 rounded-xl font-bold transition">
+        ← Dashboard
+      </button>
 
-    <span
-      *ngIf="total > 0"
-      class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold min-w-[20px] h-5 px-1 rounded-full flex items-center justify-center"
-    >
-      {{ total }}
-    </span>
-  </button>
-
-
-  <!-- ================================================== -->
-  <!-- PANEL PEQUEÑO -->
-  <!-- ================================================== -->
-
-  <div
-    *ngIf="mostrar"
-    class="absolute right-0 top-full mt-3 w-[420px] max-w-[94vw] max-h-[560px] bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden z-[9999]"
-  >
-
-    <!-- HEADER -->
-    <div
-      class="p-4 bg-[#101827] text-white"
-    >
-
-      <div class="flex items-center justify-between">
-
-        <div>
-          <h2 class="font-bold text-lg">
-            Notificaciones
-          </h2>
-
-          <p class="text-xs text-gray-400 mt-1">
-            {{ total }} sin leer
-          </p>
-        </div>
-
-        <button
-          type="button"
-          (click)="cargarNotificaciones()"
-          class="bg-white/10 hover:bg-white/20 px-3 py-2 rounded-lg transition"
-          title="Actualizar"
-        >
-          ↻
-        </button>
-
+      <div class="flex-1 text-center">
+        <h1 class="font-bold text-xl md:text-2xl">
+          Todas las notificaciones
+        </h1>
+        <p class="text-xs md:text-sm text-gray-400 mt-1">
+          {{ notificaciones.length }} notificaciones · {{ total }} sin leer
+        </p>
       </div>
 
+      <button
+        type="button"
+        (click)="cargarNotificaciones()"
+        class="shrink-0 bg-white/10 hover:bg-white/20 px-4 py-2.5 rounded-xl font-semibold transition">
+        ↻ Actualizar
+      </button>
+
     </div>
+  </header>
 
+  <!-- CONTENIDO -->
+  <main class="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
 
-    <!-- LOADING -->
+    <!-- CARGANDO -->
     <div
       *ngIf="cargando"
-      class="p-8 text-center text-gray-500"
-    >
-      <div class="text-3xl mb-2">🔄</div>
-      Cargando notificaciones...
+      class="min-h-[55vh] flex items-center justify-center">
+      <div class="text-center text-gray-500">
+        <div class="text-5xl mb-4 animate-pulse">🔄</div>
+        <p class="text-lg font-semibold">Cargando notificaciones...</p>
+      </div>
     </div>
 
-
-    <!-- VACÍO -->
+    <!-- SIN NOTIFICACIONES -->
     <div
       *ngIf="!cargando && notificaciones.length === 0"
-      class="p-8 text-center text-gray-500"
-    >
-      <div class="text-4xl mb-3">🔕</div>
-
-      <p class="font-semibold">
-        No hay notificaciones
-      </p>
+      class="min-h-[55vh] flex items-center justify-center">
+      <div class="text-center text-gray-500">
+        <div class="text-6xl mb-4">🔕</div>
+        <h2 class="text-2xl font-bold">No hay notificaciones</h2>
+        <p class="mt-2">No tienes notificaciones disponibles.</p>
+      </div>
     </div>
 
-
-    <!-- LISTA PEQUEÑA -->
+    <!-- LISTADO -->
     <div
       *ngIf="!cargando && notificaciones.length > 0"
-      class="max-h-[360px] overflow-y-auto"
-    >
+      class="w-full max-w-6xl mx-auto space-y-3">
 
       <div
-        *ngFor="let n of notificaciones.slice(0, 5)"
+        *ngFor="let n of notificaciones"
         (click)="seleccionarNotificacion(n)"
-        class="relative p-4 border-b border-gray-200 cursor-pointer hover:bg-gray-100 transition"
+        class="bg-white rounded-xl border shadow-sm hover:shadow-md cursor-pointer transition p-5"
         [ngClass]="{
-          'bg-blue-50': estaNoLeida(n),
-          'bg-white': estaLeida(n)
-        }"
-      >
+          'border-l-8 border-l-blue-500': estaNoLeida(n),
+          'border-l-8 border-l-green-500': estaLeida(n)
+        }">
 
-        <div
-          class="absolute left-0 top-0 bottom-0 w-1"
-          [ngClass]="{
-            'bg-blue-500': estaNoLeida(n),
-            'bg-green-500': estaLeida(n)
-          }"
-        ></div>
+        <div class="flex items-start gap-4">
 
-        <div class="pl-2">
+          <div class="flex-1 min-w-0">
 
-          <div class="flex items-start justify-between gap-3">
+            <div class="flex items-center gap-3 flex-wrap">
 
-            <div
-              class="font-bold text-sm"
-              [ngClass]="{
-                'text-red-500': estaNoLeida(n),
-                'text-gray-700': estaLeida(n)
-              }"
-            >
-              {{ n.titulo }}
+              <h3
+                class="text-lg font-bold"
+                [ngClass]="{
+                  'text-red-500': estaNoLeida(n),
+                  'text-gray-700': estaLeida(n)
+                }">
+                {{ n.titulo }}
+              </h3>
+
+              <span
+                *ngIf="estaNoLeida(n)"
+                class="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-bold">
+                No leída
+              </span>
+
+              <span
+                *ngIf="estaLeida(n)"
+                class="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full font-bold">
+                ✓ Leída
+              </span>
+
             </div>
 
+            <p class="text-gray-700 mt-2 leading-relaxed">
+              {{ n.mensaje }}
+            </p>
+
+            <div class="flex flex-wrap gap-x-5 gap-y-1 mt-3 text-xs text-gray-400">
+              <span>{{ n.fecha }}</span>
+
+              <span
+                *ngIf="n.nombre_remitente"
+                class="text-blue-600 font-semibold">
+                Enviado por: {{ n.nombre_remitente }}
+              </span>
+            </div>
+
+          </div>
+
+          <div class="shrink-0">
             <span
               *ngIf="estaNoLeida(n)"
-              class="text-blue-600 font-bold"
-              title="No leída"
-            >
+              class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xl font-bold">
               ●
             </span>
 
             <span
               *ngIf="estaLeida(n)"
-              class="text-green-600 font-bold text-lg"
-              title="Leída"
-            >
+              class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-xl font-bold">
               ✓
             </span>
-
           </div>
 
-          <p class="text-sm text-gray-700 mt-1">
-            {{ n.mensaje }}
-          </p>
-
-          <p class="text-xs text-gray-400 mt-2">
-            {{ n.fecha }}
-          </p>
-
-          <p
-            *ngIf="n.nombre_remitente"
-            class="text-xs text-blue-600 mt-1 font-semibold"
-          >
-            Enviado por: {{ n.nombre_remitente }}
-          </p>
-
         </div>
-
       </div>
 
     </div>
 
-
-    <!-- ================================================== -->
-    <!-- BOTÓN VER TODAS -->
-    <!-- ================================================== -->
-
-    <div
-      *ngIf="notificaciones.length > 0"
-      class="p-3 border-t border-gray-200 bg-gray-50"
-    >
-
-      <button
-        type="button"
-        (click)="verTodas()"
-        class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition"
-      >
-        Ver todas las notificaciones
-      </button>
-
-    </div>
-
-  </div>
-
-
-  <!-- ================================================== -->
-  <!-- VENTANA COMPLETA -->
-  <!-- ================================================== -->
-
-  <div
-    *ngIf="mostrarTodas"
-    class="fixed inset-0 z-[99999] bg-black/70 backdrop-blur-sm flex items-center justify-center"
-  >
-
-    <div
-      class="w-screen h-screen bg-white overflow-hidden flex flex-col"
-    >
-
-      <!-- ================================================== -->
-      <!-- HEADER DE VENTANA -->
-      <!-- ================================================== -->
-
-      <div
-        class="bg-[#101827] text-white px-6 py-4 flex items-center gap-4 shadow-lg"
-      >
-
-        <!-- DASHBOARD -->
-        <a
-          routerLink="/dashboard"
-          (click)="cerrarVistaCompleta()"
-          class="shrink-0 inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 px-5 py-3 rounded-xl font-bold transition"
-        >
-          ← Dashboard
-        </a>
-
-
-        <!-- TÍTULO -->
-        <div class="flex-1 text-center">
-
-          <h2 class="font-bold text-2xl">
-            Todas las notificaciones
-          </h2>
-
-          <p class="text-sm text-gray-400 mt-1">
-            {{ notificaciones.length }}
-            notificaciones ·
-            {{ total }}
-            sin leer
-          </p>
-
-        </div>
-
-
-        <!-- ACTUALIZAR -->
-        <button
-          type="button"
-          (click)="cargarNotificaciones()"
-          class="shrink-0 bg-white/10 hover:bg-white/20 px-4 py-3 rounded-xl font-semibold"
-        >
-          ↻ Actualizar
-        </button>
-
-
-        <!-- CERRAR -->
-        <button
-          type="button"
-          (click)="cerrarVistaCompleta()"
-          class="shrink-0 bg-red-500 hover:bg-red-600 px-4 py-3 rounded-xl font-bold"
-        >
-          ✕
-        </button>
-
-      </div>
-
-
-      <!-- ================================================== -->
-      <!-- CONTENIDO -->
-      <!-- ================================================== -->
-
-      <div
-        class="flex-1 overflow-y-auto bg-gray-100 p-6 md:p-8"
-      >
-
-        <!-- LOADING -->
-        <div
-          *ngIf="cargando"
-          class="h-full flex items-center justify-center text-gray-500"
-        >
-          <div class="text-center">
-            <div class="text-5xl mb-4">🔄</div>
-            <p>Cargando notificaciones...</p>
-          </div>
-        </div>
-
-
-        <!-- VACÍO -->
-        <div
-          *ngIf="!cargando && notificaciones.length === 0"
-          class="h-full flex items-center justify-center"
-        >
-          <div class="text-center text-gray-500">
-
-            <div class="text-7xl mb-4">
-              🔕
-            </div>
-
-            <h3 class="text-2xl font-bold">
-              No hay notificaciones
-            </h3>
-
-            <p class="mt-2">
-              No tienes notificaciones disponibles.
-            </p>
-
-          </div>
-        </div>
-
-
-        <!-- LISTADO GRANDE -->
-        <div
-          *ngIf="!cargando && notificaciones.length > 0"
-          class="w-full max-w-[1400px] mx-auto space-y-4"
-        >
-
-          <div
-            *ngFor="let n of notificaciones"
-            (click)="seleccionarNotificacion(n)"
-            class="bg-white rounded-2xl border shadow-sm hover:shadow-lg cursor-pointer transition p-6"
-            [ngClass]="{
-              'border-l-8 border-l-blue-500': estaNoLeida(n),
-              'border-l-8 border-l-green-500': estaLeida(n)
-            }"
-          >
-
-            <div class="flex items-start gap-6">
-
-              <!-- INFORMACIÓN -->
-              <div class="flex-1">
-
-                <div class="flex items-center gap-3 flex-wrap">
-
-                  <h3
-                    class="text-xl font-bold"
-                    [ngClass]="{
-                      'text-red-500': estaNoLeida(n),
-                      'text-gray-700': estaLeida(n)
-                    }"
-                  >
-                    {{ n.titulo }}
-                  </h3>
-
-                  <span
-                    *ngIf="estaNoLeida(n)"
-                    class="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-bold"
-                  >
-                    No leída
-                  </span>
-
-                  <span
-                    *ngIf="estaLeida(n)"
-                    class="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full font-bold"
-                  >
-                    ✓ Leída
-                  </span>
-
-                </div>
-
-
-                <p class="text-gray-700 text-base mt-3 leading-relaxed">
-                  {{ n.mensaje }}
-                </p>
-
-
-                <p class="text-sm text-gray-400 mt-4">
-                  {{ n.fecha }}
-                </p>
-
-
-                <p
-                  *ngIf="n.nombre_remitente"
-                  class="text-sm text-blue-600 font-semibold mt-1"
-                >
-                  Enviado por: {{ n.nombre_remitente }}
-                </p>
-
-              </div>
-
-
-              <!-- ESTADO -->
-              <div class="shrink-0 flex items-center justify-center">
-
-                <span
-                  *ngIf="estaNoLeida(n)"
-                  class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-2xl font-bold"
-                >
-                  ●
-                </span>
-
-                <span
-                  *ngIf="estaLeida(n)"
-                  class="w-12 h-12 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-2xl font-bold"
-                >
-                  ✓
-                </span>
-
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <!-- ================================================== -->
-      <!-- FOOTER -->
-      <!-- ================================================== -->
-
-      <div
-        class="border-t border-gray-200 bg-white px-6 py-4 flex items-center justify-between"
-      >
-
-        <span class="text-sm text-gray-500">
-          Usuario actual: {{ usuarioId }}
-        </span>
-
-        <button
-          type="button"
-          (click)="cerrarVistaCompleta()"
-          class="px-6 py-3 bg-gray-200 hover:bg-gray-300 rounded-xl font-bold"
-        >
-          Cerrar
-        </button>
-
-      </div>
-
-    </div>
-
-  </div>
+  </main>
+
+  <!-- PIE -->
+  <footer class="border-t border-gray-200 bg-white px-5 md:px-8 py-3 flex items-center justify-between">
+    <span class="text-xs text-gray-500">
+      Usuario actual: {{ usuarioId }}
+    </span>
+
+    <button
+      type="button"
+      (click)="volverDashboard()"
+      class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg font-semibold transition">
+      Cerrar
+    </button>
+  </footer>
 
 </div>
