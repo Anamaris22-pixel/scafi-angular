@@ -121,33 +121,41 @@
         </svg>
       </button>
 
-      <!-- USUARIO -->
-      <div class="flex items-center gap-3">
+      <!-- PERFIL -->
+      <a
+        routerLink="/perfil"
+        class="flex items-center gap-3 group"
+        title="Ver mi perfil"
+      >
         <div
           *ngIf="user?.idRol == 1 || user?.idRol == 2 || user?.idRol == 3"
           class="w-10 h-10 rounded-full overflow-hidden bg-green-600
                  flex items-center justify-center font-bold
-                 ring-2 ring-white/20 shadow-md"
-          [title]="user?.nombre || 'Usuario'"
+                 ring-2 ring-white/20 shadow-md
+                 group-hover:ring-green-300 transition"
         >
           <img
-            *ngIf="user?.foto"
+            *ngIf="user?.foto && !fotoError"
             [src]="getFotoUrl(user.foto)"
             [alt]="user?.nombre || 'Usuario'"
             class="w-full h-full object-cover"
             (error)="fotoError = true"
-            [class.hidden]="fotoError"
           />
 
           <span *ngIf="!user?.foto || fotoError">
             {{ user?.nombre?.charAt(0)?.toUpperCase() || '?' }}
           </span>
         </div>
+
         <div>
-          <div class="font-semibold text-sm">{{ user?.nombre }}</div>
-          <div class="text-xs text-gray-300">{{ getRolNombre() }}</div>
+          <div class="font-semibold text-sm group-hover:text-green-300 transition">
+            {{ user?.nombre }}
+          </div>
+          <div class="text-xs text-gray-300">
+            {{ getRolNombre() }}
+          </div>
         </div>
-      </div>
+      </a>
 
       <!-- SALIR -->
       <button (click)="logout()" class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg text-sm transition">
