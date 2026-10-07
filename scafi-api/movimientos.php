@@ -281,7 +281,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
         responder([
             "ok" => false,
-            "error" => $conexion->error
+            "error" => mysqli_error($conexion)
         ], 500);
 
     }
@@ -536,7 +536,7 @@ $insumo =
         if (!($stmtMovimiento instanceof mysqli_stmt)) {
 
             throw new Exception(
-                $conexion->error
+                mysqli_error($conexion)
             );
 
         }
@@ -589,7 +589,7 @@ $insumo =
         if (!($stmtStock instanceof mysqli_stmt)) {
 
             throw new Exception(
-                $conexion->error
+                mysqli_error($conexion)
             );
 
         }
