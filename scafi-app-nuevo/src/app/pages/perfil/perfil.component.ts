@@ -63,6 +63,10 @@ export class PerfilComponent implements OnInit {
     };
   }
 
+  esRecolector(): boolean {
+    return Number(this.user?.idRol) === 3;
+  }
+
   abrirEdicion(): void {
     this.mensaje = '';
     this.error = '';
