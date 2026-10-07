@@ -35,6 +35,77 @@ function responder(
 
 
 // =====================================================
+// NOTIFICAR VENTA PENDIENTE A LOS PROPIETARIOS
+// Crea una notificación independiente para cada usuario
+// cuyo rol sea Propietario (idRol = 1).
+// =====================================================
+
+function notificarVentaPendiente(
+    $conexion,
+    int $idVenta,
+    string $cliente,
+    string $fecha,
+    float $total
+) {
+
+    $titulo = "Venta pendiente de pago";
+
+    $mensaje =
+        "La venta #" . $idVenta .
+        " del cliente " . $cliente .
+        " está pendiente de pago por $" .
+        number_format($total, 0, ',', '.') .
+        " (fecha " . $fecha . ").";
+
+    $sql = "
+        INSERT INTO notificaciones
+        (
+            usuario_id,
+            titulo,
+            mensaje,
+            visto_por,
+            enviado_por
+        )
+        SELECT
+            id,
+            ?,
+            ?,
+            NULL,
+            NULL
+        FROM usuario
+        WHERE idRol = 1
+          AND estado = 'Activo'
+    ";
+
+    $stmt = mysqli_prepare($conexion, $sql);
+
+    if (!$stmt) {
+        error_log(
+            "SCAFI: no se pudo preparar notificación de venta pendiente: " .
+            mysqli_error($conexion)
+        );
+        return;
+    }
+
+    mysqli_stmt_bind_param(
+        $stmt,
+        "ss",
+        $titulo,
+        $mensaje
+    );
+
+    if (!mysqli_stmt_execute($stmt)) {
+        error_log(
+            "SCAFI: no se pudo crear notificación de venta pendiente: " .
+            mysqli_stmt_error($stmt)
+        );
+    }
+
+    mysqli_stmt_close($stmt);
+}
+
+
+// =====================================================
 // CORS
 // =====================================================
 
@@ -563,6 +634,20 @@ if (
             $conexion
         );
 
+        // =================================================
+        // NOTIFICACIÓN REAL DE VENTA PENDIENTE
+        // Solo se genera si la venta quedó con estado Pendiente.
+        // =================================================
+        if (strcasecmp($estado, 'Pendiente') === 0) {
+            notificarVentaPendiente(
+                $conexion,
+                (int)$idVenta,
+                $cliente,
+                $fecha,
+                (float)$totalCalculado
+            );
+        }
+
 
         // =================================================
         // RESPUESTA
@@ -722,7 +807,7 @@ if (
     $totalCalculado = $cantidad * $precio;
 
     $sqlExiste = "
-        SELECT idVenta
+        SELECT idVenta, estado
         FROM ventas
         WHERE idVenta = ?
         LIMIT 1
@@ -830,6 +915,27 @@ if (
     }
 
     mysqli_stmt_close($stmtActualizar);
+
+    // =================================================
+    // NOTIFICACIÓN AL PASAR UNA VENTA A PENDIENTE
+    // Evita repetir avisos si la venta ya estaba pendiente.
+    // =================================================
+    $estadoAnterior = trim(
+        (string)($ventaExiste['estado'] ?? '')
+    );
+
+    if (
+        strcasecmp($estado, 'Pendiente') === 0 &&
+        strcasecmp($estadoAnterior, 'Pendiente') !== 0
+    ) {
+        notificarVentaPendiente(
+            $conexion,
+            $id,
+            $cliente,
+            $fecha,
+            (float)$totalCalculado
+        );
+    }
 
     responder(
         true,
