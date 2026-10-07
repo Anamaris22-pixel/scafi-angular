@@ -17,7 +17,8 @@ import {
 } from '@angular/common/http';
 
 import {
-  RouterModule
+  RouterModule,
+  ActivatedRoute
 } from '@angular/router';
 
 
@@ -108,7 +109,8 @@ export class InsumosComponent
   // =====================================================
 
   constructor(
-    private http: HttpClient
+    private http: HttpClient,
+    private route: ActivatedRoute
   ) {}
 
 
@@ -117,6 +119,19 @@ export class InsumosComponent
   // =====================================================
 
   ngOnInit(): void {
+
+    // Permite que una notificación abra directamente
+    // el inventario filtrado por el insumo afectado.
+    this.route.queryParams.subscribe(params => {
+
+      const buscar =
+        String(params['buscar'] || '').trim();
+
+      if (buscar) {
+        this.buscar = buscar;
+      }
+
+    });
 
     this.cargar();
 
