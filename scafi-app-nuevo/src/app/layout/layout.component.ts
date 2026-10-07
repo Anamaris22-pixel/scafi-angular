@@ -70,6 +70,8 @@ implements OnInit, OnDestroy {
 
   user: any = null;
 
+  fotoError = false;
+
   constructor(
 
   private auth: AuthService,
