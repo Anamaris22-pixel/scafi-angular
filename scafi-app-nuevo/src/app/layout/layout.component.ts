@@ -183,7 +183,7 @@ implements OnInit, OnDestroy {
 
         }
 
-      }, 30000);
+      }, 5000);
 
     // Cuando el usuario vuelve a la pestaña, actualizar de inmediato.
     this.escuchandoVentana = true;
