@@ -11,6 +11,10 @@ import {
 } from '@angular/common';
 
 import {
+  FormsModule
+} from '@angular/forms';
+
+import {
   RouterModule
 } from '@angular/router';
 
@@ -35,7 +39,8 @@ Chart.register(...registerables);
   imports: [
     CommonModule,
     RouterModule,
-    HttpClientModule
+    HttpClientModule,
+    FormsModule
   ],
 
   templateUrl:
