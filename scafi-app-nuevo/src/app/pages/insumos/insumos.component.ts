@@ -31,17 +31,18 @@ import {
     RouterModule
   ],
 
-  templateUrl: './insumos.component.html'
+  templateUrl:
+    './insumos.component.html'
 })
 
 export class InsumosComponent
 implements OnInit {
 
   API =
-  'http://localhost/scafi-angular/scafi-api/insumos.php';
+    'http://localhost/scafi-angular/scafi-api/insumos.php';
 
   API_PROVEEDORES =
-  'http://localhost/scafi-angular/scafi-api/proveedores.php';
+    'http://localhost/scafi-angular/scafi-api/proveedores.php';
 
   insumos: any[] = [];
 
@@ -69,19 +70,15 @@ implements OnInit {
 
     precio: '',
 
-    stock: '',
+    stock: 0,
 
-    minimo: ''
+    stockMinimo: ''
 
   };
 
   constructor(
     private http: HttpClient
   ) {}
-
-  // =========================
-  // INIT
-  // =========================
 
   ngOnInit(): void {
 
@@ -91,61 +88,53 @@ implements OnInit {
 
   }
 
-  // =========================
-  // CARGAR INSUMOS
-  // =========================
-
   cargar(): void {
 
     this.http
-      .get<any[]>(
-        this.API
-      )
-
+      .get<any[]>(this.API)
       .subscribe({
 
         next: (res) => {
-
-          console.log(res);
-
           this.insumos = res;
-
         },
 
         error: (err) => {
 
-          console.log(err);
+          console.error(
+            'Error cargando insumos:',
+            err
+          );
+
+          alert(
+            'No fue posible cargar los insumos.'
+          );
 
         }
 
       });
 
   }
-
-  // =========================
-  // CARGAR PROVEEDORES
-  // =========================
 
   cargarProveedores(): void {
 
     this.http
-      .get<any[]>(
-        this.API_PROVEEDORES
-      )
-
+      .get<any[]>(this.API_PROVEEDORES)
       .subscribe({
 
         next: (res) => {
-
-          console.log(res);
-
           this.proveedores = res;
-
         },
 
         error: (err) => {
 
-          console.log(err);
+          console.error(
+            'Error cargando proveedores:',
+            err
+          );
+
+          alert(
+            'No fue posible cargar los proveedores.'
+          );
 
         }
 
@@ -153,36 +142,77 @@ implements OnInit {
 
   }
 
-  // =========================
-  // GUARDAR
-  // =========================
-
   guardar(): void {
 
-    this.http
-      .post<any>(
-        this.API,
-        this.nuevo
-      )
+    if (
+      !this.nuevo.nombre ||
+      !this.nuevo.idProveedor ||
+      !this.nuevo.tipo ||
+      !this.nuevo.unidad ||
+      this.nuevo.precio === '' ||
+      this.nuevo.stockMinimo === ''
+    ) {
 
+      alert(
+        'Complete todos los campos obligatorios.'
+      );
+
+      return;
+    }
+
+    const datos = {
+
+      nombre:
+        this.nuevo.nombre,
+
+      idProveedor:
+        Number(this.nuevo.idProveedor),
+
+      tipo:
+        this.nuevo.tipo,
+
+      descripcion:
+        this.nuevo.descripcion || '',
+
+      unidad:
+        this.nuevo.unidad,
+
+      precio:
+        Number(this.nuevo.precio),
+
+      // El stock inicial se controla
+      // exclusivamente desde Movimientos.
+      stock: 0,
+
+      stockMinimo:
+        Number(this.nuevo.stockMinimo)
+
+    };
+
+    this.http
+      .post<any>(this.API, datos)
       .subscribe({
 
         next: (res) => {
 
-          console.log(res);
-
           if (res.ok) {
 
             alert(
-              'Insumo guardado'
+              'Insumo registrado correctamente.'
             );
 
             this.reset();
-
             this.cargar();
 
-            this.mostrarFormulario =
-            false;
+            this.mostrarFormulario = false;
+
+          } else {
+
+            alert(
+              res.mensaje ||
+              res.error ||
+              'No fue posible registrar el insumo.'
+            );
 
           }
 
@@ -190,7 +220,15 @@ implements OnInit {
 
         error: (err) => {
 
-          console.log(err);
+          console.error(
+            'Error registrando insumo:',
+            err
+          );
+
+          alert(
+            err?.error?.mensaje ||
+            'No fue posible registrar el insumo.'
+          );
 
         }
 
@@ -198,107 +236,128 @@ implements OnInit {
 
   }
 
-  // =========================
-  // EDITAR
-  // =========================
+  editar(insumo: any): void {
 
-  editar(insumo: any) {
+    this.editando = true;
+    this.mostrarFormulario = true;
 
-  this.editando = true;
+    this.idEditar =
+      Number(insumo.idInsumo);
 
-  this.mostrarFormulario = true;
+    this.nuevo = {
 
-  this.nuevo = {
+      idInsumo:
+        Number(insumo.idInsumo),
 
-    idInsumo: insumo.idInsumo,
+      nombre:
+        insumo.nombre || '',
 
-    nombre: insumo.nombre || '',
+      idProveedor:
+        insumo.idProveedor || '',
 
-    tipo: insumo.tipo || '',
+      tipo:
+        insumo.tipo || '',
 
-    descripcion: insumo.descripcion || '',
+      descripcion:
+        insumo.descripcion || '',
 
-    unidad: insumo.unidad || '',
+      unidad:
+        insumo.unidad || '',
 
-    precio: insumo.precio || 0,
+      precio:
+        Number(insumo.precio) || 0,
 
-    stock: Number(insumo.stock) || 0,
+      stock:
+        Number(insumo.stock) || 0,
 
-    minimo:
-      Number(insumo.stockMinimo)
-      || Number(insumo.minimo)
-      || 0,
+      stockMinimo:
+        Number(insumo.stockMinimo) || 0
 
-    idProveedor:
-      insumo.idProveedor || ''
+    };
 
-  };
-
-}
-
-  // =========================
-  // ACTUALIZAR
-  // =========================
+  }
 
   actualizar(): void {
+
+    if (!this.idEditar) {
+
+      alert(
+        'No se encontró el ID del insumo.'
+      );
+
+      return;
+    }
+
+    if (
+      !this.nuevo.nombre ||
+      !this.nuevo.idProveedor ||
+      !this.nuevo.tipo ||
+      !this.nuevo.unidad ||
+      this.nuevo.precio === '' ||
+      this.nuevo.stockMinimo === ''
+    ) {
+
+      alert(
+        'Complete todos los campos obligatorios.'
+      );
+
+      return;
+    }
 
     const datos = {
 
       idInsumo:
-      this.idEditar,
+        this.idEditar,
 
       nombre:
-      this.nuevo.nombre,
+        this.nuevo.nombre,
 
       idProveedor:
-      this.nuevo.idProveedor,
+        Number(this.nuevo.idProveedor),
 
       tipo:
-      this.nuevo.tipo,
+        this.nuevo.tipo,
 
       descripcion:
-      this.nuevo.descripcion,
+        this.nuevo.descripcion || '',
 
       unidad:
-      this.nuevo.unidad,
+        this.nuevo.unidad,
 
       precio:
-      this.nuevo.precio,
+        Number(this.nuevo.precio),
 
-      stock:
-      this.nuevo.stock,
-
-      minimo:
-      this.nuevo.minimo
+      stockMinimo:
+        Number(this.nuevo.stockMinimo)
 
     };
 
     this.http
-      .put<any>(
-        this.API,
-        datos
-      )
-
+      .put<any>(this.API, datos)
       .subscribe({
 
         next: (res) => {
 
-          console.log(res);
-
           if (res.ok) {
 
             alert(
-              'Insumo actualizado'
+              'Insumo actualizado correctamente.'
             );
 
             this.editando = false;
 
             this.reset();
-
             this.cargar();
 
-            this.mostrarFormulario =
-            false;
+            this.mostrarFormulario = false;
+
+          } else {
+
+            alert(
+              res.mensaje ||
+              res.error ||
+              'No fue posible actualizar el insumo.'
+            );
 
           }
 
@@ -306,7 +365,15 @@ implements OnInit {
 
         error: (err) => {
 
-          console.log(err);
+          console.error(
+            'Error actualizando insumo:',
+            err
+          );
+
+          alert(
+            err?.error?.mensaje ||
+            'No fue posible actualizar el insumo.'
+          );
 
         }
 
@@ -314,38 +381,54 @@ implements OnInit {
 
   }
 
-  // =========================
-  // ELIMINAR
-  // =========================
-
   eliminar(id: number): void {
 
     if (
       !confirm(
-        '¿Eliminar insumo?'
+        '¿Está seguro de eliminar este insumo?'
       )
     ) {
-
       return;
-
     }
 
     this.http
       .delete<any>(
         `${this.API}?id=${id}`
       )
-
       .subscribe({
 
-        next: () => {
+        next: (res) => {
 
-          this.cargar();
+          if (res.ok) {
+
+            alert(
+              'Insumo eliminado correctamente.'
+            );
+
+            this.cargar();
+
+          } else {
+
+            alert(
+              res.mensaje ||
+              'No fue posible eliminar el insumo.'
+            );
+
+          }
 
         },
 
         error: (err) => {
 
-          console.log(err);
+          console.error(
+            'Error eliminando insumo:',
+            err
+          );
+
+          alert(
+            err?.error?.mensaje ||
+            'No fue posible eliminar el insumo.'
+          );
 
         }
 
@@ -353,35 +436,33 @@ implements OnInit {
 
   }
 
-  // =========================
-  // FILTRAR
-  // =========================
+  insumosFiltrados(): any[] {
 
-  insumosFiltrados() {
-
-    return this.insumos.filter(i =>
-
-      i.nombre
+    const texto =
+      this.buscar
         .toLowerCase()
-        .includes(
-          this.buscar.toLowerCase()
-        )
+        .trim();
 
-      ||
+    if (!texto) {
+      return this.insumos;
+    }
 
-      i.tipo
-        .toLowerCase()
-        .includes(
-          this.buscar.toLowerCase()
-        )
-
+    return this.insumos.filter(
+      i =>
+        String(i.nombre || '')
+          .toLowerCase()
+          .includes(texto)
+        ||
+        String(i.tipo || '')
+          .toLowerCase()
+          .includes(texto)
+        ||
+        String(i.descripcion || '')
+          .toLowerCase()
+          .includes(texto)
     );
 
   }
-
-  // =========================
-  // RESET
-  // =========================
 
   reset(): void {
 
@@ -399,17 +480,15 @@ implements OnInit {
 
       precio: '',
 
-      stock: '',
+      stock: 0,
 
-      minimo: ''
+      stockMinimo: ''
 
     };
 
-  }
+    this.idEditar = 0;
 
-  // =========================
-  // CANCELAR
-  // =========================
+  }
 
   cancelarEditar(): void {
 
