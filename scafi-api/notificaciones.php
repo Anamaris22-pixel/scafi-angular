@@ -73,6 +73,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         LEFT JOIN usuario u
             ON u.id = n.enviado_por
         WHERE n.usuario_id = ?
+          AND (
+              (
+                  EXISTS (
+                      SELECT 1
+                      FROM usuario ur
+                      WHERE ur.id = n.usuario_id
+                        AND ur.idRol = 3
+                  )
+                  AND n.titulo LIKE 'Nuevo mensaje%'
+              )
+              OR
+              NOT EXISTS (
+                  SELECT 1
+                  FROM usuario ur2
+                  WHERE ur2.id = n.usuario_id
+                    AND ur2.idRol = 3
+              )
+          )
         ORDER BY n.fecha DESC
     ";
 
@@ -129,6 +147,24 @@ $notificaciones = [];
         FROM notificaciones
         WHERE usuario_id = ?
         AND visto_por IS NULL
+        AND (
+            (
+                EXISTS (
+                    SELECT 1
+                    FROM usuario ur
+                    WHERE ur.id = notificaciones.usuario_id
+                      AND ur.idRol = 3
+                )
+                AND titulo LIKE 'Nuevo mensaje%'
+            )
+            OR
+            NOT EXISTS (
+                SELECT 1
+                FROM usuario ur2
+                WHERE ur2.id = notificaciones.usuario_id
+                  AND ur2.idRol = 3
+            )
+        )
     ";
 
     $stmtTotal =
