@@ -70,10 +70,6 @@ implements OnInit, OnDestroy {
 
   user: any = null;
 
-  fotoError = false;
-
-  private API_BASE = 'http://localhost/scafi-angular/scafi-api/';
-
   constructor(
 
   private auth: AuthService,
@@ -291,26 +287,6 @@ implements OnInit, OnDestroy {
     });
 
 }
-  // ======================
-  // FOTO DE PERFIL
-  // ======================
-
-  getFotoUrl(foto: string): string {
-
-    if (!foto) {
-      return '';
-    }
-
-    // Si ya viene como URL completa, se usa directamente.
-    if (/^https?:\\/\\//i.test(foto)) {
-      return foto;
-    }
-
-    // Las fotos guardadas por SCAFI suelen venir como
-    // uploads/usuarios/archivo.jpg.
-    return this.API_BASE + String(foto).replace(/^\\/+/, '');
-  }
-
   // ======================
   // ROL
   // ======================
@@ -557,6 +533,24 @@ implements OnInit, OnDestroy {
         }
 
       });
+
+  }
+
+  // ======================
+  // FOTO DE PERFIL
+  // ======================
+
+  getFotoUrl(foto: string): string {
+
+    if (!foto) {
+      return '';
+    }
+
+    if (foto.startsWith('http://') || foto.startsWith('https://')) {
+      return foto;
+    }
+
+    return 'http://localhost/scafi-angular/scafi-api/' + foto;
 
   }
 
