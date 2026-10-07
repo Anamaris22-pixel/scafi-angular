@@ -25,9 +25,9 @@
           </svg>
 
           <!-- Contador -->
-          <span *ngIf="notificaciones.length > 0"
-            class="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
-            {{ notificaciones.length }}
+          <span *ngIf="totalNoLeidas > 0"
+            class="absolute -top-2 -right-2 bg-red-500 text-white text-xs min-w-5 h-5 px-1 rounded-full flex items-center justify-center">
+            {{ totalNoLeidas }}
           </span>
         </button>
 
@@ -66,9 +66,10 @@
 
     <button
       (click)="marcarLeida(n.id)"
-      class="text-green-600 text-lg hover:text-green-800">
+      class="text-green-600 text-lg hover:text-green-800"
+      [title]="n.visto_por != null ? 'Ya leída' : 'Marcar como leída'">
 
-      ✔
+      {{ n.visto_por != null ? '✓' : '✓' }}
 
     </button>
 
