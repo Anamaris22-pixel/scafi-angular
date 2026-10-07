@@ -176,7 +176,7 @@ function generarNotificacionStock(
         );
 
 
-    if (!$resultadoUsuarios) {
+    if (!($resultadoUsuarios instanceof mysqli_result)) {
         return;
     }
 
@@ -222,7 +222,7 @@ function generarNotificacionStock(
             );
 
 
-        if (!$stmt) {
+        if (!($stmt instanceof mysqli_stmt)) {
             continue;
         }
 
@@ -277,7 +277,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $conexion->query($sql);
 
 
-    if (!$resultado) {
+    if (!($resultado instanceof mysqli_result)) {
 
         responder([
             "ok" => false,
@@ -428,7 +428,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmtInsumo->get_result();
 
 
-    $insumo =
+    
+    /** @var mysqli_result $resultadoInsumo */
+$insumo =
         $resultadoInsumo->fetch_assoc();
 
 
@@ -531,7 +533,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             );
 
 
-        if (!$stmtMovimiento) {
+        if (!($stmtMovimiento instanceof mysqli_stmt)) {
 
             throw new Exception(
                 $conexion->error
@@ -584,7 +586,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             );
 
 
-        if (!$stmtStock) {
+        if (!($stmtStock instanceof mysqli_stmt)) {
 
             throw new Exception(
                 $conexion->error
@@ -780,7 +782,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
         $stmtAnterior->get_result();
 
 
-    $movAnterior =
+    
+    /** @var mysqli_result $resultadoAnterior */
+$movAnterior =
         $resultadoAnterior->fetch_assoc();
 
 
@@ -906,7 +910,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
             $stmtNuevoInsumo->get_result();
 
 
-        $nuevoInsumo =
+        
+    /** @var mysqli_result $resultadoNuevoInsumo */
+$nuevoInsumo =
             $resultadoNuevoInsumo->fetch_assoc();
 
 
@@ -1154,7 +1160,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
         $stmtMovimiento->get_result();
 
 
-    $movimiento =
+    
+    /** @var mysqli_result $resultado */
+$movimiento =
         $resultado->fetch_assoc();
 
 
@@ -1217,7 +1225,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
         $stmtInsumo->get_result();
 
 
-    $insumo =
+    
+    /** @var mysqli_result $resultadoInsumo */
+$insumo =
         $resultadoInsumo->fetch_assoc();
 
 
