@@ -37,6 +37,60 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 require_once 'conexion.php';
 
+// =====================================================
+// VALIDAR PERMISOS DE EDICIÓN
+// =====================================================
+
+function validarUsuarioEdicion($conexion, $usuarioId) {
+
+    $usuarioId = intval($usuarioId);
+
+    if ($usuarioId <= 0) {
+        return [
+            "ok" => false,
+            "mensaje" => "Usuario no identificado."
+        ];
+    }
+
+    $stmt = $conexion->prepare(
+        "SELECT idRol FROM usuario WHERE id = ? LIMIT 1"
+    );
+
+    if (!$stmt) {
+        return [
+            "ok" => false,
+            "mensaje" => "No fue posible validar los permisos."
+        ];
+    }
+
+    $stmt->bind_param("i", $usuarioId);
+    $stmt->execute();
+
+    $resultado = $stmt->get_result();
+    $usuario = $resultado->fetch_assoc();
+
+    $stmt->close();
+
+    if (!$usuario) {
+        return [
+            "ok" => false,
+            "mensaje" => "Usuario no encontrado."
+        ];
+    }
+
+    if ((int)$usuario["idRol"] === 3) {
+        return [
+            "ok" => false,
+            "mensaje" => "Los recolectores tienen acceso de solo lectura y no pueden registrar, editar ni eliminar pesajes. Solicita el cambio al administrador."
+        ];
+    }
+
+    return [
+        "ok" => true
+    ];
+}
+
+
 
 // =====================================================
 // GET
@@ -281,6 +335,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $kg =
         $_POST['kg'] ?? '';
+
+    $usuarioId =
+        $_POST['usuario_id'] ?? 0;
+
+    $permiso = validarUsuarioEdicion($conexion, $usuarioId);
+
+    if (!$permiso["ok"]) {
+        http_response_code(403);
+        echo json_encode($permiso);
+        exit();
+    }
 
 
     // ---------------------------------------------
@@ -657,6 +722,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     $kg =
         $input['kg'] ?? '';
 
+    $usuarioId =
+        $input['usuario_id'] ?? 0;
+
+    $permiso = validarUsuarioEdicion($conexion, $usuarioId);
+
+    if (!$permiso["ok"]) {
+        http_response_code(403);
+        echo json_encode($permiso);
+        exit();
+    }
+
 
     // ---------------------------------------------
     // VALIDAR
@@ -915,6 +991,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
 
     $id =
         $_GET['id'] ?? 0;
+
+    $usuarioId =
+        $_GET['usuario_id'] ?? 0;
+
+    $permiso = validarUsuarioEdicion($conexion, $usuarioId);
+
+    if (!$permiso["ok"]) {
+        http_response_code(403);
+        echo json_encode($permiso);
+        exit();
+    }
 
 
     // ---------------------------------------------
