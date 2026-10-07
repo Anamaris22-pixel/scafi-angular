@@ -27,7 +27,7 @@
 
   <div
     *ngIf="mostrar"
-    class="absolute right-0 mt-3 w-[420px] max-w-[94vw] bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden z-[9999]"
+    class="absolute right-0 top-full mt-3 w-[420px] max-w-[94vw] max-h-[560px] bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden z-[9999]"
   >
 
     <!-- HEADER -->
@@ -87,11 +87,11 @@
     <!-- LISTA PEQUEÑA -->
     <div
       *ngIf="!cargando && notificaciones.length > 0"
-      class="max-h-[430px] overflow-y-auto"
+      class="max-h-[360px] overflow-y-auto"
     >
 
       <div
-        *ngFor="let n of notificaciones.slice(0, 6)"
+        *ngFor="let n of notificaciones.slice(0, 5)"
         (click)="seleccionarNotificacion(n)"
         class="relative p-4 border-b border-gray-200 cursor-pointer hover:bg-gray-100 transition"
         [ngClass]="{
