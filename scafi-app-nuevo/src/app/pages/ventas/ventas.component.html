@@ -314,19 +314,37 @@
       </div>
 
 
-      <!-- GUARDAR -->
+      <!-- GUARDAR / ACTUALIZAR -->
 
       <button
         (click)="guardar()"
-        class="w-full bg-green-600
-               hover:bg-green-700
+        [ngClass]="nueva.idVenta
+          ? 'bg-blue-600 hover:bg-blue-700'
+          : 'bg-green-600 hover:bg-green-700'"
+        class="w-full
                text-white
                font-bold
                py-4 rounded-2xl
                shadow-lg transition"
       >
 
-        💾 Guardar Venta
+        {{ nueva.idVenta ? '✏️ Actualizar Venta' : '💾 Guardar Venta' }}
+
+      </button>
+
+      <button
+        *ngIf="nueva.idVenta"
+        type="button"
+        (click)="cancelarEdicion()"
+        class="w-full mt-3
+               bg-gray-500 hover:bg-gray-600
+               text-white
+               font-bold
+               py-3 rounded-2xl
+               shadow-lg transition"
+      >
+
+        ✖ Cancelar edición
 
       </button>
 
