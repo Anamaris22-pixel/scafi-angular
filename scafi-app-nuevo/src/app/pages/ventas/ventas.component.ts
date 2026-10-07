@@ -223,54 +223,72 @@ export class VentasComponent {
   // GUARDAR
   // ==========================================
 
-  this.service
-    .addVenta(this.nueva)
-    .subscribe({
+  const esEdicion = this.nueva.idVenta !== null && this.nueva.idVenta !== undefined;
 
-      next: (respuesta: any) => {
+  const operacion = esEdicion
+    ? this.service.updateVenta(this.nueva.idVenta, this.nueva)
+    : this.service.addVenta(this.nueva);
 
-        console.log('Venta registrada:', respuesta);
+  operacion.subscribe({
 
-        alert('Venta registrada correctamente.');
+    next: (respuesta: any) => {
 
-        this.nueva = {
+      console.log(
+        esEdicion
+          ? 'Venta actualizada:'
+          : 'Venta registrada:',
+        respuesta
+      );
 
-          idVenta: null,
+      alert(
+        esEdicion
+          ? 'Venta actualizada correctamente.'
+          : 'Venta registrada correctamente.'
+      );
 
-          fecha: '',
+      this.nueva = {
 
-          cliente: '',
+        idVenta: null,
 
-          producto: '',
+        fecha: '',
 
-          estado: 'Pagado',
+        cliente: '',
 
-          cantidad: 0,
+        producto: '',
 
-          precio: 0,
+        estado: 'Pagado',
 
-          total: 0
+        cantidad: 0,
 
-        };
+        precio: 0,
 
-        this.cargar();
+        total: 0
 
-      },
+      };
 
-      error: (error) => {
+      this.cargar();
 
-        console.error('Error al registrar venta:', error);
+    },
 
-        const mensaje =
-          error?.error?.error ||
-          error?.error?.mensaje ||
-          'No fue posible registrar la venta.';
+    error: (error) => {
 
-        alert(mensaje);
+      console.error(
+        esEdicion
+          ? 'Error al actualizar venta:'
+          : 'Error al registrar venta:',
+        error
+      );
 
-      }
+      const mensaje =
+        error?.error?.error ||
+        error?.error?.mensaje ||
+        'No fue posible guardar la venta.';
 
-    });
+      alert(mensaje);
+
+    }
+
+  });
 
 }
   // =====================================================
