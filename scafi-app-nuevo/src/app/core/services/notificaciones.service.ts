@@ -40,21 +40,14 @@ export class NotificacionesService {
   // MARCAR LEIDA
   // =========================
 
-  marcarLeida(id: number) {
+  marcarLeida(id: number, usuario_id: number) {
 
-    const formData = new FormData();
-
-    formData.append(
-      'id',
-      id.toString()
-    );
-
-    return this.http.post(
-
-      'http://localhost/scafi-angular/scafi-api/marcar_notificacion.php',
-
-      formData
-
+    return this.http.post<any>(
+      this.api,
+      {
+        id,
+        usuario_id
+      }
     );
 
   }
