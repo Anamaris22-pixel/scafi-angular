@@ -36,7 +36,7 @@
           class="absolute right-0 mt-4 w-96 bg-white text-black rounded-2xl shadow-2xl overflow-hidden z-50">
           <div class="bg-slate-900 text-white p-4 font-bold">Notificaciones</div>
           <div *ngFor="let n of notificaciones"
-     (click)="marcarLeida(n.id)"
+     (click)="abrirNotificacion(n)"
      class="p-4 border-b hover:bg-gray-100 transition cursor-pointer"
      [ngClass]="{
        'bg-blue-50': n.visto_por == null,
@@ -58,6 +58,15 @@
       <div class="text-xs text-gray-400 mt-2">
         {{ n.fecha }}
       </div>
+
+      <button
+        type="button"
+        (click)="$event.stopPropagation(); abrirNotificacion(n)"
+        class="mt-2 text-xs text-blue-600 font-bold hover:underline">
+
+        → Ver dónde ocurrió
+
+      </button>
 
       <div
         *ngIf="n.nombre_remitente"
