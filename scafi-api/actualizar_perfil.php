@@ -19,6 +19,26 @@ try {
         throw new Exception("Usuario no válido");
     }
 
+    // Los recolectores (rol 3) no pueden modificar su perfil.
+    $rolStmt = $conexion->prepare("SELECT idRol FROM usuario WHERE id = ? LIMIT 1");
+
+    if (!$rolStmt) {
+        throw new Exception("No fue posible validar los permisos del usuario");
+    }
+
+    $rolStmt->bind_param("i", $id);
+    $rolStmt->execute();
+    $rolResult = $rolStmt->get_result();
+    $rolUsuario = $rolResult->fetch_assoc();
+
+    if (!$rolUsuario) {
+        throw new Exception("Usuario no encontrado");
+    }
+
+    if ((int)$rolUsuario['idRol'] === 3) {
+        throw new Exception("Los recolectores no pueden modificar sus datos desde el perfil. Solicita el cambio al administrador.");
+    }
+
     $nombre = trim($_POST['nombre'] ?? '');
     $correo = trim($_POST['correo'] ?? '');
     $telefono = trim($_POST['telefono'] ?? '');
