@@ -16,10 +16,48 @@ include 'conexion.php';
 // =========================
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
+  // -------------------------------------------------
+  // SINCRONIZAR USUARIOS CON ROL RECOLECTOR
+  // -------------------------------------------------
+  // Si un usuario fue creado con rol Recolector pero
+  // todavía no tiene registro en la tabla recolectores,
+  // se crea automáticamente su ficha de recolector.
+  $sqlSync = "
+    INSERT INTO recolectores
+      (nombre, cedula, telefono, zonaTrabajo, foto, idCultivo, idUsuario, estado)
+    SELECT
+      COALESCE(u.nombre, ''),
+      COALESCE(u.documento, ''),
+      u.telefono,
+      u.direccion,
+      u.foto,
+      NULL,
+      u.id,
+      COALESCE(u.estado, 'Activo')
+    FROM usuario u
+    WHERE u.idRol = 3
+      AND u.estado = 'Activo'
+      AND NOT EXISTS (
+        SELECT 1
+        FROM recolectores r
+        WHERE r.idUsuario = u.id
+      )
+  ";
+
+  if (!$conexion->query($sqlSync)) {
+    http_response_code(500);
+    echo json_encode([
+      "ok" => false,
+      "mensaje" => "No fue posible sincronizar los recolectores: " . $conexion->error
+    ]);
+    exit();
+  }
+
   $sql = "
     SELECT *
     FROM recolectores
-    ORDER BY idRecolector DESC
+    WHERE estado = 'Activo'
+    ORDER BY nombre ASC
   ";
 
   $res = $conexion->query($sql);
