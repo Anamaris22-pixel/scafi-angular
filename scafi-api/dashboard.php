@@ -117,8 +117,12 @@ $sqlGrafica = "
 
         DATE_FORMAT(
             fecha,
-            '%b %Y'
+            '%b'
         ) AS mes,
+
+        YEAR(fecha) AS anio,
+
+        MONTH(fecha) AS mes_numero,
 
         SUM(total) AS ventas
 
