@@ -26,6 +26,8 @@ export class PerfilComponent implements OnInit {
   mensaje = '';
   error = '';
 
+  constructor(private http: HttpClient) {}
+
   formulario: any = {
     nombre: '',
     correo: '',
@@ -130,7 +132,7 @@ export class PerfilComponent implements OnInit {
       'http://localhost/scafi-angular/scafi-api/actualizar_perfil.php',
       data
     ).subscribe({
-      next: (resp) => {
+      next: (resp: any) => {
 
         this.guardando = false;
 
@@ -154,7 +156,7 @@ export class PerfilComponent implements OnInit {
 
         this.mensaje = 'Perfil actualizado correctamente.';
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error(err);
         this.guardando = false;
         this.error = 'No fue posible conectar con el servidor.';
