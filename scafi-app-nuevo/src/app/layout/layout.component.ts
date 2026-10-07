@@ -185,7 +185,7 @@ implements OnInit, OnDestroy {
 
     // Cuando el usuario vuelve a la pestaña, actualizar de inmediato.
     this.escuchandoVentana = true;
-    window.addEventListener('focus', this.actualizarAlVolver.bind(this));
+    window.addEventListener('focus', this.actualizarAlVolver);
 
   }
 
