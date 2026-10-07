@@ -581,6 +581,20 @@ export class VentasComponent {
   }
 
   // =====================================================
+  // FECHA LOCAL DE HOY
+  // =====================================================
+
+  private fechaHoyLocal(): string {
+
+    const hoy = new Date();
+
+    return hoy.getFullYear() + '-' +
+      String(hoy.getMonth() + 1).padStart(2, '0') + '-' +
+      String(hoy.getDate()).padStart(2, '0');
+
+  }
+
+  // =====================================================
   // VENTAS DEL MES ACTUAL
   // =====================================================
 
@@ -618,7 +632,9 @@ export class VentasComponent {
 
           mes === mesActual &&
 
-          anio === anioActual
+          anio === anioActual &&
+
+          fecha <= this.fechaHoyLocal()
 
         );
 
@@ -666,13 +682,27 @@ export class VentasComponent {
         const mesVenta =
           Number(partes[1]);
 
-        return (
-
+        const mismoMes =
           mesVenta === Number(mes) &&
+          anioVenta === Number(anio);
 
-          anioVenta === Number(anio)
+        if (!mismoMes) {
+          return false;
+        }
 
-        );
+        // Para el mes y año actuales, nunca contar ventas con fecha futura.
+        const hoy = new Date();
+        const mesActual = hoy.getMonth() + 1;
+        const anioActual = hoy.getFullYear();
+
+        if (
+          Number(mes) === mesActual &&
+          Number(anio) === anioActual
+        ) {
+          return fecha <= this.fechaHoyLocal();
+        }
+
+        return true;
 
       })
 
