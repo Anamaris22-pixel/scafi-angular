@@ -1,0 +1,185 @@
+<div class="min-h-screen bg-slate-100 text-slate-900">
+
+  <!-- CABECERA -->
+  <section class="bg-gradient-to-r from-slate-950 via-slate-900 to-green-900 text-white">
+    <div class="max-w-6xl mx-auto px-6 py-5">
+      <button
+        routerLink="/dashboard"
+        class="inline-flex items-center gap-2 text-white/80 hover:text-white
+               bg-white/10 hover:bg-white/15 px-4 py-2 rounded-xl transition">
+        ← Dashboard
+      </button>
+    </div>
+  </section>
+
+  <!-- PERFIL -->
+  <main class="max-w-6xl mx-auto px-6 py-8">
+
+    <div class="relative overflow-hidden rounded-[2rem]
+                bg-gradient-to-br from-slate-950 via-slate-900 to-green-900
+                text-white shadow-2xl">
+
+      <div class="absolute -right-20 -top-20 w-72 h-72
+                  rounded-full bg-green-400/10"></div>
+      <div class="absolute -left-24 -bottom-28 w-80 h-80
+                  rounded-full bg-blue-400/10"></div>
+
+      <div class="relative z-10 p-8 md:p-10
+                  flex flex-col md:flex-row
+                  items-center md:items-end gap-7">
+
+        <!-- FOTO -->
+        <div class="w-32 h-32 md:w-40 md:h-40 rounded-full
+                    overflow-hidden bg-green-600
+                    ring-4 ring-white/30 shadow-2xl
+                    flex items-center justify-center shrink-0">
+
+          <img
+            *ngIf="user?.foto && !fotoError"
+            [src]="getFotoUrl(user.foto)"
+            [alt]="user?.nombre || 'Usuario'"
+            class="w-full h-full object-cover"
+            (error)="fotoError = true"
+          >
+
+          <span
+            *ngIf="!user?.foto || fotoError"
+            class="text-6xl font-black">
+            {{ user?.nombre?.charAt(0)?.toUpperCase() || '?' }}
+          </span>
+
+        </div>
+
+        <!-- DATOS PRINCIPALES -->
+        <div class="text-center md:text-left flex-1">
+
+          <p class="text-green-300 font-bold uppercase tracking-[0.18em] text-sm mb-2">
+            Perfil de usuario
+          </p>
+
+          <h1 class="text-4xl md:text-5xl font-black">
+            {{ user?.nombre || 'Usuario' }}
+          </h1>
+
+          <p class="text-white/70 mt-2 text-lg">
+            {{ getRolNombre() }}
+          </p>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- INFORMACIÓN -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-7">
+
+      <!-- DATOS DE CONTACTO -->
+      <section class="lg:col-span-2 bg-white rounded-[2rem]
+                      shadow-xl border border-slate-200 overflow-hidden">
+
+        <div class="px-7 py-5 border-b border-slate-100">
+          <h2 class="text-2xl font-black">Detalles de usuario</h2>
+          <p class="text-sm text-slate-500 mt-1">
+            Información registrada en SCAFI
+          </p>
+        </div>
+
+        <div class="p-7 grid grid-cols-1 md:grid-cols-2 gap-5">
+
+          <div class="rounded-2xl bg-slate-50 p-5">
+            <p class="text-xs font-black uppercase tracking-wide text-slate-400">
+              Nombre completo
+            </p>
+            <p class="mt-2 font-bold text-lg">
+              {{ user?.nombre || 'No registrado' }}
+            </p>
+          </div>
+
+          <div class="rounded-2xl bg-slate-50 p-5">
+            <p class="text-xs font-black uppercase tracking-wide text-slate-400">
+              Correo electrónico
+            </p>
+            <p class="mt-2 font-bold break-all">
+              {{ user?.correo || 'No registrado' }}
+            </p>
+          </div>
+
+          <div class="rounded-2xl bg-slate-50 p-5">
+            <p class="text-xs font-black uppercase tracking-wide text-slate-400">
+              Teléfono
+            </p>
+            <p class="mt-2 font-bold">
+              {{ user?.telefono || 'No registrado' }}
+            </p>
+          </div>
+
+          <div class="rounded-2xl bg-slate-50 p-5">
+            <p class="text-xs font-black uppercase tracking-wide text-slate-400">
+              Rol
+            </p>
+            <p class="mt-2 font-bold">
+              {{ getRolNombre() }}
+            </p>
+          </div>
+
+          <div class="rounded-2xl bg-slate-50 p-5">
+            <p class="text-xs font-black uppercase tracking-wide text-slate-400">
+              Documento
+            </p>
+            <p class="mt-2 font-bold">
+              {{ user?.documento || 'No registrado' }}
+            </p>
+          </div>
+
+          <div class="rounded-2xl bg-slate-50 p-5">
+            <p class="text-xs font-black uppercase tracking-wide text-slate-400">
+              Dirección
+            </p>
+            <p class="mt-2 font-bold">
+              {{ user?.direccion || 'No registrada' }}
+            </p>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ESTADO -->
+      <aside class="bg-white rounded-[2rem]
+                    shadow-xl border border-slate-200 p-7 h-fit">
+
+        <div class="w-14 h-14 rounded-2xl bg-green-100
+                    flex items-center justify-center text-2xl mb-5">
+          👤
+        </div>
+
+        <h2 class="text-2xl font-black">
+          Mi cuenta
+        </h2>
+
+        <p class="text-slate-500 mt-2">
+          Datos del usuario actualmente autenticado.
+        </p>
+
+        <div class="mt-6 p-4 rounded-2xl bg-green-50
+                    border border-green-100">
+          <p class="text-xs uppercase font-black text-green-700">
+            Estado
+          </p>
+          <p class="mt-1 font-bold text-green-800">
+            {{ user?.estado || 'Activo' }}
+          </p>
+        </div>
+
+        <button
+          routerLink="/dashboard"
+          class="w-full mt-5 bg-slate-950 hover:bg-slate-800
+                 text-white font-bold py-3 rounded-xl transition">
+          Volver al Dashboard
+        </button>
+
+      </aside>
+
+    </div>
+
+  </main>
+</div>
