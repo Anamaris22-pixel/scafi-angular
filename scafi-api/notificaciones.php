@@ -63,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $stmt =
         $conexion->prepare($sql);
 
-    if (!$stmt) {
+    if (!($stmt instanceof mysqli_stmt)) {
 
         responder([
             "ok" => false,
@@ -93,7 +93,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $resultado =
         $stmt->get_result();
 
-    $notificaciones = [];
+    
+    /** @var mysqli_result $resultado */
+$notificaciones = [];
 
     while (
         $fila =
@@ -130,7 +132,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $resultadoTotal =
             $stmtTotal->get_result();
 
-        $filaTotal =
+        
+    /** @var mysqli_result $resultadoTotal */
+$filaTotal =
             $resultadoTotal->fetch_assoc();
 
         $total =
@@ -199,7 +203,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $sqlVerificar
         );
 
-    if (!$stmtVerificar) {
+    if (!($stmtVerificar instanceof mysqli_stmt)) {
 
         responder([
             "ok" => false,
@@ -221,7 +225,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $resultado =
         $stmtVerificar->get_result();
 
-    $notificacion =
+    
+    /** @var mysqli_result $resultado */
+$notificacion =
         $resultado->fetch_assoc();
 
     $stmtVerificar->close();
@@ -265,7 +271,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $sqlUpdate
         );
 
-    if (!$stmtUpdate) {
+    if (!($stmtUpdate instanceof mysqli_stmt)) {
 
         responder([
             "ok" => false,
