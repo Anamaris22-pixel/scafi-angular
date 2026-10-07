@@ -54,6 +54,9 @@ $sql = "
         u.contrasena,
         u.idRol,
         u.foto,
+        u.telefono,
+        u.documento,
+        u.direccion,
         r.nombreRol
 
     FROM usuario u
@@ -110,6 +113,15 @@ if (
 
                 "foto" =>
                 $usuario['foto'] ?? '',
+
+                "telefono" =>
+                $usuario['telefono'] ?? '',
+
+                "documento" =>
+                $usuario['documento'] ?? '',
+
+                "direccion" =>
+                $usuario['direccion'] ?? '',
 
                 "rol" =>
                 $usuario['nombreRol']
