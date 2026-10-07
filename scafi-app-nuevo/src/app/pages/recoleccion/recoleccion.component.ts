@@ -348,6 +348,7 @@ export class RecoleccionComponent implements OnInit {
     // ----------------------------------------------
 
     const data =
+      localStorage.getItem('usuario') ||
       localStorage.getItem('user');
 
 
@@ -505,6 +506,20 @@ export class RecoleccionComponent implements OnInit {
 
 
   // ====================================================
+  // PERMISOS
+  // ====================================================
+
+  esRecolector(): boolean {
+    return Number(this.user()?.idRol) === 3;
+  }
+
+  mostrarAvisoSoloLectura(): void {
+    alert(
+      'Los recolectores tienen acceso de solo lectura. No pueden registrar, editar ni eliminar pesajes.'
+    );
+  }
+
+  // ====================================================
   // GUARDAR PESAJE
   // ====================================================
 
@@ -585,6 +600,11 @@ export class RecoleccionComponent implements OnInit {
     formData.append(
       'kg',
       payload.kg
+    );
+
+    formData.append(
+      'usuario_id',
+      String(this.user()?.['id'] ?? '')
     );
 
 
@@ -730,6 +750,9 @@ export class RecoleccionComponent implements OnInit {
       id:
         this.idEditar(),
 
+      usuario_id:
+        this.user()?.['id'] ?? '',
+
       ...this.formulario()
 
     };
@@ -833,7 +856,7 @@ export class RecoleccionComponent implements OnInit {
         mensaje?: string;
       }>(
 
-        `${this.api}?id=${id}`
+        `${this.api}?id=${id}&usuario_id=${this.user()?.['id'] ?? ''}`
 
       )
 
