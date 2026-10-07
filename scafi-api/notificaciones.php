@@ -47,8 +47,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         SELECT
             n.id,
             n.usuario_id,
-            n.titulo,
-            n.mensaje,
+            CASE
+                WHEN n.titulo = 'Nuevo mensaje'
+                     AND n.enviado_por IS NOT NULL
+                THEN CONCAT(
+                    'Nuevo mensaje de ',
+                    COALESCE(u.nombre, 'Usuario')
+                )
+                ELSE n.titulo
+            END AS titulo,
+            CASE
+                WHEN n.titulo = 'Nuevo mensaje'
+                     AND n.enviado_por IS NOT NULL
+                THEN CONCAT(
+                    COALESCE(u.nombre, 'Usuario'),
+                    ' te ha enviado un mensaje nuevo.'
+                )
+                ELSE n.mensaje
+            END AS mensaje,
             n.fecha,
             n.visto_por,
             n.enviado_por,
