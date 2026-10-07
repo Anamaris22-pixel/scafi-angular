@@ -1,420 +1,352 @@
 <!-- CONTENEDOR -->
-<!-- VOLVER -->
+<div class="mb-5">
+  <button
+    routerLink="/dashboard"
+    type="button"
+    class="bg-gradient-to-r from-black to-[#081028] text-white px-6 py-3 rounded-2xl shadow-2xl border border-slate-900 font-bold flex items-center gap-2 transition-all duration-300 hover:scale-105"
+  >
+    <span>←</span>
+    <span>Dashboard</span>
+  </button>
+</div>
 
-  <div class="mb-5">
-
-    <button
-
-      routerLink="/dashboard"
-
-      class="bg-gradient-to-r from-black to-[#081028] text-white px-6 py-3 rounded-2xl shadow-2xl border border-slate-900 font-bold flex items-center gap-2 transition-all duration-300 hover:scale-105">
-
-      <span>
-        ←
-      </span>
-
-      <span>
-        Dashboard
-      </span>
-
-    </button>
-
-  </div>
 <div class="p-4">
 
   <!-- TOP BAR -->
-
-  <div
-    class="bg-gray-200/95 rounded-2xl shadow-lg p-4 mb-5"
-  >
-
-    <div
-      class="flex flex-col md:flex-row gap-4 justify-between items-center"
-    >
+  <div class="bg-gray-200/95 rounded-2xl shadow-lg p-4 mb-5">
+    <div class="flex flex-col md:flex-row gap-4 justify-between items-center">
 
       <!-- BUSCADOR -->
-
       <div class="flex">
-
         <input
-
+          type="text"
           [(ngModel)]="buscar"
-
           placeholder="Buscar cliente..."
-
           class="w-72 p-3 rounded-l-xl border outline-none"
-
         />
 
         <button
+          type="button"
           class="bg-white px-4 rounded-r-xl border"
         >
-
           🔍
-
         </button>
-
       </div>
 
       <!-- NUEVO -->
-
       <button
-
-        (click)="mostrarFormulario = true"
-
+        type="button"
+        (click)="nuevoCliente()"
         class="bg-white hover:bg-gray-100 px-6 py-3 rounded-xl shadow font-semibold"
-
       >
-
         ➕ Nuevo
-
       </button>
 
     </div>
-
   </div>
 
-  
-
   <!-- FORMULARIO -->
-
   <div
-
     *ngIf="mostrarFormulario"
-
     class="bg-white/95 rounded-2xl shadow-xl p-6 mb-5"
-
   >
 
-    <h2 class="text-3xl font-bold mb-6 text-slate-800">
-
-      {{
-        editando
-        ? 'Editar Cliente'
-        : 'Nuevo Cliente'
-      }}
-
+    <h2 class="text-3xl font-bold mb-2 text-slate-800">
+      {{ editando ? '✏️ Editar Cliente' : '➕ Nuevo Cliente' }}
     </h2>
+
+    <p class="text-gray-500 text-sm mb-5">
+      Los campos marcados con
+      <span class="text-red-600 font-bold">*</span>
+      son obligatorios.
+    </p>
+
+    <!-- MENSAJE GENERAL -->
+    <div
+      *ngIf="formularioEnviado && hayErrores"
+      class="mb-5 p-4 rounded-xl bg-red-50 border border-red-300 text-red-700"
+    >
+      <div class="font-bold mb-1">
+        ⚠️ No se puede guardar el cliente.
+      </div>
+
+      <div class="text-sm">
+        Por favor complete correctamente todos los campos obligatorios.
+      </div>
+    </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-      <input
+      <!-- NIT -->
+      <div>
+        <label class="block font-semibold mb-1">
+          NIT <span class="text-red-600 font-bold">*</span>
+        </label>
 
-        [(ngModel)]="nuevo.nit"
+        <input
+          type="text"
+          [(ngModel)]="nuevo.nit"
+          (ngModelChange)="limpiarError('nit')"
+          placeholder="NIT"
+          [class.border-red-500]="errores.nit"
+          class="w-full border rounded-xl p-3 outline-none"
+        />
 
-        placeholder="NIT"
+        <p *ngIf="errores.nit" class="text-red-600 text-sm mt-1">
+          ⚠️ {{ errores.nit }}
+        </p>
+      </div>
 
-        class="border rounded-xl p-3"
+      <!-- NOMBRE -->
+      <div>
+        <label class="block font-semibold mb-1">
+          Nombre empresa <span class="text-red-600 font-bold">*</span>
+        </label>
 
-      />
+        <input
+          type="text"
+          [(ngModel)]="nuevo.nombre"
+          (ngModelChange)="limpiarError('nombre')"
+          placeholder="Nombre empresa"
+          [class.border-red-500]="errores.nombre"
+          class="w-full border rounded-xl p-3 outline-none"
+        />
 
-      <input
+        <p *ngIf="errores.nombre" class="text-red-600 text-sm mt-1">
+          ⚠️ {{ errores.nombre }}
+        </p>
+      </div>
 
-        [(ngModel)]="nuevo.nombre"
+      <!-- TELEFONO -->
+      <div>
+        <label class="block font-semibold mb-1">
+          Teléfono <span class="text-red-600 font-bold">*</span>
+        </label>
 
-        placeholder="Nombre empresa"
+        <input
+          type="tel"
+          [(ngModel)]="nuevo.telefono"
+          (ngModelChange)="limpiarError('telefono')"
+          placeholder="Teléfono"
+          [class.border-red-500]="errores.telefono"
+          class="w-full border rounded-xl p-3 outline-none"
+        />
 
-        class="border rounded-xl p-3"
+        <p *ngIf="errores.telefono" class="text-red-600 text-sm mt-1">
+          ⚠️ {{ errores.telefono }}
+        </p>
+      </div>
 
-      />
+      <!-- CORREO -->
+      <div>
+        <label class="block font-semibold mb-1">
+          Correo <span class="text-red-600 font-bold">*</span>
+        </label>
 
-      <input
+        <input
+          type="email"
+          [(ngModel)]="nuevo.correo"
+          (ngModelChange)="limpiarError('correo')"
+          placeholder="correo@ejemplo.com"
+          [class.border-red-500]="errores.correo"
+          class="w-full border rounded-xl p-3 outline-none"
+        />
 
-        [(ngModel)]="nuevo.telefono"
+        <p *ngIf="errores.correo" class="text-red-600 text-sm mt-1">
+          ⚠️ {{ errores.correo }}
+        </p>
+      </div>
 
-        placeholder="Teléfono"
+      <!-- CIUDAD -->
+      <div>
+        <label class="block font-semibold mb-1">
+          Ciudad <span class="text-red-600 font-bold">*</span>
+        </label>
 
-        class="border rounded-xl p-3"
+        <input
+          type="text"
+          [(ngModel)]="nuevo.ciudad"
+          (ngModelChange)="limpiarError('ciudad')"
+          placeholder="Ciudad"
+          [class.border-red-500]="errores.ciudad"
+          class="w-full border rounded-xl p-3 outline-none"
+        />
 
-      />
+        <p *ngIf="errores.ciudad" class="text-red-600 text-sm mt-1">
+          ⚠️ {{ errores.ciudad }}
+        </p>
+      </div>
 
-      <input
+      <!-- DIRECCION -->
+      <div>
+        <label class="block font-semibold mb-1">
+          Dirección <span class="text-red-600 font-bold">*</span>
+        </label>
 
-        [(ngModel)]="nuevo.correo"
+        <input
+          type="text"
+          [(ngModel)]="nuevo.direccion"
+          (ngModelChange)="limpiarError('direccion')"
+          placeholder="Dirección"
+          [class.border-red-500]="errores.direccion"
+          class="w-full border rounded-xl p-3 outline-none"
+        />
 
-        placeholder="Correo"
+        <p *ngIf="errores.direccion" class="text-red-600 text-sm mt-1">
+          ⚠️ {{ errores.direccion }}
+        </p>
+      </div>
 
-        class="border rounded-xl p-3"
+      <!-- TIPO -->
+      <div>
+        <label class="block font-semibold mb-1">
+          Tipo <span class="text-red-600 font-bold">*</span>
+        </label>
 
-      />
+        <select
+          [(ngModel)]="nuevo.tipo"
+          (ngModelChange)="limpiarError('tipo')"
+          [class.border-red-500]="errores.tipo"
+          class="w-full border rounded-xl p-3 outline-none"
+        >
+          <option value="Cooperativa">Cooperativa</option>
+          <option value="Exportadora">Exportadora</option>
+          <option value="Empresa">Empresa</option>
+          <option value="Distribuidor">Distribuidor</option>
+        </select>
 
-      <input
-
-        [(ngModel)]="nuevo.ciudad"
-
-        placeholder="Ciudad"
-
-        class="border rounded-xl p-3"
-
-      />
-
-      <input
-
-        [(ngModel)]="nuevo.direccion"
-
-        placeholder="Dirección"
-
-        class="border rounded-xl p-3"
-
-      />
-
-      <select
-
-        [(ngModel)]="nuevo.tipo"
-
-        class="border rounded-xl p-3"
-
-      >
-
-        <option value="Cooperativa">
-
-          Cooperativa
-
-        </option>
-
-        <option value="Exportadora">
-
-          Exportadora
-
-        </option>
-
-        <option value="Empresa">
-
-          Empresa
-
-        </option>
-
-        <option value="Distribuidor">
-
-          Distribuidor
-
-        </option>
-
-      </select>
+        <p *ngIf="errores.tipo" class="text-red-600 text-sm mt-1">
+          ⚠️ {{ errores.tipo }}
+        </p>
+      </div>
 
     </div>
 
     <!-- BOTONES -->
-
     <div class="flex gap-3 mt-6">
 
       <button
-
         *ngIf="!editando"
-
+        type="button"
         (click)="guardar()"
-
         class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl font-semibold"
-
       >
-
-        Guardar
-
+        💾 Guardar
       </button>
 
       <button
-
         *ngIf="editando"
-
+        type="button"
         (click)="actualizar()"
-
         class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold"
-
       >
-
-        Actualizar
-
+        ✏️ Actualizar
       </button>
 
       <button
-
+        type="button"
         (click)="cancelar()"
-
         class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-xl font-semibold"
-
       >
-
-        Cancelar
-
+        ✖ Cancelar
       </button>
 
     </div>
-
   </div>
 
   <!-- TABLA -->
-
-  <div
-    class="bg-white/95 rounded-2xl shadow-xl overflow-hidden"
-  >
-
+  <div class="bg-white/95 rounded-2xl shadow-xl overflow-hidden">
     <div class="overflow-auto">
 
       <table class="w-full">
 
         <thead class="bg-slate-900 text-white">
-
           <tr>
-
-            <th class="p-4 text-left">
-              ID
-            </th>
-
-            <th class="p-4 text-left">
-              Cliente
-            </th>
-
-            <th class="p-4 text-left">
-              Contacto
-            </th>
-
-            <th class="p-4 text-left">
-              Dirección
-            </th>
-
-            <th class="p-4 text-left">
-              Tipo
-            </th>
-
-            <th class="p-4 text-left">
-              Acciones
-            </th>
-
+            <th class="p-4 text-left">ID</th>
+            <th class="p-4 text-left">Cliente</th>
+            <th class="p-4 text-left">Contacto</th>
+            <th class="p-4 text-left">Dirección</th>
+            <th class="p-4 text-left">Tipo</th>
+            <th class="p-4 text-left">Acciones</th>
           </tr>
-
         </thead>
 
         <tbody>
 
           <tr
-
-            *ngFor="
-              let c of clientesFiltrados()
-            "
-
+            *ngFor="let c of clientesFiltrados()"
             class="border-b hover:bg-gray-100"
-
           >
 
             <td class="p-4 font-bold text-blue-700">
-
               #{{ c.id }}
-
             </td>
 
             <td class="p-4">
-
               <div class="font-semibold">
-
                 {{ c.nombre }}
-
               </div>
 
               <div class="text-sm text-gray-500">
-
                 {{ c.nit }}
-
               </div>
-
             </td>
 
             <td class="p-4 text-sm">
-
               {{ c.telefono }}
-
               <br>
-
               {{ c.correo }}
-
             </td>
 
             <td class="p-4">
-
               {{ c.ciudad }}
-
               <br>
 
               <span class="text-sm text-gray-500">
-
                 {{ c.direccion }}
-
               </span>
-
             </td>
 
             <td class="p-4">
-
-              <span
-
-                class="bg-blue-100 text-blue-700 px-3 py-1 rounded-xl text-sm"
-
-              >
-
+              <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-xl text-sm">
                 {{ c.tipo }}
-
               </span>
-
             </td>
 
             <td class="p-4">
-
               <div class="flex gap-2">
 
                 <button
-
+                  type="button"
                   (click)="editar(c)"
-
                   class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg"
-
                 >
-
-                  Editar
-
+                  ✏️ Editar
                 </button>
 
                 <button
-
+                  type="button"
                   (click)="eliminar(c.id)"
-
                   class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg"
-
                 >
-
-                  Eliminar
-
+                  🗑️ Eliminar
                 </button>
 
               </div>
-
             </td>
 
           </tr>
 
-          <!-- VACÍO -->
-
-          <tr
-            *ngIf="
-              clientesFiltrados().length === 0
-            "
-          >
-
-            <td
-              colspan="6"
-              class="text-center p-10 text-gray-500"
-            >
-
+          <tr *ngIf="clientesFiltrados().length === 0">
+            <td colspan="6" class="text-center p-10 text-gray-500">
               No hay clientes registrados
-
             </td>
-
           </tr>
 
         </tbody>
-
       </table>
 
     </div>
-
   </div>
 
 </div>
