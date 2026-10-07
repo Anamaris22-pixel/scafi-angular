@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 
 @Component({
   selector: 'app-notificaciones',
@@ -33,7 +33,7 @@ export class NotificacionesComponent implements OnInit {
 
   api = 'http://localhost/scafi-angular/scafi-api/notificaciones.php';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private router: Router) {}
 
   ngOnInit(): void {
     this.obtenerUsuarioId();
@@ -97,48 +97,6 @@ export class NotificacionesComponent implements OnInit {
     console.warn(
       'No se encontró el ID del usuario en localStorage.'
     );
-  }
-
-  // ==================================================
-  // ABRIR CAMPANA
-  // ==================================================
-
-  abrirNotificaciones(): void {
-
-    this.mostrar = !this.mostrar;
-
-    if (this.mostrar) {
-      this.cargarNotificaciones();
-    }
-  }
-
-  // ==================================================
-  // VER TODAS
-  // ==================================================
-
-  verTodas(): void {
-
-    this.mostrar = false;
-    this.mostrarTodas = true;
-    this.notificacionSeleccionada = null;
-
-    // Evita que el fondo de la aplicación se desplace
-    document.body.style.overflow = 'hidden';
-
-    // Volvemos a consultar para mostrar información actualizada
-    this.cargarNotificaciones();
-  }
-
-  // ==================================================
-  // CERRAR VISTA COMPLETA
-  // ==================================================
-
-  cerrarVistaCompleta(): void {
-
-    this.mostrarTodas = false;
-    this.notificacionSeleccionada = null;
-
-    document.body.style.overflow = '';
   }
 
   // ==================================================
@@ -312,11 +270,7 @@ export class NotificacionesComponent implements OnInit {
     return notificacion?.visto_por == null;
   }
 
-  // ==================================================
-  // CERRAR DETALLE
-  // ==================================================
-
-  cerrarDetalle(): void {
-    this.notificacionSeleccionada = null;
+  volverDashboard(): void {
+    this.router.navigate(['/dashboard']);
   }
 }
