@@ -66,6 +66,7 @@ implements OnInit, OnDestroy {
   permisosCargados = false;
 
   intervalo: any;
+  escuchandoVentana = false;
 
   user: any = null;
 
@@ -171,12 +172,20 @@ implements OnInit, OnDestroy {
 
     this.cargarNotificaciones();
 
+    // Actualización ligera: no recargar si la pestaña está oculta.
     this.intervalo =
       setInterval(() => {
 
-        this.cargarNotificaciones();
+        if (!document.hidden) {
+          this.actualizarNotificaciones();
 
-      }, 15000);
+        }
+
+      }, 30000);
+
+    // Cuando el usuario vuelve a la pestaña, actualizar de inmediato.
+    this.escuchandoVentana = true;
+    window.addEventListener('focus', this.actualizarAlVolver.bind(this));
 
   }
 
@@ -190,7 +199,45 @@ implements OnInit, OnDestroy {
 
     }
 
+    if (this.escuchandoVentana) {
+      window.removeEventListener('focus', this.actualizarAlVolver);
+      this.escuchandoVentana = false;
+    }
+
   }
+
+  private actualizarAlVolver = (): void => {
+    if (!document.hidden) {
+      this.actualizarNotificaciones();
+    }
+  };
+
+  private actualizarNotificaciones(): void {
+    if (!this.user) {
+      return;
+    }
+
+    this.notiService
+      .refrescar(Number(this.user.id))
+      .subscribe({
+        next: (res: any) => {
+          if (res?.ok) {
+            this.notificaciones = res.notificaciones || [];
+            this.totalNoLeidas = Number(
+              res.total ??
+              this.notificaciones.filter(
+                (n: any) => n.visto_por == null
+              ).length
+            );
+            this.cdr.markForCheck();
+          }
+        },
+        error: () => {
+          // No borrar las notificaciones actuales por un fallo temporal.
+        }
+      });
+  }
+
   marcarLeida(id: number) {
 
   this.notiService
@@ -217,8 +264,8 @@ implements OnInit, OnDestroy {
               (n: any) => n.visto_por == null
             ).length;
 
-          // Confirmar el estado real con el servidor.
-          this.cargarNotificaciones();
+          // Confirmar el estado real sin borrar la vista durante la petición.
+          this.actualizarNotificaciones();
 
         } else {
 
