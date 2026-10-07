@@ -169,22 +169,6 @@
       </div>
     </div>
 
-    <div
-      *ngIf="esRecolector()"
-      class="mb-6 bg-white/95 backdrop-blur-md border border-emerald-100 rounded-3xl p-6 shadow-2xl"
-    >
-      <div class="flex items-center gap-3">
-        <span class="text-3xl">🌱</span>
-        <div>
-          <h2 class="text-xl font-black text-slate-800">Panel de consulta</h2>
-          <p class="text-sm text-slate-500 mt-1">
-            Como Recolector, puedes consultar la información autorizada de SCAFI.
-            Las tarjetas de indicadores administrativos no están disponibles para este rol.
-          </p>
-        </div>
-      </div>
-    </div>
-
     <div *ngIf="!esRecolector()" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       
       <div class="lg:col-span-2 bg-white/95 backdrop-blur-md border border-white/40 rounded-3xl p-6 shadow-2xl flex flex-col justify-between">
