@@ -1,6 +1,7 @@
 import {
   Component,
   OnInit,
+  OnDestroy,
   AfterViewInit,
   ChangeDetectorRef
 } from '@angular/core';
@@ -43,7 +44,7 @@ Chart.register(...registerables);
 })
 
 export class DashboardComponent
-implements OnInit, AfterViewInit {
+implements OnInit, AfterViewInit, OnDestroy {
 
   // ==========================================
   // API
@@ -110,6 +111,8 @@ implements OnInit, AfterViewInit {
 
   graficaInstance: any;
 
+  private intervaloActualizacion: any;
+
   // ==========================================
   // CONSTRUCTOR
   // ==========================================
@@ -131,10 +134,10 @@ implements OnInit, AfterViewInit {
 
     // AUTO ACTUALIZAR
 
-    setInterval(() => {
-
-      this.obtenerDatosDashboard();
-
+    this.intervaloActualizacion = setInterval(() => {
+      if (!document.hidden) {
+        this.obtenerDatosDashboard();
+      }
     }, 30000);
 
   }
@@ -142,6 +145,12 @@ implements OnInit, AfterViewInit {
   // ==========================================
   // AFTER VIEW
   // ==========================================
+
+  ngOnDestroy(): void {
+    if (this.intervaloActualizacion) {
+      clearInterval(this.intervaloActualizacion);
+    }
+  }
 
   ngAfterViewInit(): void {
 
