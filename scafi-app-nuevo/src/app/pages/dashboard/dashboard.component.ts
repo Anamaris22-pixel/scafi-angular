@@ -199,6 +199,13 @@ implements OnInit, AfterViewInit, OnDestroy {
 
   obtenerDatosDashboard(): void {
 
+    // Los recolectores no deben cargar datos administrativos
+    // ni financieros del dashboard.
+    if (this.esRecolector()) {
+      this.cargando = false;
+      return;
+    }
+
     this.http
     .get<any>(this.API)
 
