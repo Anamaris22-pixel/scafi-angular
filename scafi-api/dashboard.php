@@ -153,6 +153,10 @@ while (
 
         "mes" => $fila['mes'],
 
+        "anio" => (int)$fila['anio'],
+
+        "mes_numero" => (int)$fila['mes_numero'],
+
         "ventas" =>
         (float)$fila['ventas']
 
