@@ -89,7 +89,21 @@
 
   <main class="flex-1 p-8 overflow-y-auto backdrop-blur-sm bg-gradient-to-br from-black/20 to-black/30">
     
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div
+      *ngIf="esRecolector()"
+      class="mb-8 bg-white/95 backdrop-blur-md border border-white/40 rounded-3xl p-8 shadow-2xl flex items-center justify-center min-h-[220px]"
+    >
+      <img
+        src="assets/logo-scafi.png"
+        alt="SCAFI"
+        class="w-56 md:w-72 lg:w-80 h-auto object-contain drop-shadow-xl"
+      />
+    </div>
+
+    <div
+      *ngIf="!esRecolector()"
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
+    >
       
       <div class="bg-white/95 backdrop-blur-md border border-white/40 rounded-3xl p-6 shadow-2xl flex justify-between items-center hover:scale-[1.02] transition-transform" *ngIf="!esRecolector()">
         <div>
