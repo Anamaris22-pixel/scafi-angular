@@ -322,6 +322,115 @@ implements OnInit, OnDestroy {
   }
 
   // ======================
+  // DESTINO DE NOTIFICACIÓN
+  // ======================
+
+  obtenerDestinoNotificacion(n: any): {
+    ruta: string;
+    queryParams?: any;
+  } {
+
+    const titulo =
+      String(n?.titulo || '').toLowerCase();
+
+    const mensaje =
+      String(n?.mensaje || '');
+
+    // Stock: buscar exactamente el insumo mencionado.
+    if (
+      titulo.includes('stock') ||
+      mensaje.toLowerCase().includes('insumo ')
+    ) {
+
+      const coincidencia =
+        mensaje.match(
+          /insumo\s+(.+?)\s+(?:tiene|ha vuelto|presenta)/i
+        );
+
+      const nombreInsumo =
+        coincidencia?.[1]?.trim() || '';
+
+      return {
+        ruta: '/insumos',
+        queryParams: nombreInsumo
+          ? { buscar: nombreInsumo }
+          : undefined
+      };
+
+    }
+
+    // Mensajes.
+    if (
+      titulo.includes('mensaje') ||
+      mensaje.toLowerCase().includes('mensaje nuevo')
+    ) {
+      return {
+        ruta: '/mensajes'
+      };
+    }
+
+    // Ventas.
+    if (titulo.includes('venta')) {
+      return {
+        ruta: '/ventas'
+      };
+    }
+
+    // Clientes.
+    if (titulo.includes('cliente')) {
+      return {
+        ruta: '/clientes'
+      };
+    }
+
+    // Proveedores.
+    if (titulo.includes('proveedor')) {
+      return {
+        ruta: '/proveedores'
+      };
+    }
+
+    // Movimientos.
+    if (
+      titulo.includes('movimiento') ||
+      mensaje.toLowerCase().includes('movimiento')
+    ) {
+      return {
+        ruta: '/movimientos'
+      };
+    }
+
+    // Por defecto, abrir el centro de notificaciones.
+    return {
+      ruta: '/notificaciones'
+    };
+  }
+
+  abrirNotificacion(n: any): void {
+
+    if (!n) {
+      return;
+    }
+
+    // Primero la marcamos como leída.
+    if (n.visto_por == null) {
+      this.marcarLeida(n.id);
+    }
+
+    const destino =
+      this.obtenerDestinoNotificacion(n);
+
+    this.showNoti = false;
+
+    this.router.navigate(
+      [destino.ruta],
+      destino.queryParams
+        ? { queryParams: destino.queryParams }
+        : undefined
+    );
+  }
+
+  // ======================
   // NOTIFICACIONES
   // ======================
 
