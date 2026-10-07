@@ -55,7 +55,7 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
       if (!document.hidden) {
         this.cargarNotificaciones(false);
       }
-    }, 30000);
+    }, 5000);
 
     this.escucharFocus = true;
     window.addEventListener('focus', this.actualizarAlVolver);
