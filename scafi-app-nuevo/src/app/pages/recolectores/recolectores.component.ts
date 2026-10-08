@@ -375,7 +375,7 @@ ngOnInit(): void {
   }
 
   get recolectoresPagina(): any[] {
-    const datos = this.recolectoresFiltrados()();
+    const datos = this.recolectoresFiltrados();
     const inicio = (this.paginaActual - 1) * this.registrosPorPagina;
     return datos.slice(inicio, inicio + this.registrosPorPagina);
   }
