@@ -80,12 +80,43 @@
         </div>
       </div>
 
-      <a *ngIf="!esRecolector()" routerLink="/configuracion" routerLinkActive="bg-green-600 text-white font-bold" class="flex items-center gap-4 px-6 py-3.5 hover:bg-slate-800 transition-all">
+      <button
+        *ngIf="!esRecolector()"
+        (click)="abrirConfiguracion()"
+        class="w-full flex items-center gap-4 px-6 py-3.5 hover:bg-slate-800 transition-all text-left"
+      >
         <span class="text-xl">⚙️</span>
         <span *ngIf="sidebarAbierto" class="text-sm tracking-wide">Configuración</span>
-      </a>
+      </button>
     </nav>
   </aside>
+
+  <!-- Aviso de permisos -->
+  <div
+    *ngIf="mostrarAvisoConfiguracion"
+    class="fixed top-6 right-6 z-50 w-full max-w-md bg-slate-900 border border-amber-400/40 text-white rounded-2xl shadow-2xl p-5"
+  >
+    <div class="flex items-start gap-4">
+      <div class="w-11 h-11 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center text-xl">
+        ⚠️
+      </div>
+
+      <div class="flex-1">
+        <h3 class="font-bold text-lg">Módulo no permitido</h3>
+        <p class="text-sm text-white/70 mt-1">
+          El módulo de Configuración no está disponible para el administrador.
+          Solo el propietario puede acceder a esta sección.
+        </p>
+      </div>
+
+      <button
+        (click)="mostrarAvisoConfiguracion = false"
+        class="text-white/50 hover:text-white text-xl"
+      >
+        ✕
+      </button>
+    </div>
+  </div>
 
   <main class="flex-1 p-8 overflow-y-auto backdrop-blur-sm bg-gradient-to-br from-black/20 to-black/30">
     
