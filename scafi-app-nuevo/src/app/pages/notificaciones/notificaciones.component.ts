@@ -26,6 +26,32 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
 
   notificaciones: any[] = [];
 
+  // Paginación del listado completo
+  paginaActual = 1;
+  readonly notificacionesPorPagina = 10;
+
+  get totalPaginas(): number {
+    return Math.max(1, Math.ceil(this.notificaciones.length / this.notificacionesPorPagina));
+  }
+
+  get notificacionesPagina(): any[] {
+    const inicio = (this.paginaActual - 1) * this.notificacionesPorPagina;
+    return this.notificaciones.slice(inicio, inicio + this.notificacionesPorPagina);
+  }
+
+  get inicioPagina(): number {
+    return this.notificaciones.length === 0
+      ? 0
+      : (this.paginaActual - 1) * this.notificacionesPorPagina + 1;
+  }
+
+  get finPagina(): number {
+    return Math.min(
+      this.paginaActual * this.notificacionesPorPagina,
+      this.notificaciones.length
+    );
+  }
+
   notificacionSeleccionada: any = null;
 
   // Usuario actualmente autenticado
@@ -150,6 +176,7 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
 
       this.notificaciones = [];
       this.total = 0;
+      this.paginaActual = 1;
       this.cargando = false;
 
       return;
@@ -168,6 +195,10 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
 
           this.notificaciones =
             resp.notificaciones || [];
+
+          if (this.paginaActual > this.totalPaginas) {
+            this.paginaActual = this.totalPaginas;
+          }
 
           this.actualizarContador();
 
@@ -189,6 +220,7 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
 
           this.notificaciones = [];
           this.total = 0;
+          this.paginaActual = 1;
         }
 
         this.cargando = false;
@@ -204,6 +236,7 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
 
         this.notificaciones = [];
         this.total = 0;
+        this.paginaActual = 1;
         this.cargando = false;
         this.cdr.detectChanges();
       }
@@ -402,3 +435,19 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
     this.router.navigate(['/dashboard']);
   }
 }
+
+  irPagina(pagina: number): void {
+    if (pagina < 1 || pagina > this.totalPaginas) {
+      return;
+    }
+    this.paginaActual = pagina;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  paginaAnterior(): void {
+    this.irPagina(this.paginaActual - 1);
+  }
+
+  paginaSiguiente(): void {
+    this.irPagina(this.paginaActual + 1);
+  }
