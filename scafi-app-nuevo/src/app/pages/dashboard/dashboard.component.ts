@@ -15,6 +15,7 @@ import {
 } from '@angular/forms';
 
 import {
+  Router,
   RouterModule
 } from '@angular/router';
 
@@ -128,13 +129,17 @@ implements OnInit, AfterViewInit, OnDestroy {
   private intervaloActualizacion: any;
   private vistaLista = false;
 
+  // Aviso cuando un administrador intenta entrar a Configuración.
+  mostrarAvisoConfiguracion = false;
+
   // ==========================================
   // CONSTRUCTOR
   // ==========================================
 
   constructor(
     private http: HttpClient,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private router: Router
   ) {}
 
   // ==========================================
@@ -190,6 +195,40 @@ implements OnInit, AfterViewInit, OnDestroy {
       return Number(JSON.parse(usuario)?.idRol) === 3;
     } catch {
       return false;
+    }
+  }
+
+  // ==========================================
+  // PERMISO DE CONFIGURACIÓN
+  // ==========================================
+
+  abrirConfiguracion(): void {
+    const usuario = localStorage.getItem('usuario') || localStorage.getItem('user');
+
+    if (!usuario) {
+      return;
+    }
+
+    try {
+      const idRol = Number(JSON.parse(usuario)?.idRol);
+
+      // El administrador no tiene permiso para Configuración.
+      if (idRol === 2) {
+        this.mostrarAvisoConfiguracion = true;
+
+        setTimeout(() => {
+          this.mostrarAvisoConfiguracion = false;
+        }, 5000);
+
+        return;
+      }
+
+      // El propietario sí puede acceder.
+      if (idRol === 1) {
+        this.router.navigate(['/configuracion']);
+      }
+    } catch (error) {
+      console.error('No se pudo validar el permiso de Configuración:', error);
     }
   }
 
