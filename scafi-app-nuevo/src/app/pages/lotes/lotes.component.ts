@@ -186,7 +186,7 @@ export class LotesComponent implements OnInit {
   }
 
   get lotesPagina(): any[] {
-    const datos = this.lotesFiltrados()();
+    const datos = this.lotesFiltrados();
     const inicio = (this.paginaActual - 1) * this.registrosPorPagina;
     return datos.slice(inicio, inicio + this.registrosPorPagina);
   }
