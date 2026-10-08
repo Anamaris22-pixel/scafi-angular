@@ -797,7 +797,7 @@ export class ProveedoresComponent implements OnInit {
   }
 
   get proveedoresPagina(): any[] {
-    const datos = this.proveedoresFiltrados()();
+    const datos = this.proveedoresFiltrados();
     const inicio = (this.paginaActual - 1) * this.registrosPorPagina;
     return datos.slice(inicio, inicio + this.registrosPorPagina);
   }
