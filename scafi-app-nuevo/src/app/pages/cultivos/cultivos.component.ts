@@ -228,7 +228,7 @@ export class CultivosComponent implements OnInit {
   }
 
   get cultivosPagina(): any[] {
-    const datos = this.cultivosFiltrados()();
+    const datos = this.cultivosFiltrados();
     const inicio = (this.paginaActual - 1) * this.registrosPorPagina;
     return datos.slice(inicio, inicio + this.registrosPorPagina);
   }
