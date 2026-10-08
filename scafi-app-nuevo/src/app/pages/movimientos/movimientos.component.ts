@@ -615,7 +615,7 @@ export class MovimientosComponent
   }
 
   get movimientosPagina(): any[] {
-    const datos = this.movimientosFiltrados()();
+    const datos = this.movimientosFiltrados();
     const inicio = (this.paginaActual - 1) * this.registrosPorPagina;
     return datos.slice(inicio, inicio + this.registrosPorPagina);
   }
