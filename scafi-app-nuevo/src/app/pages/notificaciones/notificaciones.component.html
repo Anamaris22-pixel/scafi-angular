@@ -60,7 +60,7 @@
       class="w-full max-w-6xl mx-auto space-y-3">
 
       <div
-        *ngFor="let n of notificaciones"
+        *ngFor="let n of notificacionesPagina"
         (click)="abrirNotificacion(n)"
         class="bg-white rounded-xl border shadow-sm hover:shadow-md cursor-pointer transition p-5"
         [ngClass]="{
@@ -136,6 +136,46 @@
             </span>
           </div>
 
+        </div>
+      </div>
+
+      <!-- PAGINACIÓN -->
+      <div
+        *ngIf="totalPaginas > 1"
+        class="mt-6 bg-white rounded-xl border shadow-sm px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
+
+        <div class="text-sm text-gray-500">
+          Mostrando <strong>{{ inicioPagina }}</strong>–<strong>{{ finPagina }}</strong>
+          de <strong>{{ notificaciones.length }}</strong> notificaciones
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button
+            type="button"
+            (click)="paginaAnterior()"
+            [disabled]="paginaActual === 1"
+            class="px-4 py-2 rounded-lg font-semibold border transition disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-100">
+            ← Anterior
+          </button>
+
+          <button
+            *ngFor="let pagina of [].constructor(totalPaginas); let i = index"
+            type="button"
+            (click)="irPagina(i + 1)"
+            class="min-w-10 px-3 py-2 rounded-lg font-bold border transition"
+            [ngClass]="paginaActual === i + 1
+              ? 'bg-blue-600 text-white border-blue-600'
+              : 'bg-white text-gray-600 hover:bg-gray-100 border-gray-200'">
+            {{ i + 1 }}
+          </button>
+
+          <button
+            type="button"
+            (click)="paginaSiguiente()"
+            [disabled]="paginaActual === totalPaginas"
+            class="px-4 py-2 rounded-lg font-semibold border transition disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-100">
+            Siguiente →
+          </button>
         </div>
       </div>
 
