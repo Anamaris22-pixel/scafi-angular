@@ -219,4 +219,28 @@ export class CultivosComponent implements OnInit {
       return lote.includes(buscar) || cafe.includes(buscar);
     });
   }
+  // PAGINACIÓN
+  paginaActual = 1;
+  readonly registrosPorPagina = 10;
+
+  get totalPaginas(): number {
+    return Math.max(1, Math.ceil(this.cultivosFiltrados().length / this.registrosPorPagina));
+  }
+
+  get cultivosPagina(): any[] {
+    const datos = this.cultivosFiltrados()();
+    const inicio = (this.paginaActual - 1) * this.registrosPorPagina;
+    return datos.slice(inicio, inicio + this.registrosPorPagina);
+  }
+
+  irPagina(pagina: number): void {
+    if (pagina < 1 || pagina > this.totalPaginas) return;
+    this.paginaActual = pagina;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  paginaAnterior(): void { this.irPagina(this.paginaActual - 1); }
+  paginaSiguiente(): void { this.irPagina(this.paginaActual + 1); }
+  reiniciarPaginacion(): void { this.paginaActual = 1; }
+
 }
