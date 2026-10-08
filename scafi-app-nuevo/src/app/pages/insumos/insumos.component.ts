@@ -683,11 +683,11 @@ export class InsumosComponent
   readonly registrosPorPagina = 10;
 
   get totalPaginas(): number {
-    return Math.max(1, Math.ceil(this.insumosFiltrados()().length / this.registrosPorPagina));
+    return Math.max(1, Math.ceil(this.insumosFiltrados().length / this.registrosPorPagina));
   }
 
   get insumosPagina(): any[] {
-    const datos = this.insumosFiltrados()();
+    const datos = this.insumosFiltrados();
     const inicio = (this.paginaActual - 1) * this.registrosPorPagina;
     return datos.slice(inicio, inicio + this.registrosPorPagina);
   }
