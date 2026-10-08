@@ -434,12 +434,12 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
   volverDashboard(): void {
     this.router.navigate(['/dashboard']);
   }
-}
 
   irPagina(pagina: number): void {
     if (pagina < 1 || pagina > this.totalPaginas) {
       return;
     }
+
     this.paginaActual = pagina;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -451,3 +451,4 @@ export class NotificacionesComponent implements OnInit, OnDestroy {
   paginaSiguiente(): void {
     this.irPagina(this.paginaActual + 1);
   }
+}
