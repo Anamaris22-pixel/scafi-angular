@@ -461,11 +461,11 @@
 
     </table>
 
-      <div *ngIf="insumosFiltrados()().length > registrosPorPagina"
+      <div *ngIf="insumosFiltrados().length > registrosPorPagina"
            class="flex flex-col md:flex-row items-center justify-between gap-3 mt-4 p-4 bg-white rounded-xl border shadow-sm">
         <span class="text-sm text-gray-500">
           Página <strong>{{ paginaActual }}</strong> de <strong>{{ totalPaginas }}</strong>
-          · {{ insumosFiltrados()().length }} registros
+          · {{ insumosFiltrados().length }} registros
         </span>
         <div class="flex items-center gap-2">
           <button type="button" (click)="paginaAnterior()" [disabled]="paginaActual === 1"
