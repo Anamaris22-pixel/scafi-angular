@@ -117,6 +117,30 @@
       </div>
     </div>
 
+    <!-- FRASE MOTIVACIONAL PARA PROPIETARIO Y ADMINISTRADOR -->
+    <div
+      *ngIf="!esRecolector()"
+      class="mb-6 relative overflow-hidden bg-gradient-to-r from-slate-900 via-blue-900 to-slate-800 border border-white/10 rounded-2xl px-6 py-5 shadow-xl"
+    >
+      <div class="absolute -right-10 -top-10 w-36 h-36 bg-cyan-400/10 rounded-full blur-2xl"></div>
+
+      <div class="relative z-10 flex items-center gap-4">
+        <div class="w-12 h-12 rounded-xl bg-white/10 border border-white/10 flex items-center justify-center text-2xl shrink-0">
+          ✨
+        </div>
+
+        <div>
+          <p class="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-cyan-300 mb-1">
+            SCAFI · Un paso a la vez
+          </p>
+
+          <p class="text-base md:text-xl font-bold text-white">
+            “Las grandes metas se construyen con pequeñas decisiones hechas con propósito.”
+          </p>
+        </div>
+      </div>
+    </div>
+
     <div
       *ngIf="!esRecolector()"
       class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
