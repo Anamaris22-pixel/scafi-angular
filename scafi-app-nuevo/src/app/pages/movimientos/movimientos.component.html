@@ -307,7 +307,7 @@ name="idInsumo"
 
         <tr
           *ngFor="
-            let m of movimientosFiltrados()
+            let m of movimientosPagina
           "
 
           class="border-b hover:bg-gray-50"
@@ -406,6 +406,15 @@ name="idInsumo"
       </tbody>
 
     </table>
+      <div *ngIf="movimientosFiltrados().length > registrosPorPagina"
+           class="flex flex-col md:flex-row items-center justify-between gap-3 mt-4 p-4 bg-white rounded-xl border shadow-sm">
+        <span class="text-sm text-gray-500">Página <strong>{{ paginaActual }}</strong> de <strong>{{ totalPaginas }}</strong> · {{ movimientosFiltrados().length }} registros</span>
+        <div class="flex items-center gap-2">
+          <button type="button" (click)="paginaAnterior()" [disabled]="paginaActual === 1" class="px-4 py-2 rounded-lg border font-semibold disabled:opacity-40">← Anterior</button>
+          <button *ngFor="let pagina of [].constructor(totalPaginas); let n = index" type="button" (click)="irPagina(n + 1)" class="min-w-9 px-3 py-2 rounded-lg border font-bold" [ngClass]="paginaActual === n + 1 ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-600'">{{ n + 1 }}</button>
+          <button type="button" (click)="paginaSiguiente()" [disabled]="paginaActual === totalPaginas" class="px-4 py-2 rounded-lg border font-semibold disabled:opacity-40">Siguiente →</button>
+        </div>
+      </div>
 
   </div>
 
