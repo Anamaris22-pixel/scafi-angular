@@ -38,6 +38,7 @@
       <input
         type="text"
         [(ngModel)]="buscar"
+        (ngModelChange)="reiniciarPaginacion()"
         placeholder="Buscar insumo..."
         class="p-3 w-80 border rounded-l-xl outline-none"
       >
@@ -343,7 +344,7 @@
       <tbody>
 
         <tr
-          *ngFor="let i of insumosFiltrados()"
+          *ngFor="let i of insumosPagina"
           class="border-b hover:bg-gray-50"
         >
 
@@ -459,6 +460,30 @@
       </tbody>
 
     </table>
+
+      <div *ngIf="insumosFiltrados()().length > registrosPorPagina"
+           class="flex flex-col md:flex-row items-center justify-between gap-3 mt-4 p-4 bg-white rounded-xl border shadow-sm">
+        <span class="text-sm text-gray-500">
+          Página <strong>{{ paginaActual }}</strong> de <strong>{{ totalPaginas }}</strong>
+          · {{ insumosFiltrados()().length }} registros
+        </span>
+        <div class="flex items-center gap-2">
+          <button type="button" (click)="paginaAnterior()" [disabled]="paginaActual === 1"
+                  class="px-4 py-2 rounded-lg border font-semibold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-100">
+            ← Anterior
+          </button>
+          <button *ngFor="let pagina of [].constructor(totalPaginas); let n = index"
+                  type="button" (click)="irPagina(n + 1)"
+                  class="min-w-9 px-3 py-2 rounded-lg border font-bold transition"
+                  [ngClass]="paginaActual === n + 1 ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-600 hover:bg-gray-100'">
+            {{ n + 1 }}
+          </button>
+          <button type="button" (click)="paginaSiguiente()" [disabled]="paginaActual === totalPaginas"
+                  class="px-4 py-2 rounded-lg border font-semibold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-100">
+            Siguiente →
+          </button>
+        </div>
+      </div>
 
   </div>
 
