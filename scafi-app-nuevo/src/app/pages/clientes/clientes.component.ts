@@ -521,7 +521,7 @@ get hayErrores(): boolean {
   }
 
   get clientesPagina(): any[] {
-    const datos = this.clientesFiltrados()();
+    const datos = this.clientesFiltrados();
     const inicio = (this.paginaActual - 1) * this.registrosPorPagina;
     return datos.slice(inicio, inicio + this.registrosPorPagina);
   }
