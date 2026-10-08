@@ -751,31 +751,6 @@ export class VentasComponent {
 
   }
 
-  // PAGINACIÓN
-  paginaActual = 1;
-  readonly registrosPorPagina = 10;
-
-  get totalPaginas(): number {
-    return Math.max(1, Math.ceil(this.ventasFiltradas()().length / this.registrosPorPagina));
-  }
-
-  get ventasPagina(): any[] {
-    const datos = this.ventasFiltradas()();
-    const inicio = (this.paginaActual - 1) * this.registrosPorPagina;
-    return datos.slice(inicio, inicio + this.registrosPorPagina);
-  }
-
-  irPagina(pagina: number): void {
-    if (pagina < 1 || pagina > this.totalPaginas) return;
-    this.paginaActual = pagina;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  paginaAnterior(): void { this.irPagina(this.paginaActual - 1); }
-  paginaSiguiente(): void { this.irPagina(this.paginaActual + 1); }
-
-  reiniciarPaginacion(): void { this.paginaActual = 1; }
-
   // PAGINACIÓN DEL HISTORIAL
   paginaActual = 1;
   readonly registrosPorPagina = 10;
