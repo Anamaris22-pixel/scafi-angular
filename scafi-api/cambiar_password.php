@@ -1,78 +1,140 @@
 <?php
 
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: *");
-header("Content-Type: application/json");
+error_reporting(E_ALL);
+ini_set('display_errors', '0');
 
-include 'conexion.php';
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Headers: Content-Type");
+header("Access-Control-Allow-Methods: POST, OPTIONS");
+header("Content-Type: application/json; charset=utf-8");
+
+function responder($datos, $estado = 200) {
+    http_response_code($estado);
+    echo json_encode(
+        $datos,
+        JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE
+    );
+    exit;
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(204);
+    exit;
+}
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    responder([
+        "ok" => false,
+        "mensaje" => "Método no permitido"
+    ], 405);
+}
 
 $data = json_decode(file_get_contents("php://input"), true);
 
-if (!$data) {
-    echo json_encode([
+if (!is_array($data)) {
+    responder([
         "ok" => false,
-        "mensaje" => "No llegaron datos"
-    ]);
-    exit;
+        "mensaje" => "Solicitud inválida"
+    ], 400);
 }
 
-$token = $data['token'] ?? '';
-$nuevaPassword = $data['nuevaPassword'] ?? '';
+$token = trim((string)($data['token'] ?? ''));
+$nuevaPassword = (string)($data['nuevaPassword'] ?? '');
 
-if ($token == '' || $nuevaPassword == '') {
-    echo json_encode([
+if ($token === '' || $nuevaPassword === '') {
+    responder([
         "ok" => false,
         "mensaje" => "Datos incompletos"
-    ]);
-    exit;
+    ], 400);
 }
 
-$sql = "
-SELECT *
-FROM usuario
-WHERE token_recuperacion='$token'
-AND token_expira > NOW()
-LIMIT 1
-";
-
-$resultado = mysqli_query($conexion, $sql);
-
-if (!$resultado) {
-    echo json_encode([
+if (strlen($nuevaPassword) < 8) {
+    responder([
         "ok" => false,
-        "mensaje" => mysqli_error($conexion)
-    ]);
-    exit;
+        "mensaje" => "La contraseña debe tener al menos 8 caracteres"
+    ], 400);
 }
 
-if (mysqli_num_rows($resultado) == 0) {
-    echo json_encode([
+if (strlen($nuevaPassword) > 72) {
+    responder([
         "ok" => false,
-        "mensaje" => "Token inválido o expirado"
-    ]);
-    exit;
+        "mensaje" => "La contraseña es demasiado larga"
+    ], 400);
 }
 
-$usuario = mysqli_fetch_assoc($resultado);
-$id = $usuario['id'];
+try {
+    require __DIR__ . '/conexion.php';
 
-$update = "
-UPDATE usuario
-SET
-contrasena='$nuevaPassword',
-token_recuperacion=NULL,
-token_expira=NULL
-WHERE id='$id'
-";
+    $consulta = $conexion->prepare(
+        "SELECT id FROM usuario
+         WHERE token_recuperacion = ?
+           AND token_expira > NOW()
+         LIMIT 1"
+    );
 
-if (mysqli_query($conexion, $update)) {
-    echo json_encode([
+    if (!$consulta) {
+        throw new RuntimeException("No se pudo preparar la consulta");
+    }
+
+    $consulta->bind_param("s", $token);
+    $consulta->execute();
+
+    $resultado = $consulta->get_result();
+    $usuario = $resultado->fetch_assoc();
+    $consulta->close();
+
+    if (!$usuario) {
+        responder([
+            "ok" => false,
+            "mensaje" => "Token inválido o expirado"
+        ], 400);
+    }
+
+    $hash = password_hash($nuevaPassword, PASSWORD_DEFAULT);
+
+    if ($hash === false) {
+        throw new RuntimeException("No se pudo generar el hash");
+    }
+
+    $id = (int)$usuario['id'];
+
+    $actualizar = $conexion->prepare(
+        "UPDATE usuario
+         SET contrasena = ?,
+             token_recuperacion = NULL,
+             token_expira = NULL
+         WHERE id = ?
+           AND token_recuperacion = ?
+           AND token_expira > NOW()"
+    );
+
+    if (!$actualizar) {
+        throw new RuntimeException("No se pudo preparar la actualización");
+    }
+
+    $actualizar->bind_param("sis", $hash, $id, $token);
+    $actualizar->execute();
+
+    $cambios = $actualizar->affected_rows;
+    $actualizar->close();
+
+    if ($cambios !== 1) {
+        responder([
+            "ok" => false,
+            "mensaje" => "El token ya no es válido. Solicita uno nuevo."
+        ], 400);
+    }
+
+    responder([
         "ok" => true,
-        "mensaje" => "Contraseña actualizada"
+        "mensaje" => "Contraseña actualizada correctamente"
     ]);
-} else {
-    echo json_encode([
+
+} catch (Throwable $e) {
+    error_log("SCAFI cambiar_password: " . $e->getMessage());
+
+    responder([
         "ok" => false,
-        "mensaje" => mysqli_error($conexion)
-    ]);
+        "mensaje" => "No fue posible actualizar la contraseña"
+    ], 500);
 }

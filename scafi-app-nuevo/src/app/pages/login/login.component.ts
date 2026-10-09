@@ -137,19 +137,26 @@ export class LoginComponent {
       // =========================
       error: (err: any) => {
 
-        console.error(
-          'ERROR LOGIN =>',
-          err
-        );
+        console.error('ERROR LOGIN =>', err);
 
-        this.error =
-          'No fue posible conectar con el servidor.';
+        if (err.status === 401) {
+          this.error =
+            err.error?.mensaje ||
+            'Correo o contraseña incorrectos.';
+
+        } else if (err.status === 0) {
+          this.error =
+            'No fue posible conectar con el servidor.';
+
+        } else {
+          this.error =
+            err.error?.mensaje ||
+            `Error del servidor (${err.status}).`;
+        }
 
         this.cargando = false;
-
         this.cd.detectChanges();
       },
-
       // =========================
       // FINALIZÓ
       // =========================
