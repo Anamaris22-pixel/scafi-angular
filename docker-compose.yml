@@ -1,0 +1,61 @@
+# SCAFI en Docker  (instrucciones completas en DOCKER.md)
+# Encender :  docker compose up -d
+# Apagar   :  docker compose down
+# Ver logs :  docker compose logs -f
+
+name: scafi
+
+services:
+
+  # ---------- Base de datos ----------
+  db:
+    image: mariadb:10.11
+    container_name: scafi-db
+    restart: unless-stopped
+    command: ["--port=3307", "--character-set-server=utf8mb4", "--collation-server=utf8mb4_general_ci"]
+    environment:
+      MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: "1"
+      MARIADB_DATABASE: scafi
+    volumes:
+      - scafi_datos:/var/lib/mysql
+      - scafi_socket:/run/mysqld
+      - ./scafi_base_datos.sql:/docker-entrypoint-initdb.d/01_scafi.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mariadb-admin ping -h 127.0.0.1 -P 3307 -uroot --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 40
+      start_period: 20s
+
+  # ---------- API en PHP ----------
+  api:
+    image: scafi-api
+    build:
+      context: ./docker
+      dockerfile: api.Dockerfile
+    container_name: scafi-api
+    restart: unless-stopped
+    network_mode: "service:db"
+    volumes:
+      - ./scafi-api:/var/www/html/scafi-angular/scafi-api
+      - scafi_socket:/run/mysqld
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # ---------- Aplicación Angular (ya compilada) servida con Nginx ----------
+  web:
+    image: nginx:alpine
+    container_name: scafi-web
+    restart: unless-stopped
+    ports:
+      - "${SCAFI_PUERTO:-4200}:80"
+    volumes:
+      - ./docker/web-dist:/usr/share/nginx/html:ro
+      - ./docker/nginx-scafi.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - api
+
+volumes:
+  scafi_datos:
+  scafi_socket:
