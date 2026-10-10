@@ -1,6 +1,6 @@
 # SCAFI
 
-Sistema de Control Administrativo para Fincas cafeteras: gestión de
+Sistema de Control Integral Cafetero: gestión de
 producción, recolección, inventario, ventas y reportes.
 
 Proyecto de formación del programa Análisis y Desarrollo de Software (SENA).
