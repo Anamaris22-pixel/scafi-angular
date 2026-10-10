@@ -9,7 +9,7 @@ Proyecto de formación del programa Análisis y Desarrollo de Software (SENA).
 
 - Angular (aplicación web)
 - PHP (API)
-- MariaDB / MySQL (base de datos)
+- MySQL (base de datos)
 
 ## Derechos de autor
 
